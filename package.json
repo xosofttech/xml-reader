@@ -1,0 +1,50 @@
+{
+  "name": "nft-stats",
+  "version": "1.0.0",
+  "description": "none",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://muteebahmadkamboh@bitbucket.org/muteebahmadkamboh/nft-stats.git"
+  },
+  "author": "Xosoft Technologies (PVT)",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/muteebahmadkamboh/nft-stats#readme",
+  "dependencies": {
+    "async": "^3.2.4",
+    "await-sleep": "^0.0.1",
+    "axios": "^1.2.1",
+    "body-parser": "^1.20.1",
+    "cheerio": "^1.0.0-rc.12",
+    "child_process": "^1.0.2",
+    "chromedriver": "^110.0.0",
+    "cookie-parser": "^1.4.5",
+    "cron": "^1.8.2",
+    "debug": "~2.6.9",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-session": "^1.17.0",
+    "http-errors": "~1.6.3",
+    "jsdom": "^20.0.3",
+    "moment": "^2.29.4",
+    "mongoose": "^6.8.1",
+    "node-cron": "^2.0.3",
+    "node-fetch": "^3.3.0",
+    "nodejs-web-scraper": "^6.1.2",
+    "nodemon": "^2.0.7",
+    "request-promise": "^4.2.6",
+    "selenium-webdriver": "^4.8.0",
+    "xml2js": "^0.4.23"
+  },
+  "engines": {
+    "node": "12.16.1"
+  },
+  "bugs": {
+    "url": "https://bitbucket.org/muteebahmadkamboh/nft-stats/issues"
+  },
+  "keywords": []
+}
