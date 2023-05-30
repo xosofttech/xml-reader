@@ -1,4 +1,4 @@
-//Data Models
+// Data Models
 const TIMEZONE = "Asia/Jerusalem";
 var exec = require('child_process').exec;
 const async = require("async");
@@ -8,8 +8,15 @@ const axios = require("axios");
 const cheerio = require('cheerio');
 const jsdom = require('jsdom');
 const moment = require('moment');
+const request = require('request');
 const {JSDOM} = jsdom;
-const {Scraper, Root, OpenLinks, CollectContent, DownloadContent} = require('nodejs-web-scraper');
+const {
+    Scraper,
+    Root,
+    OpenLinks,
+    CollectContent,
+    DownloadContent
+} = require('nodejs-web-scraper');
 const {Builder, Browser, By} = require('selenium-webdriver');
 const firefox = require('selenium-webdriver/firefox');
 
@@ -18,20 +25,24 @@ let profile = new firefox.Options();
 profile.setPreference('permissions.default.stylesheet', 2);
 profile.setPreference('permissions.default.image', 2);
 profile.setPreference("dom.ipc.plugins.enabled.libflashplayer.so", false);
-profile.setPreference('network.proxy.Kind','Direct')
+profile.setPreference('network.proxy.Kind', 'Direct')
 
 
 global.DOMParser = new JSDOM().window.DOMParser
 
 var Shows = require('../Model/shows');
+var AllEvents = require('../Model/allevents');
 const fs = require("fs");
+const {start} = require('repl');
 // var Barbie = require('../Model/barbie');
 // var Zappa = require('../Model/zappa');
 // var EvenTim = require('../Model/eventim');
 // var Comy = require('../Model/comy');
 
 var execute = function (command, callback) {
-    exec(command, {maxBuffer: Infinity}, function (error, stdout, stderr) {
+    exec(command, {
+        maxBuffer: Infinity
+    }, function (error, stdout, stderr) {
         callback(error, stdout, stderr);
     });
 };
@@ -39,7 +50,10 @@ var execute = function (command, callback) {
 exports.PullXMLObject = function () {
     try {
         execute(`node get-xml.js`, function (err, data, outerr) {
-            if (err) throw err;
+            if (err) 
+                throw err;
+            
+
             console.log(data);
         });
     } catch (e) {
@@ -51,12 +65,13 @@ exports.ScrapBarbie = async function () {
 
     var ArrData = [];
 
-    const pages = [0];//All ad pages.
+    const pages = [0];
+    // All ad pages.
 
-    //pageObject will be formatted as {title,phone,images}, becuase these are the names we chose for the scraping operations below.
-    //Note that each key is an array, because there might be multiple elements fitting the querySelector.
-    //This hook is called after every page finished scraping.
-    //It will also get an address argument.
+    // pageObject will be formatted as {title,phone,images}, becuase these are the names we chose for the scraping operations below.
+    // Note that each key is an array, because there might be multiple elements fitting the querySelector.
+    // This hook is called after every page finished scraping.
+    // It will also get an address argument.
     const getPageObject = (pageObject, address) => {
         pages.push({URL: address, Data: pageObject})
     }
@@ -69,9 +84,13 @@ exports.ScrapBarbie = async function () {
 
     const scraper = new Scraper(config);
 
-    const root = new Root();//Open pages 1-10. You need to supply the querystring that the site uses(more details in the API docs).
+    const root = new Root(); // Open pages 1-10. You need to supply the querystring that the site uses(more details in the API docs).
 
-    const jobAds = new OpenLinks('.defShowListMain a', {name: 'Link', getPageObject});//Opens every job ad, and calls the getPageObject, passing the formatted dictionary.
+    const jobAds = new OpenLinks('.defShowListMain a', {
+        name: 'Link',
+        getPageObject
+    });
+    // Opens every job ad, and calls the getPageObject, passing the formatted dictionary.
 
     // const links = new CollectContent('.defShowListMain a.href', {name: 'link'});
     const titles = new CollectContent('h1', {name: 'title'});
@@ -110,7 +129,7 @@ exports.ScrapBarbie = async function () {
         // var convImg = (obj.images)
         // convImg = "" + convImg;
 
-        if (obj?.title) {
+        if (obj ?. title) {
             var convTitle = obj.title
             convTitle = "" + convTitle;
             // console.log(convTitle)
@@ -136,15 +155,13 @@ exports.ScrapBarbie = async function () {
 
             var dateParts = convDate.split("/");
             if (dateParts[0] >= 13) {
-                var convDate = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
+                var convDate = new Date(+ dateParts[2], dateParts[1] - 1, + dateParts[0]);
             } else {
                 convDate = new Date(Date.parse(convDate))
-            }
-
-            convTime = convTime[0];
+            } convTime = convTime[0];
 
 
-            //Show Locations
+            // Show Locations
             var myDate = new Date(convDate);
 
             year = myDate.getFullYear();
@@ -174,7 +191,7 @@ exports.ScrapBarbie = async function () {
             locations.address = "ברבי תל אביב Barbie";
             showLocations.push(locations);
 
-            //Show Locations
+            // Show Locations
 
 
             var response = {};
@@ -193,10 +210,12 @@ exports.ScrapBarbie = async function () {
             response.showLocations = showLocations;
 
             DBResponse = await Shows.findOne({show_id: showID});
-            if (DBResponse === null)
+            if (DBResponse === null) 
                 ArrData.push(response);
-            else
+             else 
                 console.log(showID, "Already Exist");
+            
+
         }
     }
 
@@ -219,23 +238,26 @@ exports.ScrapComy = async function () {
 
     var ArrData = [];
 
-    const pages = [];//All ad pages.
+    const pages = []; // All ad pages.
 
-    const getPageObject = (pageObject, address) => {
-        //pageObject.URL=address;
+    const getPageObject = (pageObject, address) => { // pageObject.URL=address;
         pages.push({URL: address, Data: pageObject})
     }
 
     const config = {
         baseSiteUrl: `https://comy.co.il/`,
-        startUrl: `https://comy.co.il/`,
+        startUrl: `https://comy.co.il/`
     }
 
     const scraper = new Scraper(config);
 
-    const root = new Root();//Open pages 1-10. You need to supply the querystring that the site uses(more details in the API docs).
+    const root = new Root(); // Open pages 1-10. You need to supply the querystring that the site uses(more details in the API docs).
 
-    const jobAds = new OpenLinks('#home-page-events .event a', {name: 'Link', getPageObject});//Opens every job ad, and calls the getPageObject, passing the formatted dictionary.
+    const jobAds = new OpenLinks('#home-page-events .event a', {
+        name: 'Link',
+        getPageObject
+    });
+    // Opens every job ad, and calls the getPageObject, passing the formatted dictionary.
 
     // const links = new CollectContent('.defShowListMain a.href', {name: 'link'});
     const titles = new CollectContent('h1', {name: 'title'});
@@ -244,7 +266,7 @@ exports.ScrapComy = async function () {
     const date = new CollectContent('.te-date', {name: 'date'});
     const price = new CollectContent('.ticket-price', {name: 'price'});
 
-    //Event List
+    // Event List
     const eventName = new CollectContent('.single-place-string p', {name: 'eventName'});
     const eventDate = new CollectContent('.single-date-details .date', {name: 'eventDate'});
     const eventTime = new CollectContent('.single-date-details .single-light', {name: 'eventTime'});
@@ -257,7 +279,7 @@ exports.ScrapComy = async function () {
     jobAds.addOperation(showDescription);
     jobAds.addOperation(date);
     jobAds.addOperation(price);
-    //Event List
+    // Event List
     jobAds.addOperation(eventName);
     jobAds.addOperation(eventDate);
     jobAds.addOperation(eventTime);
@@ -266,7 +288,7 @@ exports.ScrapComy = async function () {
     // jobAds.addOperation(description);
 
     await scraper.scrape(root);
-    //console.log(pages)
+    // console.log(pages)
 
 
     for ([index, object] of pages.entries()) {
@@ -339,12 +361,9 @@ exports.ScrapComy = async function () {
                 myObj.time = time;
                 myObj.address = num3;
                 myObjArray.push(myObj);
-                console.log("Title: ", convTitle, "Date", num1, "Converted Date", newdate )
+                console.log("Title: ", convTitle, "Date", num1, "Converted Date", newdate)
             });
         }
-
-
-
 
 
         // console.log(myObjArray)
@@ -357,22 +376,23 @@ exports.ScrapComy = async function () {
         response.link = pageAddress;
         response.name = convTitle;
         response.category = convCategory;
-        //response.date = convDate;
+        // response.date = convDate;
         response.price = convPrice;
         response.showDescription = convshowDescription;
         response.showLocations = myObjArray;
         DBResponse = await Shows.findOne({show_id: showID});
-        if (DBResponse === null)
+        if (DBResponse === null) 
             ArrData.push(response);
-        else
+         else 
             console.log(showID, "Already Exist");
+        
+
 
     }
 
     // console.log(ArrData)
 
-    Shows.insertMany(ArrData).then(async function () {
-        //addComyObj()
+    Shows.insertMany(ArrData).then(async function () { // addComyObj()
         console.log("done")
     }).catch(function (error) {
         console.log(error)
@@ -398,7 +418,8 @@ exports.XMLToMongo = function () {
                     callback(err);
                 });
             });
-        }, function (xml, callback) {
+        },
+        function (xml, callback) {
             var parser = new xml2js.Parser({explicitArray: false});
             parser.parseString(xml, function (err, result) {
                 if (err) {
@@ -407,11 +428,12 @@ exports.XMLToMongo = function () {
                     callback(null, result);
                 }
             });
-        }, async function (json, callback) {
+        },
+        async function (json, callback) {
             // do something usefull with the json
-            //eyes.inspect(json.bravo.shows);sky
+            // eyes.inspect(json.bravo.shows);sky
             var Result = json.bravo.shows.show;
-            //console.log(Result)
+            // console.log(Result)
             for (var [key, val] of Result.entries()) {
 
                 show_domain = "buytickets.kartisim.co.il";
@@ -441,14 +463,14 @@ exports.XMLToMongo = function () {
                     show_dateTo = val.dateTo;
                 }
 
-                show_location = val.seances?.seance;
+                show_location = val.seances ?. seance;
 
 
                 if (!(show_location instanceof Array)) {
                     show_location = [show_location];
                 }
 
-                if (val.seances?.seance === undefined) {
+                if (val.seances ?. seance === undefined) {
                     show_date = null;
                     show_time = null;
                     show_hall = null;
@@ -494,10 +516,13 @@ exports.XMLToMongo = function () {
                 ShowExist = await Shows.findOne({"show_id": show_id});
                 if (ShowExist != null) {
                     console.log("ShowID => ", show_id, " Exist already Found & Updated");
-                    PageResult = await Shows.updateOne(
-                        {"show_id": show_id},
-                        {$set: {"showLocations": show_location}}
-                    );
+                    PageResult = await Shows.updateOne({
+                        "show_id": show_id
+                    }, {
+                        $set: {
+                            "showLocations": show_location
+                        }
+                    });
                 } else {
                     console.log("Show ID - ", show_id, "Inserted");
                     obj = new Shows(response);
@@ -518,21 +543,233 @@ exports.XMLToMongo = function () {
 }
 let driver = "";
 exports.ScrapEvenTim = async function () {
-    driver = await new Builder().forBrowser(Browser.FIREFOX)
-        .setFirefoxOptions(profile)
-        .build();
+    driver = await new Builder().forBrowser(Browser.FIREFOX).setFirefoxOptions(profile).build();
     data = await GetBrowserURL(`https://www.eventim.co.il`);
     const $ = cheerio.load(data);
 
-    const pokemons = $('.swiper-slide')
-        .map((_, pokemon) => {
-            const $pokemon = $(pokemon);
-            const link = $pokemon.find('a').attr("href");
-            return {'link': link}
-        })
-        .toArray();
+    const pokemons = $('.swiper-slide').map((_, pokemon) => {
+        const $pokemon = $(pokemon);
+        const link = $pokemon.find('a').attr("href");
+        return {'link': link}
+    }).toArray();
     EvenTimFunc(pokemons)
 }
+
+
+exports.LoopAllLinks = async function () {
+
+    const links = [
+    'https://2207.kupat.co.il/show/oshercohen', 
+    'https://2207.kupat.co.il/show/matilda', 
+    'https://2207.kupat.co.il/show/hananbenari', 
+    'https://2207.kupat.co.il/show/eyalgolan',
+    'https://2207.kupat.co.il/show/shlomo-artzi',
+    'https://2207.kupat.co.il/show/ozuna',
+    'https://2207.kupat.co.il/show/static',
+    'https://2207.kupat.co.il/show/avivgeffen',
+    'https://2207.kupat.co.il/show/peertasi',
+    'https://2207.kupat.co.il/show/sarit-hadad',
+    'https://2207.kupat.co.il/show/idan-amedi',
+    'https://2207.kupat.co.il/show/nasreenqadri',
+    'https://2207.kupat.co.il/show/nathangoshen',
+    'https://2207.kupat.co.il/show/revivoproject',
+    'https://2207.kupat.co.il/show/knesiyathasechel',
+    'https://2207.kupat.co.il/show/circus',
+    'https://2207.kupat.co.il/show/krovim',
+    'https://2207.kupat.co.il/show/echoes',
+    'https://2207.kupat.co.il/show/elai-botner-outsidekids',
+    'https://2207.kupat.co.il/show/shirimaimon',
+    'https://2207.kupat.co.il/show/avi-aburomi',
+    'https://2207.kupat.co.il/show/benaiabarabi',
+    'https://2207.kupat.co.il/show/ishayribo',
+    'https://2207.kupat.co.il/show/agambuhbut',
+    'https://2207.kupat.co.il/show/dylendror',
+    'https://2207.kupat.co.il/show/itay-levi-motzkin',
+    'https://2207.kupat.co.il/show/sarit-hadad-motzkin',
+    'https://2207.kupat.co.il/show/tuna',
+    'https://2207.kupat.co.il/show/oshercohen-motzkin',
+    'https://2207.kupat.co.il/show/dani-tislam',
+    'https://2207.kupat.co.il/show/avivgefen-motzkin',
+    'https://2207.kupat.co.il/show/avivgefen-motzkin',
+    'https://2207.kupat.co.il/show/revivo',
+    'https://2207.kupat.co.il/show/ran-elai',
+    'https://2207.kupat.co.il/show/mia',
+    'https://2207.kupat.co.il/show/yasso-time',
+    'https://2207.kupat.co.il/show/dannysanderson',
+];
+
+    async function scrapeEvents(links) {
+        const eventsArray = [];
+
+        for (const link of links) {
+            await new Promise((resolve, reject) => {
+                request(link, (error, response, body) => {
+                    if (!error && response.statusCode === 200) {
+                        const $ = cheerio.load(body);
+                        const showLocations = [];
+                        const name = $('.order_btn_wrap a').text();
+                        const description = $('.about-content p').text();
+
+                        $('.days.alldays li').each((index, element) => {
+                            const $element = $(element);
+                            const date = $element.find('.date').text().trim();
+                            const time = $element.find('.starts').text().trim();
+                            const city = $element.find('.city').text().trim();
+                            const hall = $element.find('.hall').text().trim();
+                            const orderLink = $element.find('a.order_show').attr('href');
+
+                            showLocations.push({
+                                date,
+                                time,
+                                city,
+                                hall,
+                                orderLink
+                            });
+                        });
+
+                        eventsArray.push({name, description, showLocations});
+                        resolve();
+                    } else {
+                        console.error('Error:', error);
+                        reject(error);
+                    }
+                });
+            });
+        }
+        
+    AllEvents.insertMany(eventsArray).then(async function () {
+        console.log("done");
+    }).catch(function (error) {
+        console.log(error)
+    });
+    }
+
+    scrapeEvents(links);
+
+}
+
+// exports.ScrapOshercohen = async function () {
+
+//     request('https://2207.kupat.co.il/show/oshercohen', (error, response, body) => {
+//         if (!error && response.statusCode === 200) {
+//             const $ = cheerio.load(body);
+
+//             // Example: Scrape the text from an element with a specific class
+//             const date = $('.ticket-row-inner .date').text();
+//             const starts = $('.ticket-row-inner .starts').text();
+//             const city = $('.ticket-row-inner .city').text();
+//             const hall = $('.ticket-row-inner .hall').text();
+//             const scrapedText = $('.tab-title.only-desktop').text();
+//             const description = $('.info').text();
+
+
+//             console.log('date:', date);
+//             console.log('date:', starts);
+//             console.log('date:', city);
+//             console.log('date:', hall);
+//             console.log('title:', scrapedText);
+//             console.log('description:', description);
+
+//             // Continue scraping other elements as needed
+
+//         } else {
+//             console.error('Error:', error);
+//         }
+//     });
+
+// }
+
+// exports.ScrapHananbenari = async function () {
+
+//     request('https://2207.kupat.co.il/show/hananbenari', (error, response, body) => {
+//       if (!error && response.statusCode === 200) {
+//         const $ = cheerio.load(body);
+//         const events = [];
+//         const name = $('.order_btn_wrap a').text();
+
+//         $('.days.alldays li').each((index, element) => {
+//           const $element = $(element);
+//           const date = $element.find('.date').text().trim();
+//           const time = $element.find('.starts').text().trim();
+//           const city = $element.find('.city').text().trim();
+//           const hall = $element.find('.hall').text().trim();
+//           const orderLink = $element.find('a.order_show').attr('href');
+
+//           events.push({ date, time, city, hall, orderLink });
+//         });
+
+//         console.log(name)
+//         console.log(events);
+
+//       } else {
+//         console.error('Error:', error);
+//       }
+//     });
+
+
+// }
+
+// exports.ScrapEyalgolan = async function () {
+
+//     request('https://2207.kupat.co.il/show/eyalgolan', (error, response, body) => {
+//       if (!error && response.statusCode === 200) {
+//         const $ = cheerio.load(body);
+//         const events = [];
+//         const name = $('.order_btn_wrap a').text();
+
+//         $('.days.alldays li').each((index, element) => {
+//           const $element = $(element);
+//           const date = $element.find('.date').text().trim();
+//           const time = $element.find('.starts').text().trim();
+//           const city = $element.find('.city').text().trim();
+//           const hall = $element.find('.hall').text().trim();
+//           const orderLink = $element.find('a.order_show').attr('href');
+
+//           events.push({ date, time, city, hall, orderLink });
+//         });
+
+//         console.log(name)
+//         console.log(events);
+
+//       } else {
+//         console.error('Error:', error);
+//       }
+//     });
+
+
+// }
+
+
+// exports.ScrapShlomo = async function () {
+
+//     request('https://2207.kupat.co.il/show/shlomo-artzi', (error, response, body) => {
+//       if (!error && response.statusCode === 200) {
+//         const $ = cheerio.load(body);
+//         const events = [];
+//         const name = $('.order_btn_wrap a').text();
+
+//         $('.days.alldays li').each((index, element) => {
+//           const $element = $(element);
+//           const date = $element.find('.date').text().trim();
+//           const time = $element.find('.starts').text().trim();
+//           const city = $element.find('.city').text().trim();
+//           const hall = $element.find('.hall').text().trim();
+//           const orderLink = $element.find('a.order_show').attr('href');
+
+//           events.push({ date, time, city, hall, orderLink });
+//         });
+
+//         console.log(name)
+//         console.log(events);
+
+//       } else {
+//         console.error('Error:', error);
+//       }
+//     });
+
+
+// }
+
 
 async function EvenTimFunc(pokemons) {
 
@@ -541,7 +778,7 @@ async function EvenTimFunc(pokemons) {
     var eventDetails = [];
     var showID = "";
     console.log("Total:", pokemons.length);
-    for await ([index, object] of pokemons.entries()) {
+    for await([index, object] of pokemons.entries()) {
         var pageAddress = object.link || '';
 
         var parts = object.link.split("/");
@@ -575,7 +812,7 @@ async function EvenTimFunc(pokemons) {
             console.log('Total Event Found', eventDetails.length);
 
 
-            for await ([index, object] of eventDetails.entries()) {
+            for await([index, object] of eventDetails.entries()) {
                 var startDate = new Date(object.startDate).toISOString().slice(0, 10);
                 var eventTime = moment(object.startDate).tz(TIMEZONE).format("HH:mm");
                 EventData.push({
@@ -586,52 +823,41 @@ async function EvenTimFunc(pokemons) {
                     time: eventTime
                 });
             }
+        
 
 
-            var response = {};
-            response.show_id = showID;
-            response.domain = 'www.eventim.co.il';
-            response.section = '';
-            response.link = pageAddress;
-            response.name = name;
-            response.category = "";
-            response.day = "";
-            response.date = "";
-            response.time = "";
-            response.price = "";
-            response.description = description;
-            response.showLocations = EventData;
-            response.showObj = eventDetails;
+        var response = {};
+        response.show_id = showID;
+        response.domain = 'www.eventim.co.il';
+        response.section = '';
+        response.link = pageAddress;
+        response.name = name;
+        response.category = "";
+        response.day = "";
+        response.date = "";
+        response.time = "";
+        response.price = "";
+        response.description = description;
+        response.showLocations = EventData;
+        response.showObj = eventDetails;
 
-            //ArrData.push(response);
+        // ArrData.push(response);
 
-            //console.log(ArrData)
+        // console.log(ArrData)
 
 
-            const result = await Shows.findOne({show_id: showID});
-            if (result == null) {
-                console.log(showID, "Not Found Pushing in Array");
-                ArrData.push(response);
-                await Shows.create(response);
-            } else {
-                console.log(showID, "Already Exist");
-            }
+        const result = await Shows.findOne({show_id: showID});
+        if (result == null) {
+            console.log(showID, "Not Found Pushing in Array");
+            ArrData.push(response);
+            await Shows.create(response);
+        } else {
+            console.log(showID, "Already Exist");
         }
     }
-
-    console.log("Total New Added", ArrData.length);
-    console.log("Updated, Execution Completed!!!");
-    driver.close();
-
-}
-
-async function GetBrowserURL(url) {
-    try {
-        console.log(url);
-        await driver.get(url);
-        html = await driver.findElement(By.tagName("html")).getAttribute("innerHTML");
-        return html;
-    } catch (e) {
-        console.log(e);
-    }
-}
+}console.log("Total New Added", ArrData.length);console.log("Updated, Execution Completed!!!");driver.close();} async function GetBrowserURL(url) {try {
+console.log(url);
+await driver.get(url);
+html = await driver.findElement(By.tagName("html")).getAttribute("innerHTML");
+return html;} catch (e) {
+console.log(e);}}

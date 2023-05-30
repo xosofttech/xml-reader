@@ -3,6 +3,12 @@ var CronJob = require('cron').CronJob;
 var FN = require('../CronFunctions/functions');
 var {CONFIG} = require('../config');
 
+
+FN.LoopAllLinks();
+
+
+
+
 if (CONFIG.CRON === "on") {
     var PullXMLObject = new CronJob('01 */12 * * *', function () {
         console.log("Getting XML Object Cron Running Start");
@@ -34,6 +40,7 @@ if (CONFIG.CRON === "on") {
     }, null, true, TIMEZONE);
     ScrapEvenTim.start();
 }
+
 
 /*Test Funtions to check Crons*/
 // FN.PullXMLObject();
