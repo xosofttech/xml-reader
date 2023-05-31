@@ -34,6 +34,7 @@ var Shows = require('../Model/shows');
 var AllEvents = require('../Model/allevents');
 const fs = require("fs");
 const {start} = require('repl');
+const { Console } = require('console');
 // var Barbie = require('../Model/barbie');
 // var Zappa = require('../Model/zappa');
 // var EvenTim = require('../Model/eventim');
@@ -557,7 +558,6 @@ exports.ScrapEvenTim = async function () {
 
 
 exports.LoopAllLinks = async function () {
-
     const links = [
     'https://2207.kupat.co.il/show/oshercohen', 
     'https://2207.kupat.co.il/show/matilda', 
@@ -607,12 +607,16 @@ exports.LoopAllLinks = async function () {
                     if (!error && response.statusCode === 200) {
                         const $ = cheerio.load(body);
                         const showLocations = [];
-                        const name = $('.order_btn_wrap a').text();
+                        // const name = $('.order_btn_wrap a').text();
+                        const name = $('title').text();
+                        const domain = "2207.kupat.co.il";
                         const description = $('.about-content p').text();
 
                         $('.days.alldays li').each((index, element) => {
                             const $element = $(element);
-                            const date = $element.find('.date').text().trim();
+                            const str = $element.find('.date').text().trim();
+                            const formattedDate = str.match(/\d{2}\/\d{2}/)[0]; 
+                            const date = new Date().getFullYear() + '-' + formattedDate.split('/').reverse().join('-');
                             const time = $element.find('.starts').text().trim();
                             const city = $element.find('.city').text().trim();
                             const hall = $element.find('.hall').text().trim();
@@ -627,7 +631,7 @@ exports.LoopAllLinks = async function () {
                             });
                         });
 
-                        eventsArray.push({name, description, showLocations});
+                        eventsArray.push({name, domain, link, description, showLocations});
                         resolve();
                     } else {
                         console.error('Error:', error);
@@ -636,12 +640,13 @@ exports.LoopAllLinks = async function () {
                 });
             });
         }
-        
+       console.log(eventsArray) 
     AllEvents.insertMany(eventsArray).then(async function () {
         console.log("done");
     }).catch(function (error) {
         console.log(error)
     });
+
     }
 
     scrapeEvents(links);

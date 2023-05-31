@@ -8,6 +8,14 @@ var AllEventsSchema = new Schema({
         type: "String",
         default: "",
     },
+    domain: {
+        type: "String",
+        default: "",
+    },
+    link: {
+        type: "String",
+        default: "",
+    },
     name: {
         type: "String",
         default: "",
