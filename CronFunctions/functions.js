@@ -611,9 +611,7 @@ exports.LoopAllLinks = async function () {
                         const showLocations = [];
                         // const name = $('.order_btn_wrap a').text();
                         const title = $('title').text();
-                        var regex = /(.+?)\s/;
-                        var match = regex.exec(title);
-                        var name = match[1];
+                        var name = title.split(" - ")[0];
                         const domain = "2207.kupat.co.il";
                         const description = $('.about-content p').text();
 
