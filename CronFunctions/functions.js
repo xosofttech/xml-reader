@@ -34,7 +34,7 @@ var Shows = require('../Model/shows');
 var AllEvents = require('../Model/allevents');
 const fs = require("fs");
 const {start} = require('repl');
-const { Console } = require('console');
+const {Console} = require('console');
 // var Barbie = require('../Model/barbie');
 // var Zappa = require('../Model/zappa');
 // var EvenTim = require('../Model/eventim');
@@ -54,6 +54,7 @@ exports.PullXMLObject = function () {
             if (err) 
                 throw err;
             
+
 
             console.log(data);
         });
@@ -216,6 +217,7 @@ exports.ScrapBarbie = async function () {
              else 
                 console.log(showID, "Already Exist");
             
+
 
         }
     }
@@ -559,44 +561,44 @@ exports.ScrapEvenTim = async function () {
 
 exports.LoopAllLinks = async function () {
     const links = [
-    'https://2207.kupat.co.il/show/oshercohen', 
-    'https://2207.kupat.co.il/show/matilda', 
-    'https://2207.kupat.co.il/show/hananbenari', 
-    'https://2207.kupat.co.il/show/eyalgolan',
-    'https://2207.kupat.co.il/show/shlomo-artzi',
-    'https://2207.kupat.co.il/show/ozuna',
-    'https://2207.kupat.co.il/show/static',
-    'https://2207.kupat.co.il/show/avivgeffen',
-    'https://2207.kupat.co.il/show/peertasi',
-    'https://2207.kupat.co.il/show/sarit-hadad',
-    'https://2207.kupat.co.il/show/idan-amedi',
-    'https://2207.kupat.co.il/show/nasreenqadri',
-    'https://2207.kupat.co.il/show/nathangoshen',
-    'https://2207.kupat.co.il/show/revivoproject',
-    'https://2207.kupat.co.il/show/knesiyathasechel',
-    'https://2207.kupat.co.il/show/circus',
-    'https://2207.kupat.co.il/show/krovim',
-    'https://2207.kupat.co.il/show/echoes',
-    'https://2207.kupat.co.il/show/elai-botner-outsidekids',
-    'https://2207.kupat.co.il/show/shirimaimon',
-    'https://2207.kupat.co.il/show/avi-aburomi',
-    'https://2207.kupat.co.il/show/benaiabarabi',
-    'https://2207.kupat.co.il/show/ishayribo',
-    'https://2207.kupat.co.il/show/agambuhbut',
-    'https://2207.kupat.co.il/show/dylendror',
-    'https://2207.kupat.co.il/show/itay-levi-motzkin',
-    'https://2207.kupat.co.il/show/sarit-hadad-motzkin',
-    'https://2207.kupat.co.il/show/tuna',
-    'https://2207.kupat.co.il/show/oshercohen-motzkin',
-    'https://2207.kupat.co.il/show/dani-tislam',
-    'https://2207.kupat.co.il/show/avivgefen-motzkin',
-    'https://2207.kupat.co.il/show/avivgefen-motzkin',
-    'https://2207.kupat.co.il/show/revivo',
-    'https://2207.kupat.co.il/show/ran-elai',
-    'https://2207.kupat.co.il/show/mia',
-    'https://2207.kupat.co.il/show/yasso-time',
-    'https://2207.kupat.co.il/show/dannysanderson',
-];
+        'https://2207.kupat.co.il/show/oshercohen',
+        'https://2207.kupat.co.il/show/matilda',
+        'https://2207.kupat.co.il/show/hananbenari',
+        'https://2207.kupat.co.il/show/eyalgolan',
+        'https://2207.kupat.co.il/show/shlomo-artzi',
+        'https://2207.kupat.co.il/show/ozuna',
+        'https://2207.kupat.co.il/show/static',
+        'https://2207.kupat.co.il/show/avivgeffen',
+        'https://2207.kupat.co.il/show/peertasi',
+        'https://2207.kupat.co.il/show/sarit-hadad',
+        'https://2207.kupat.co.il/show/idan-amedi',
+        'https://2207.kupat.co.il/show/nasreenqadri',
+        'https://2207.kupat.co.il/show/nathangoshen',
+        'https://2207.kupat.co.il/show/revivoproject',
+        'https://2207.kupat.co.il/show/knesiyathasechel',
+        'https://2207.kupat.co.il/show/circus',
+        'https://2207.kupat.co.il/show/krovim',
+        'https://2207.kupat.co.il/show/echoes',
+        'https://2207.kupat.co.il/show/elai-botner-outsidekids',
+        'https://2207.kupat.co.il/show/shirimaimon',
+        'https://2207.kupat.co.il/show/avi-aburomi',
+        'https://2207.kupat.co.il/show/benaiabarabi',
+        'https://2207.kupat.co.il/show/ishayribo',
+        'https://2207.kupat.co.il/show/agambuhbut',
+        'https://2207.kupat.co.il/show/dylendror',
+        'https://2207.kupat.co.il/show/itay-levi-motzkin',
+        'https://2207.kupat.co.il/show/sarit-hadad-motzkin',
+        'https://2207.kupat.co.il/show/tuna',
+        'https://2207.kupat.co.il/show/oshercohen-motzkin',
+        'https://2207.kupat.co.il/show/dani-tislam',
+        'https://2207.kupat.co.il/show/avivgefen-motzkin',
+        'https://2207.kupat.co.il/show/avivgefen-motzkin',
+        'https://2207.kupat.co.il/show/revivo',
+        'https://2207.kupat.co.il/show/ran-elai',
+        'https://2207.kupat.co.il/show/mia',
+        'https://2207.kupat.co.il/show/yasso-time',
+        'https://2207.kupat.co.il/show/dannysanderson',
+    ];
 
     async function scrapeEvents(links) {
         const eventsArray = [];
@@ -608,14 +610,17 @@ exports.LoopAllLinks = async function () {
                         const $ = cheerio.load(body);
                         const showLocations = [];
                         // const name = $('.order_btn_wrap a').text();
-                        const name = $('title').text();
+                        const title = $('title').text();
+                        var regex = /(.+?)\s/;
+                        var match = regex.exec(title);
+                        var name = match[1];
                         const domain = "2207.kupat.co.il";
                         const description = $('.about-content p').text();
 
                         $('.days.alldays li').each((index, element) => {
                             const $element = $(element);
                             const str = $element.find('.date').text().trim();
-                            const formattedDate = str.match(/\d{2}\/\d{2}/)[0]; 
+                            const formattedDate = str.match(/\d{2}\/\d{2}/)[0];
                             const date = new Date().getFullYear() + '-' + formattedDate.split('/').reverse().join('-');
                             const time = $element.find('.starts').text().trim();
                             const city = $element.find('.city').text().trim();
@@ -631,7 +636,13 @@ exports.LoopAllLinks = async function () {
                             });
                         });
 
-                        eventsArray.push({name, domain, link, description, showLocations});
+                        eventsArray.push({
+                            name,
+                            domain,
+                            link,
+                            description,
+                            showLocations
+                        });
                         resolve();
                     } else {
                         console.error('Error:', error);
@@ -640,12 +651,12 @@ exports.LoopAllLinks = async function () {
                 });
             });
         }
-       console.log(eventsArray) 
-    AllEvents.insertMany(eventsArray).then(async function () {
-        console.log("done");
-    }).catch(function (error) {
-        console.log(error)
-    });
+        console.log(eventsArray)
+        AllEvents.insertMany(eventsArray).then(async function () {
+            console.log("done");
+        }).catch(function (error) {
+            console.log(error)
+        });
 
     }
 
