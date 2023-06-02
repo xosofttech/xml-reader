@@ -598,6 +598,7 @@ exports.LoopAllLinks = async function () {
         'https://2207.kupat.co.il/show/mia',
         'https://2207.kupat.co.il/show/yasso-time',
         'https://2207.kupat.co.il/show/dannysanderson',
+        'https://2207.kupat.co.il/show/mati-caspi',
     ];
 
     async function scrapeEvents(links) {
@@ -658,9 +659,12 @@ exports.LoopAllLinks = async function () {
 
     }
 
-    scrapeEvents(links);
+    // scrapeEvents(links);
 
 }
+
+
+
 
 // exports.ScrapOshercohen = async function () {
 
@@ -875,3 +879,24 @@ await driver.get(url);
 html = await driver.findElement(By.tagName("html")).getAttribute("innerHTML");
 return html;} catch (e) {
 console.log(e);}}
+
+
+
+
+
+
+// async function PullDataToShows() {
+
+//     Events = await AllEvents.find()
+
+//     Shows.insertMany(Events).then(async function () {
+//         console.log(`Execution Comleted`);
+//     }).catch(function (error) {
+//         console.log(error)
+//     });
+
+
+    
+// }
+
+// PullDataToShows();
