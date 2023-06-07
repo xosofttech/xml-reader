@@ -55,7 +55,6 @@ exports.PullXMLObject = function () {
                 throw err;
 
 
-
             console.log(data);
         });
     } catch (e) {
@@ -131,7 +130,7 @@ exports.ScrapBarbie = async function () {
         // var convImg = (obj.images)
         // convImg = "" + convImg;
 
-        if (obj ?. title) {
+        if (obj?.title) {
             var convTitle = obj.title
             convTitle = "" + convTitle;
             // console.log(convTitle)
@@ -157,10 +156,11 @@ exports.ScrapBarbie = async function () {
 
             var dateParts = convDate.split("/");
             if (dateParts[0] >= 13) {
-                var convDate = new Date(+ dateParts[2], dateParts[1] - 1, + dateParts[0]);
+                var convDate = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
             } else {
                 convDate = new Date(Date.parse(convDate))
-            } convTime = convTime[0];
+            }
+            convTime = convTime[0];
 
 
             // Show Locations
@@ -214,9 +214,8 @@ exports.ScrapBarbie = async function () {
             DBResponse = await Shows.findOne({show_id: showID});
             if (DBResponse === null)
                 ArrData.push(response);
-             else
+            else
                 console.log(showID, "Already Exist");
-
 
 
         }
@@ -271,6 +270,8 @@ exports.ScrapComy = async function () {
 
     // Event List
     const eventName = new CollectContent('.single-place-string p', {name: 'eventName'});
+    const eventHall = new CollectContent('.single-place-string p:nth-child(1)', {name: 'eventHall'});
+    const eventCity = new CollectContent('.single-place-string p:nth-child(2)', {name: 'eventCity'});
     const eventDate = new CollectContent('.single-date-details .date', {name: 'eventDate'});
     const eventTime = new CollectContent('.single-date-details .single-light', {name: 'eventTime'});
     // const eventTitle = new CollectContent('.single-edt-left-new p', {name: 'eventTitle'});
@@ -284,6 +285,8 @@ exports.ScrapComy = async function () {
     jobAds.addOperation(price);
     // Event List
     jobAds.addOperation(eventName);
+    jobAds.addOperation(eventHall);
+    jobAds.addOperation(eventCity);
     jobAds.addOperation(eventDate);
     jobAds.addOperation(eventTime);
     // jobAds.addOperation(eventTitle);
@@ -316,6 +319,8 @@ exports.ScrapComy = async function () {
         let ArreventDate = obj.eventDate;
         let ArreventTime = obj.eventTime;
         let ArreventName = obj.eventName;
+        let ArreventHall = obj.eventHall;
+        let ArreventCity = obj.eventCity;
 
         var parts = convDate.split('-');
         var startDate = new Date(parts[0]);
@@ -344,6 +349,8 @@ exports.ScrapComy = async function () {
             ArreventDate.forEach((num1, index) => {
                 const num2 = ArreventTime[index];
                 const num3 = ArreventName[index];
+                const num4 = ArreventHall[index];
+                const num5 = ArreventCity[index];
                 var sDate = ""
                 if (startDate !== null) {
                     sDate = startDateYear;
@@ -362,6 +369,8 @@ exports.ScrapComy = async function () {
                 var time = parts[1];
 
                 myObj.time = time;
+                myObj.hall = num4;
+                myObj.city = num5;
                 myObj.address = num3;
                 myObjArray.push(myObj);
                 console.log("Title: ", convTitle, "Date", num1, "Converted Date", newdate)
@@ -386,9 +395,8 @@ exports.ScrapComy = async function () {
         DBResponse = await Shows.findOne({show_id: showID});
         if (DBResponse === null)
             ArrData.push(response);
-         else
+        else
             console.log(showID, "Already Exist");
-
 
 
     }
@@ -442,7 +450,7 @@ exports.XMLToMongo = function () {
                 show_domain = "buytickets.kartisim.co.il";
                 show_name = val.name;
                 show_anounce = val.announce;
-                show_link = val.link;
+                show_link = `https://buytickets.kartisim.co.il${val.link}`;
                 show_pubDate = val.pubDate;
                 show_section = val.section;
                 if (val.priceMin === undefined) {
@@ -466,14 +474,14 @@ exports.XMLToMongo = function () {
                     show_dateTo = val.dateTo;
                 }
 
-                show_location = val.seances ?. seance;
+                show_location = val.seances?.seance;
 
 
                 if (!(show_location instanceof Array)) {
                     show_location = [show_location];
                 }
 
-                if (val.seances ?. seance === undefined) {
+                if (val.seances?.seance === undefined) {
                     show_date = null;
                     show_time = null;
                     show_hall = null;
@@ -664,8 +672,6 @@ exports.LoopAllLinks = async function () {
 }
 
 
-
-
 // exports.ScrapOshercohen = async function () {
 
 //     request('https://2207.kupat.co.il/show/oshercohen', (error, response, body) => {
@@ -843,47 +849,59 @@ async function EvenTimFunc(pokemons) {
             }
 
 
+            var response = {};
+            response.show_id = showID;
+            response.domain = 'www.eventim.co.il';
+            response.section = '';
+            response.link = pageAddress;
+            response.name = name;
+            response.category = "";
+            response.day = "";
+            response.date = "";
+            response.time = "";
+            response.price = "";
+            response.description = description;
+            response.showLocations = EventData;
+            response.showObj = eventDetails;
 
-        var response = {};
-        response.show_id = showID;
-        response.domain = 'www.eventim.co.il';
-        response.section = '';
-        response.link = pageAddress;
-        response.name = name;
-        response.category = "";
-        response.day = "";
-        response.date = "";
-        response.time = "";
-        response.price = "";
-        response.description = description;
-        response.showLocations = EventData;
-        response.showObj = eventDetails;
+            // ArrData.push(response);
 
-        // ArrData.push(response);
-
-        // console.log(ArrData)
+            // console.log(ArrData)
 
 
-        const result = await Shows.findOne({show_id: showID});
-        if (result == null) {
-            console.log(showID, "Not Found Pushing in Array");
-            ArrData.push(response);
-            await Shows.create(response);
-        } else {
-            console.log(showID, "Already Exist");
+            const result = await Shows.findOne({show_id: showID});
+            if (result == null) {
+                console.log(showID, "Not Found Pushing in Array");
+                ArrData.push(response);
+                await Shows.create(response);
+            } else {
+                console.log(showID, "Already Exist");
+            }
         }
     }
-}console.log("Total New Added", ArrData.length);console.log("Updated, Execution Completed!!!");driver.close();} async function GetBrowserURL(url) {try {
-console.log(url);
-await driver.get(url);
-html = await driver.findElement(By.tagName("html")).getAttribute("innerHTML");
-return html;} catch (e) {
-console.log(e);}}
+    console.log("Total New Added", ArrData.length);
+    console.log("Updated, Execution Completed!!!");
+    driver.close();
+}
 
+async function GetBrowserURL(url) {
+    try {
+        console.log(url);
+        await driver.get(url);
+        html = await driver.findElement(By.tagName("html")).getAttribute("innerHTML");
+        return html;
+    } catch (e) {
+        console.log(e);
+    }
+}
 
+function Delete_Shows() {
+    Shows.deleteMany({domain: /comy.co.il/}, function (err, resp) {
+        console.log(resp);
+    });
+}
 
-
-
+//Delete_Shows();
 
 // async function PullDataToShows() {
 
@@ -894,7 +912,6 @@ console.log(e);}}
 //     }).catch(function (error) {
 //         console.log(error)
 //     });
-
 
 
 // }

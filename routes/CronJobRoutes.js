@@ -3,18 +3,12 @@ var CronJob = require('cron').CronJob;
 var FN = require('../CronFunctions/functions');
 var {CONFIG} = require('../config');
 
-
-FN.LoopAllLinks();
-
-
-
-
 if (CONFIG.CRON === "on") {
-    var PullXMLObject = new CronJob('01 */12 * * *', function () {
+    /*var PullXMLObject = new CronJob('01 *!/12 * * *', function () {
         console.log("Getting XML Object Cron Running Start");
         FN.PullXMLObject();
     }, null, true, TIMEZONE);
-    PullXMLObject.start();
+    PullXMLObject.start();*/
 
     var PullXMLToMongoObject = new CronJob('05 */12 * * *', function () {
         console.log("Getting XML TO Mongo Cron Running Start");
@@ -47,5 +41,6 @@ if (CONFIG.CRON === "on") {
 // FN.XMLToMongo();
 // FN.ScrapBarbie();
 // FN.ScrapComy();
-//FN.ScrapEvenTim();
+// FN.ScrapEvenTim();
+//FN.LoopAllLinks();
 
