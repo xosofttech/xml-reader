@@ -107,7 +107,31 @@ route.post('/fetch-shows', async function (req, res) {
 
 
     Rows = await Shows.find(main_query).sort({_id: 1});
-    TotalRows = Rows.length
+
+
+    Rows = await Shows.aggregate([
+        {
+            $unwind: "$showLocations"
+        },
+        {
+            $project: {
+                _id: 0,
+                showObj: 0
+            }
+        },
+        {
+            $match: main_query
+        },
+        {
+            $group: {
+                _id: null,
+                count: {$sum: 1}
+            }
+        }
+    ])
+
+
+    TotalRows = (Rows !== undefined && Rows.length !== 0) ? Rows[0].count : 0
 
     /*ShowsResult.map(elem => {
         const {showObj, ...newObj} = elem;
