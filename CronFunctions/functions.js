@@ -51,9 +51,9 @@ var execute = function (command, callback) {
 exports.PullXMLObject = function () {
     try {
         execute(`node get-xml.js`, function (err, data, outerr) {
-            if (err) 
+            if (err)
                 throw err;
-            
+
 
 
             console.log(data);
@@ -212,11 +212,11 @@ exports.ScrapBarbie = async function () {
             response.showLocations = showLocations;
 
             DBResponse = await Shows.findOne({show_id: showID});
-            if (DBResponse === null) 
+            if (DBResponse === null)
                 ArrData.push(response);
-             else 
+             else
                 console.log(showID, "Already Exist");
-            
+
 
 
         }
@@ -355,7 +355,7 @@ exports.ScrapComy = async function () {
                 const todayTest = num1 + "." + "2023";
 
                 var datearray = todayTest.split(".");
-                var newdate = datearray[2] + '-' + datearray[0] + '-' + datearray[1];
+                var newdate = datearray[2] + '-' + datearray[1] + '-' + datearray[0];
                 myObj.date = newdate;
 
                 var parts = num2.split("'");
@@ -384,11 +384,11 @@ exports.ScrapComy = async function () {
         response.showDescription = convshowDescription;
         response.showLocations = myObjArray;
         DBResponse = await Shows.findOne({show_id: showID});
-        if (DBResponse === null) 
+        if (DBResponse === null)
             ArrData.push(response);
-         else 
+         else
             console.log(showID, "Already Exist");
-        
+
 
 
     }
@@ -841,7 +841,7 @@ async function EvenTimFunc(pokemons) {
                     time: eventTime
                 });
             }
-        
+
 
 
         var response = {};
@@ -896,7 +896,7 @@ console.log(e);}}
 //     });
 
 
-    
+
 // }
 
 // PullDataToShows();
