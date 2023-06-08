@@ -369,8 +369,8 @@ exports.ScrapComy = async function () {
                 var time = parts[1];
 
                 myObj.time = time;
-                myObj.hall = num4;
-                myObj.city = num5;
+                myObj.hall = (num4 !== '') ? num4 : num5;
+                myObj.city = (num5 !== '') ? num5 : num4;
                 myObj.address = num3;
                 myObjArray.push(myObj);
                 console.log("Title: ", convTitle, "Date", num1, "Converted Date", newdate)
@@ -393,10 +393,12 @@ exports.ScrapComy = async function () {
         response.showDescription = convshowDescription;
         response.showLocations = myObjArray;
         DBResponse = await Shows.findOne({show_id: showID});
-        if (DBResponse === null)
+        if (DBResponse === null) {
             ArrData.push(response);
-        else
-            console.log(showID, "Already Exist");
+        } else {
+            await Shows.updateOne({show_id: showID}, response);
+            console.log(showID, "Already Exist & Updated");
+        }
 
 
     }
