@@ -10,7 +10,7 @@ if (CONFIG.CRON === "on") {
     }, null, true, TIMEZONE);
     PullXMLObject.start();*/
 
-    var PullXMLToMongoObject = new CronJob('05 */12 * * *', function () {
+    var PullXMLToMongoObject = new CronJob('01 */12 * * *', function () {
         console.log("Getting XML TO Mongo Cron Running Start");
         FN.XMLToMongo();
     }, null, true, TIMEZONE);
