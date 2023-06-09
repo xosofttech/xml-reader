@@ -364,6 +364,7 @@ exports.ScrapComy = async function () {
                 var datearray = todayTest.split(".");
                 var newdate = datearray[2] + '-' + datearray[1] + '-' + datearray[0];
                 myObj.date = newdate;
+                myObj.day = GetDay(newdate);
 
                 var parts = num2.split("'");
                 var time = parts[1];
@@ -601,6 +602,7 @@ exports.XMLToMongo = function () {
 
                                 show_location.map((obj) => {
                                     obj.link = (obj.link !== undefined) ? `https://buytickets.kartisim.co.il${obj.link}` : "";
+                                    obj.day = GetDay(obj.date);
                                 });
                             }
                         }
@@ -1038,3 +1040,16 @@ function Delete_Shows() {
 // }
 
 // PullDataToShows();
+
+//console.log(GetDay("2023-06-12"));
+
+function GetDay(DateStr) {
+    try {
+        const data = new Date(DateStr);
+        const day = data.getDay();
+        const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        return dayNames[day];
+    } catch (e) {
+        return "";
+    }
+}
