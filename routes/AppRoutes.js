@@ -19,16 +19,12 @@ route.post('/fetch-shows', async function (req, res) {
 
     let isoDate = new Date();
     gteDate = isoDate.toISOString().substring(0, 10);
-
-
+    
     filterParams = req.body.filter;
     pageParams = req.body.page;
 
     var perPage = (pageParams.limit !== undefined && pageParams.limit !== null) ? pageParams.limit : 10; //10docs in single page
     var page = pageParams.page - 1; //1st page
-
-    // console.log(perPage)
-    // console.log(page)
 
     if (isNaN(parseFloat(page)) || page === undefined) {
         perPage = 10;
@@ -53,13 +49,9 @@ route.post('/fetch-shows', async function (req, res) {
         main_query["showLocations.date"] = {$gte: filterParams.date}
     else
         main_query["showLocations.date"] = {$gte: TodayDate}
-    //main_query["showLocations.date"]= new RegExp(filterParams.date, "i")
 
     if (!filterParams.date)
         Query.date = {$gte: gteDate};
-
-    // if (Object.entries(Query).length !== 0)
-    //     main_query.showLocations = {$elemMatch: Query};
 
     if (filterParams.name)
         main_query.name = new RegExp(filterParams.name, "i");
@@ -69,16 +61,6 @@ route.post('/fetch-shows', async function (req, res) {
 
     if (filterParams.section)
         main_query.section = new RegExp(filterParams.section, "i");
-
-    console.log(main_query)
-
-    /*if (pageParams.limit <= 0) {
-        ShowsResult = await Shows.find(main_query).sort({_id: 1});
-    } else {
-        ShowsResult = await Shows.find(main_query).skip(perPage * page).limit(perPage).sort({_id: 1});
-    }*/
-
-    //ShowsResult = await Shows.find(main_query).skip(perPage * page).limit(perPage).sort({_id: 1});
 
 
     ShowsResult = await Shows.aggregate([
@@ -106,9 +88,6 @@ route.post('/fetch-shows', async function (req, res) {
     ]);
 
 
-    Rows = await Shows.find(main_query).sort({_id: 1});
-
-
     Rows = await Shows.aggregate([
         {
             $unwind: "$showLocations"
@@ -128,34 +107,13 @@ route.post('/fetch-shows', async function (req, res) {
                 count: {$sum: 1}
             }
         }
-    ])
-
+    ]);
 
     TotalRows = (Rows !== undefined && Rows.length !== 0) ? Rows[0].count : 0
 
-    /*ShowsResult.map(elem => {
-        const {showObj, ...newObj} = elem;
-        delete newObj._doc.showObj;
-        return newObj._doc;
-    });*/
 
-
-    /*filteredShows = [];
-    var AlldatesObj = (ShowsResult[0].showLocations !== undefined) ? ShowsResult[0].showLocations : []
-    AlldatesObj.forEach(function (arrayItem) {
-        var x = arrayItem
-        if (new Date(x.date) > isoDate) {
-            // AlldatesObj.push(x)
-            filteredShows.push(x)
-        }
-    });
-    ShowsResult[0].showLocations = null;
-    ShowsResult[0].showLocations = filteredShows;*/
-    // console.log(ShowsResult)
-
-    ShowsResultObj = Object.assign({}, ShowsResult);
     res.send({
-        "result": ShowsResultObj,
+        "result": Object.assign({}, ShowsResult),
         "TotalRecords": TotalRows,
         "CurrPage": pageParams.page,
         "Totalpages": (Math.ceil(TotalRows / perPage))
