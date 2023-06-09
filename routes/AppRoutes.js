@@ -23,6 +23,9 @@ route.post('/fetch-shows', async function (req, res) {
     filterParams = req.body.filter;
     pageParams = req.body.page;
 
+    const notInShabathFilter = filterParams.Not_in_Shabath;
+    const isWeekendFilter = filterParams.isWeekend;
+
     var perPage = (pageParams.limit !== undefined && pageParams.limit !== null) ? pageParams.limit : 10; //10docs in single page
     var page = pageParams.page - 1; //1st page
 
@@ -50,8 +53,14 @@ route.post('/fetch-shows', async function (req, res) {
     else
         main_query["showLocations.date"] = {$gte: TodayDate}
 
-    if (!filterParams.date)
-        Query.date = {$gte: gteDate};
+    // if (!filterParams.date)
+    //     Query.date = {$gte: gteDate};
+
+
+    if (filterParams.date)
+        main_query["showLocations.date"] = { $gte: filterParams.date };
+    else if (!filterParams.Not_in_Shabath)
+        main_query["showLocations.date"] = { $gte: TodayDate };
 
     if (filterParams.name)
         main_query.name = new RegExp(filterParams.name, "i");
@@ -62,6 +71,13 @@ route.post('/fetch-shows', async function (req, res) {
     if (filterParams.section)
         main_query.section = new RegExp(filterParams.section, "i");
 
+    if (filterParams.Not_in_Shabath) {
+        main_query["showLocations.day"] = { $nin: ["Friday", "Saturday"] };
+    }
+
+    if (filterParams.isWeekend) {
+        main_query["showLocations.day"] = { $in: ["Friday", "Saturday"] };
+    }
 
     ShowsResult = await Shows.aggregate([
         {
