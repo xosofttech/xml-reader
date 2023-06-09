@@ -182,8 +182,9 @@ exports.ScrapBarbie = async function () {
             var locations = {};
             var showLocations = [];
 
-            locations.day = convDay;
+            //locations.day = convDay;
             locations.date = myDate;
+            locations.day = GetDay(locations.date);
             locations.time = convTime;
             locations.priceMin = convPrice;
             locations.priceMax = convPrice;
@@ -204,7 +205,7 @@ exports.ScrapBarbie = async function () {
             // response.image = convImg;
             response.name = convTitle;
             response.category = convCategory;
-            response.day = convDay;
+            //response.day = convDay;
             response.date = convDate;
             response.time = convTime;
             response.price = convPrice;
@@ -212,10 +213,12 @@ exports.ScrapBarbie = async function () {
             response.showLocations = showLocations;
 
             DBResponse = await Shows.findOne({show_id: showID});
-            if (DBResponse === null)
+            if (DBResponse === null) {
                 ArrData.push(response);
-            else
-                console.log(showID, "Already Exist");
+            } else {
+                await Shows.updateOne({show_id: showID}, response);
+                console.log(showID, "Already Exist & Updated");
+            }
 
 
         }
@@ -967,6 +970,7 @@ async function EvenTimFunc(pokemons) {
                     hall: object.location.name,
                     city: object.location.address.addressLocality,
                     date: startDate,
+                    day: GetDay(startDate),
                     time: eventTime
                 });
             }
@@ -998,7 +1002,8 @@ async function EvenTimFunc(pokemons) {
                 ArrData.push(response);
                 await Shows.create(response);
             } else {
-                console.log(showID, "Already Exist");
+                await Shows.updateOne({show_id: showID}, response);
+                console.log(showID, "Already Exist & Updated");
             }
         }
     }
