@@ -19,7 +19,7 @@ route.post('/fetch-shows', async function (req, res) {
 
     let isoDate = new Date();
     gteDate = isoDate.toISOString().substring(0, 10);
-    
+
     filterParams = req.body.filter;
     pageParams = req.body.page;
 
@@ -38,6 +38,10 @@ route.post('/fetch-shows', async function (req, res) {
 
     if (filterParams.city)
         main_query["showLocations.city"] = new RegExp(filterParams.city, "i");
+
+    if (filterParams.area && filterParams.area === 'center') {
+        main_query["showLocations.city"] = {$in: ['רמת גן', 'תל אביב']}
+    }
 
     if (filterParams.hall)
         main_query["showLocations.hall"] = new RegExp(filterParams.hall, "i");
@@ -111,6 +115,7 @@ route.post('/fetch-shows', async function (req, res) {
 
     TotalRows = (Rows !== undefined && Rows.length !== 0) ? Rows[0].count : 0
 
+    console.log(main_query);
 
     res.send({
         "result": Object.assign({}, ShowsResult),
