@@ -104,14 +104,14 @@ route.post('/fetch-shows', async function (req, res) {
         main_query.section = new RegExp(filterParams.section, "i");
 
     if (filterParams.Not_in_Shabath && filterParams.Not_in_Shabath === true) {
-        main_query.$and = [
+        main_query.$or = [
             {
-                "showLocations.day": {$nin: ["Friday", "Saturday"]},
-                //"showLocations.time": {$gte: "16:00"}
+                "showLocations.day": "Friday",
+                "showLocations.time": {$lt: "16:00"}
             },
             {
-                //"showLocations.day": {$ne: "Saturday"},
-                "showLocations.time": {$gte: "16:00", $lte: "18:00"}
+                "showLocations.day": "Saturday",
+                "showLocations.time": {$gt: "18:00"}
             }
         ];
     }
