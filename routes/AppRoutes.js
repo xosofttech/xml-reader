@@ -4,6 +4,7 @@ const Module = require('../Modules/general');
 var Config = require('../config');
 const {JSON} = require('../Modules/allowed-Extensions');
 var Shows = require('../Model/shows');
+var ObjectId = require('mongodb').ObjectId;
 
 
 route.get('/', function (req, res) {
@@ -182,6 +183,53 @@ route.post('/fetch-shows', async function (req, res) {
 
 function Empty(object) {
     return Object.keys(object).length === 0
+}
+
+
+//checkDatesinShows();
+
+function checkDatesinShows() {
+    Shows.aggregate(
+        [
+            {
+                $match: {
+                    //show_id: "summerinthecity",
+                    "showLocations.day": {$exists: false}, showLocations: {$ne: []}
+                }
+            }
+        ], async function (err, show_result) {
+            //console.log(show_result);
+            (async function () {
+                for ([index, object] of show_result.entries()) {
+                    //    console.log(object);
+                    for ([index1, object1] of object.showLocations.entries()) {
+                        object1.day = GetDay(object1.date);
+                        //      console.log(object1);
+                    }
+                    //console.log(object.show_id);
+                    await Shows.updateOne({_id: ObjectId(object._id)}, {showLocations: object.showLocations});
+                    console.log(object._id, "Updated");
+                }
+
+                //console.log(show_result);
+            })();
+        });
+}
+
+// Shows.deleteMany({showLocations:{ $exists: true, $size: 0}}, function (err, resp) {
+//     console.log(resp);
+// })
+
+
+function GetDay(DateStr) {
+    try {
+        const data = new Date(DateStr);
+        const day = data.getDay();
+        const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        return dayNames[day];
+    } catch (e) {
+        return "";
+    }
 }
 
 module.exports = route
