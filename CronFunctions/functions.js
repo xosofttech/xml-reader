@@ -372,7 +372,7 @@ exports.ScrapComy = async function () {
                 var parts = num2.split("'");
                 var time = parts[1];
 
-                myObj.time = time;
+                myObj.time = (time && time != null && time != undefined) ? time.trim().replace(/ /g, '') : time;
                 myObj.hall = (num4 !== '') ? num4 : num5;
                 myObj.city = (num5 !== '') ? num5 : num4;
                 myObj.address = num3;
