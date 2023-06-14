@@ -103,6 +103,19 @@ route.post('/fetch-shows', async function (req, res) {
     if (filterParams.section)
         main_query.section = new RegExp(filterParams.section, "i");
 
+    if (filterParams.Not_in_Shabath && filterParams.Not_in_Shabath === true) {
+        main_query.$and = [
+            {
+                "showLocations.day": {$nin: ["Friday", "Saturday"]},
+                //"showLocations.time": {$gte: "16:00"}
+            },
+            {
+                //"showLocations.day": {$ne: "Saturday"},
+                "showLocations.time": {$gte: "16:00", $lte: "18:00"}
+            }
+        ];
+    }
+
 
     ShowsResult = await Shows.aggregate([
         {
