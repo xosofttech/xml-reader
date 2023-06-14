@@ -106,6 +106,9 @@ route.post('/fetch-shows', async function (req, res) {
     if (filterParams.Not_in_Shabath && filterParams.Not_in_Shabath === true) {
         main_query.$or = [
             {
+                "showLocations.day": ["Monday", "Tuesday", "Wednesday", "Thursday", "Sunday"],
+            },
+            {
                 "showLocations.day": "Friday",
                 "showLocations.time": {$lt: "16:00"}
             },
