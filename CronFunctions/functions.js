@@ -944,9 +944,9 @@ async function EvenTimFunc(pokemons) {
 
 
             data = await GetBrowserURL(pageAddress);
-            
+
             //console.log(data);
-            
+
             try {
                 const $ = cheerio.load(data);
                 eventDetails = [];
@@ -968,9 +968,9 @@ async function EvenTimFunc(pokemons) {
                     var startDate = new Date(object.startDate).toISOString().slice(0, 10);
                     var eventTime = moment(object.startDate).tz(TIMEZONE).format("HH:mm");
                     EventData.push({
-                        address: object.location.name,
-                        hall: object.location.name,
-                        city: object.location.address.addressLocality,
+                        address: (object.location.name != null && object.location.name != undefined) ? object.location.name.trim() : object.location.name,
+                        hall: (object.location.name != null && object.location.name != undefined) ? object.location.name.trim() : object.location.name,
+                        city: (object.location.address.addressLocality != null && object.location.address.addressLocality != undefined) ? object.location.address.addressLocality.trim() : object.location.address.addressLocality,
                         date: startDate,
                         day: GetDay(startDate),
                         time: eventTime
