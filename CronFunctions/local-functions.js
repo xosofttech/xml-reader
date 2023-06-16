@@ -1,6 +1,10 @@
 // Data Models
 const fs = require('fs');
 var Shows = require('../Model/shows');
+var dir = 'public';
+if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir);
+}
 
 exports.FetchDetails = async function () {
     var CitiesArr = [], SectionsArr = [];
