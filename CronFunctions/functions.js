@@ -945,65 +945,70 @@ async function EvenTimFunc(pokemons) {
 
             data = await GetBrowserURL(pageAddress);
 
+            //console.log(data);
 
-            const $ = cheerio.load(data);
-            eventDetails = [];
-            EventData = [];
-            const $pokemon = $('.main-content');
-            const name = $pokemon.find('.event-listing-city').text();
-            const date = $pokemon.find('.stage-content-text-item').text();
-            const address = $pokemon.find('.stage-content-text-item address').text();
-            const description = $pokemon.find('.moretext-teaser').text();
-            $pokemon.find('.listing-item-wrapper-inside-card script').toArray().forEach((elem) => {
-                eventDetails.push(JSON.parse($(elem).text()));
-            });
-
-
-            console.log('Total Event Found', eventDetails.length);
-
-
-            for await([index, object] of eventDetails.entries()) {
-                var startDate = new Date(object.startDate).toISOString().slice(0, 10);
-                var eventTime = moment(object.startDate).tz(TIMEZONE).format("HH:mm");
-                EventData.push({
-                    address: object.location.name,
-                    hall: object.location.name,
-                    city: object.location.address.addressLocality,
-                    date: startDate,
-                    day: GetDay(startDate),
-                    time: eventTime
+            try {
+                const $ = cheerio.load(data);
+                eventDetails = [];
+                EventData = [];
+                const $pokemon = $('.main-content');
+                const name = $pokemon.find('.event-listing-city').text();
+                const date = $pokemon.find('.stage-content-text-item').text();
+                const address = $pokemon.find('.stage-content-text-item address').text();
+                const description = $pokemon.find('.moretext-teaser').text();
+                $pokemon.find('.listing-item-wrapper-inside-card script').toArray().forEach((elem) => {
+                    eventDetails.push(JSON.parse($(elem).text()));
                 });
-            }
 
 
-            var response = {};
-            response.show_id = showID;
-            response.domain = 'www.eventim.co.il';
-            response.section = '';
-            response.link = pageAddress;
-            response.name = name;
-            response.category = "";
-            response.day = "";
-            response.date = "";
-            response.time = "";
-            response.price = "";
-            response.description = description;
-            response.showLocations = EventData;
-            response.showObj = eventDetails;
-
-            // ArrData.push(response);
-
-            // console.log(ArrData)
+                console.log('Total Event Found', eventDetails.length);
 
 
-            const result = await Shows.findOne({show_id: showID});
-            if (result == null) {
-                console.log(showID, "Not Found Pushing in Array");
-                ArrData.push(response);
-                await Shows.create(response);
-            } else {
-                await Shows.updateOne({show_id: showID}, response);
-                console.log(showID, "Already Exist & Updated");
+                for await([index, object] of eventDetails.entries()) {
+                    var startDate = new Date(object.startDate).toISOString().slice(0, 10);
+                    var eventTime = moment(object.startDate).tz(TIMEZONE).format("HH:mm");
+                    EventData.push({
+                        address: (object.location.name != null && object.location.name != undefined) ? object.location.name.trim() : object.location.name,
+                        hall: (object.location.name != null && object.location.name != undefined) ? object.location.name.trim() : object.location.name,
+                        city: (object.location.address.addressLocality != null && object.location.address.addressLocality != undefined) ? object.location.address.addressLocality.trim() : object.location.address.addressLocality,
+                        date: startDate,
+                        day: GetDay(startDate),
+                        time: eventTime
+                    });
+                }
+
+
+                var response = {};
+                response.show_id = showID;
+                response.domain = 'www.eventim.co.il';
+                response.section = '';
+                response.link = pageAddress;
+                response.name = name;
+                response.category = "";
+                response.day = "";
+                response.date = "";
+                response.time = "";
+                response.price = "";
+                response.description = description;
+                response.showLocations = EventData;
+                response.showObj = eventDetails;
+
+                // ArrData.push(response);
+
+                // console.log(ArrData)
+
+
+                const result = await Shows.findOne({show_id: showID});
+                if (result == null) {
+                    console.log(showID, "Not Found Pushing in Array");
+                    ArrData.push(response);
+                    await Shows.create(response);
+                } else {
+                    await Shows.updateOne({show_id: showID}, response);
+                    console.log(showID, "Already Exist & Updated");
+                }
+            } catch (e) {
+                console.log(`Error Cherio laod`);
             }
         }
     }
