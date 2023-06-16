@@ -24,7 +24,7 @@ route.post('/fetch-shows', async function (req, res) {
     filterParams = req.body.filter;
     pageParams = req.body.page;
 
-    var perPage = (pageParams.limit !== undefined && pageParams.limit !== null) ? pageParams.limit : 10; //10docs in single page
+    var perPage = (pageParams.limit !== undefined && pageParams.limit !== null && pageParams.limit <= 100) ? pageParams.limit : 10; //10docs in single page
     var page = pageParams.page - 1; //1st page
 
     if (isNaN(parseFloat(page)) || page === undefined) {
@@ -101,8 +101,14 @@ route.post('/fetch-shows', async function (req, res) {
     if (filterParams.show_id)
         main_query.show_id = new RegExp(filterParams.show_id, "i");
 
-    if (filterParams.section)
-        main_query.section = new RegExp(filterParams.section, "i");
+    if (filterParams.section && Array.isArray(filterParams.section)) {
+        var SectionSearchArr = [];
+        filterParams.section.map((Section_obj) => {
+            SectionSearchArr.push(new RegExp(Section_obj, "i"));
+        })
+        if (SectionSearchArr.length !== 0)
+            main_query.section = {$in: SectionSearchArr};
+    }
 
     if (filterParams.Not_in_Shabath && filterParams.Not_in_Shabath === true) {
         main_query.$or = [
