@@ -35,6 +35,6 @@ if (CONFIG.CRON === "on") {
 // FN.XMLToMongo();
 // FN.ScrapBarbie();
 // FN.ScrapComy();
-FN.ScrapEvenTim();
+// FN.ScrapEvenTim();
 //FN.LoopAllLinks();
 
