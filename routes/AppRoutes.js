@@ -5,7 +5,7 @@ var Config = require('../config');
 const {JSON} = require('../Modules/allowed-Extensions');
 var Shows = require('../Model/shows');
 var ObjectId = require('mongodb').ObjectId;
-
+const fs = require('fs');
 
 route.get('/', function (req, res) {
     res.send(`<center style="margin-top: 10%;"><h1> XML Shows</h1></center>`);
@@ -186,6 +186,16 @@ route.post('/fetch-shows', async function (req, res) {
 
 });
 
+route.post('/fetch-data', async function (req, res) {
+    try {
+        if (fs.existsSync('public/data.txt')) {
+            const data = fs.readFileSync('public/data.txt', 'utf8');
+            res.send(data);
+        }
+    } catch (err) {
+        res.send({"cities": [], "sections": []});
+    }
+});
 
 function Empty(object) {
     return Object.keys(object).length === 0
