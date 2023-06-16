@@ -20,7 +20,7 @@ exports.FetchDetails = async function () {
         }]);
 
     CitiesList.map((obj) => {
-        if (obj._id !== undefined && obj._id !== null && obj._id !== "")
+        if (obj._id !== undefined && obj._id !== null && obj._id !== "" && obj._id !== "0")
             CitiesArr.push(obj._id);
     });
 
