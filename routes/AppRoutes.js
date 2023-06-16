@@ -190,6 +190,7 @@ route.post('/fetch-data', async function (req, res) {
     try {
         if (fs.existsSync('public/data.txt')) {
             const data = fs.readFileSync('public/data.txt', 'utf8');
+            res.setHeader('Content-Type', 'application/json');
             res.send(data);
         } else {
             res.send({"cities": [], "sections": []});
