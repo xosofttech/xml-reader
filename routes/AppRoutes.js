@@ -135,7 +135,7 @@ route.post('/fetch-shows', async function (req, res) {
             $match: main_query
         },
         {
-            $sort: {"showLocations.date": 1}
+            $sort: {"showLocations.date": 1, "showLocations.time": 1}
         },
         {
             $skip: perPage * page
