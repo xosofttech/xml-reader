@@ -101,14 +101,62 @@ route.post('/fetch-shows', async function (req, res) {
     if (filterParams.show_id)
         main_query.show_id = new RegExp(filterParams.show_id, "i");
 
-    if (filterParams.section && Array.isArray(filterParams.section)) {
+
+    //fruits.includes("Banana", 3);
+
+    /*if (filterParams.section && Array.isArray(filterParams.section)) {
         var SectionSearchArr = [];
         filterParams.section.map((Section_obj) => {
             SectionSearchArr.push(new RegExp(Section_obj, "i"));
         })
         if (SectionSearchArr.length !== 0)
             main_query.section = {$in: SectionSearchArr};
+    }*/
+
+    if (filterParams.section && Array.isArray(filterParams.section)) {
+        var SectionSearchArr = [];
+        /*filterParams.section.map((Section_obj) => {
+            SectionSearchArr.push(new RegExp(Section_obj, "i"));
+        })*/
+
+        if (filterParams.section.includes("הרצאות")) {
+            SectionSearchArr.push(new RegExp(`הרצאות`, "i"));
+        }
+        if (filterParams.section.includes("תערוכות")) {
+            SectionSearchArr.push(new RegExp(`תערוכות`, "i"));
+        }
+        if (filterParams.section.includes("אופרה")) {
+            SectionSearchArr.push(new RegExp(`אופרה`, "i"));
+        }
+        if (filterParams.section.includes("מחול ובלט")) {
+            SectionSearchArr.push(new RegExp(`הופעות מחול ובלט,`, "i"));
+        }
+        if (filterParams.section.includes("מחזמר")) {
+            SectionSearchArr.push(new RegExp(`מחזמר`, "i"));
+        }
+        if (filterParams.section.includes("הצגות ילדים")) {
+            SectionSearchArr.push(new RegExp(`הצגות ילדים`, "i"));
+            SectionSearchArr.push(new RegExp(`קרקס`, "i"));
+            SectionSearchArr.push(new RegExp(`מוסיקה לילדים`, "i"));
+        }
+        if (filterParams.section.includes("סטנדאפ")) {
+            SectionSearchArr.push(new RegExp(`סטנדאפ`, "i"));
+        }
+        if (filterParams.section.includes("הצגות")) {
+            SectionSearchArr.push(new RegExp(`הצגות`, "i"));
+        }
+        if (filterParams.section.includes("הופעות")) {
+            SectionSearchArr.push(new RegExp(`הופעות מוזיקה`, "i"));
+            SectionSearchArr.push(new RegExp(`הופעות רוק`, "i"));
+            SectionSearchArr.push(new RegExp(`הופעות מוזיקה קלאסית`, "i"));
+            SectionSearchArr.push(new RegExp(`הופעות ג'אז ובלוז`, "i"));
+        }
+        
+        if (SectionSearchArr.length !== 0)
+            main_query.section = {$in: SectionSearchArr};
     }
+
+    //console.log(SectionSearchArr);
 
     if (filterParams.Not_in_Shabath && filterParams.Not_in_Shabath === true) {
         main_query.$or = [
