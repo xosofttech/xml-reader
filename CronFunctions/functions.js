@@ -953,18 +953,55 @@ async function EvenTimFunc(pokemons) {
                 EventData = [];
                 const $pokemon = $('.main-content');
                 const name = $pokemon.find('.event-listing-city').text();
-                const date = $pokemon.find('.stage-content-text-item').text();
+                const dateStr = $pokemon.find('.artwork-content-text .stage-content-text-item').text();
+                var parts = dateStr.split('/');
+                var formattedDate = parts[2].trim() + '-' + parts[1].trim() + '-' + parts[0].trim();
                 const address = $pokemon.find('.stage-content-text-item address').text();
                 const description = $pokemon.find('.moretext-teaser').text();
                 $pokemon.find('.listing-item-wrapper-inside-card script').toArray().forEach((elem) => {
                     eventDetails.push(JSON.parse($(elem).text()));
                 });
 
+                if (eventDetails.length > 0) {
+
+                    for await ([index, object] of eventDetails.entries()) {
+                        var startDate = new Date(object.startDate).toISOString().slice(0, 10);
+                        var eventTime = moment(object.startDate).tz(TIMEZONE).format("HH:mm");
+                        EventData.push({
+                            address: (object.location.name != null && object.location.name != undefined) ? object.location.name.trim() : object.location.name,
+                            hall: (object.location.name != null && object.location.name != undefined) ? object.location.name.trim() : object.location.name,
+                            city: (object.location.address.addressLocality != null && object.location.address.addressLocality != undefined) ? object.location.address.addressLocality.trim() : object.location.address.addressLocality,
+                            date: startDate,
+                            day: GetDay(startDate),
+                            time: eventTime
+                        });
+                    }
+                } else {
+
+                    const $listing = $('.listing-item-wrapper-inside-card');
+                    const address = $listing.find('.event-listing-venue').text().trim();
+                    const city = $listing.find('.event-listing-info-wrapper .event-listing-venue').text().trim();
+                    const hall = $listing.find('.event-listing-info-wrapper .event-listing-event').text().trim();
+                    const day = $listing.find('.event-listing-date').text().trim();
+                    const time = $listing.find('.event-listing-time').text().trim();
+
+
+                    EventData.push({
+                        address: address,
+                        hall: hall,
+                        city: city,
+                        date: formattedDate,
+                        day: GetDay(formattedDate),
+                        time: time
+                    });
+                }
+
 
                 console.log('Total Event Found', eventDetails.length);
+                console.log('eventDetails', EventData);
 
 
-                for await([index, object] of eventDetails.entries()) {
+                /*for await([index, object] of eventDetails.entries()) {
                     var startDate = new Date(object.startDate).toISOString().slice(0, 10);
                     var eventTime = moment(object.startDate).tz(TIMEZONE).format("HH:mm");
                     EventData.push({
@@ -975,7 +1012,7 @@ async function EvenTimFunc(pokemons) {
                         day: GetDay(startDate),
                         time: eventTime
                     });
-                }
+                }*/
 
 
                 var response = {};
