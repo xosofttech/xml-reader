@@ -1002,7 +1002,7 @@ async function EvenTimFunc(pokemons) {
 
 
                 console.log('Total Event Found', eventDetails.length);
-                console.log('eventDetails', EventData);
+                //console.log('eventDetails', EventData);
 
 
                 /*for await([index, object] of eventDetails.entries()) {
