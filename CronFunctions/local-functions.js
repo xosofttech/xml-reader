@@ -7,7 +7,8 @@ if (!fs.existsSync(dir)) {
 }
 
 exports.FetchDetails = async function () {
-    var CitiesArr = [], SectionsArr = [];
+    var CitiesArr = [],
+        SectionsArr = [`הרצאות`, `תערוכות`, `אופרה`, `מחול ובלט`, `מחזמר`, `הצגות ילדים`, `סטנדאפ`, `הצגות`, `הופעות`];
     CitiesList = await Shows.aggregate([
         {
             $unwind: "$showLocations"
@@ -25,7 +26,7 @@ exports.FetchDetails = async function () {
     });
 
 
-    SectionsList = await Shows.aggregate([
+    /*SectionsList = await Shows.aggregate([
         {
             $group: {
                 _id: "$section",
@@ -36,7 +37,7 @@ exports.FetchDetails = async function () {
     SectionsList.map((obj) => {
         if (obj._id !== undefined && obj._id !== null && obj._id !== "")
             SectionsArr.push(obj._id);
-    });
+    });*/
     Object_Array = {'cities': CitiesArr, 'sections': SectionsArr};
     let json = JSON.stringify(Object_Array);
     fs.writeFileSync('public/data.txt', json);
