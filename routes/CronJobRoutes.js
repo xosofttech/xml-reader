@@ -36,5 +36,5 @@ if (CONFIG.CRON === "on") {
 // FN.ScrapBarbie();
 // FN.ScrapComy();
 // FN.ScrapEvenTim();
-//FN.LoopAllLinks();
+// FN.LoopAllLinks();
 
