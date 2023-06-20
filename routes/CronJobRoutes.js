@@ -29,7 +29,6 @@ if (CONFIG.CRON === "on") {
     ScrapEvenTim.start();
 }
 
-
 /*Test Funtions to check Crons*/
 // FN.PullXMLObject();
 // FN.XMLToMongo();
