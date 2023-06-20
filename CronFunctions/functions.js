@@ -952,7 +952,9 @@ async function EvenTimFunc(pokemons) {
                 eventDetails = [];
                 EventData = [];
                 const $pokemon = $('.main-content');
-                const name = $pokemon.find('.event-listing-city').text();
+                //const name = $pokemon.find('.event-listing-city').text();
+                var name = $('title').text();
+                name = (name != null && name != undefined) ? name.replace(/- eventim/g, "").trim() : name;
                 const dateStr = $pokemon.find('.artwork-content-text .stage-content-text-item').text();
                 var parts = dateStr.split('/');
                 var formattedDate = parts[2].trim() + '-' + parts[1].trim() + '-' + parts[0].trim();

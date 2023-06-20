@@ -3,7 +3,7 @@ var CronJob = require('cron').CronJob;
 var FN = require('../CronFunctions/functions');
 var {CONFIG} = require('../config');
 
-if (CONFIG.CRON === "offf") {
+if (CONFIG.CRON === "on") {
     var PullXMLToMongoObject = new CronJob('01 */3 * * *', function () {
         console.log("Getting XML TO Mongo Cron Running Start");
         FN.XMLToMongo();
