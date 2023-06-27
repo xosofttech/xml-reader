@@ -2,13 +2,73 @@ const express = require('express');
 const route = express.Router();
 const Module = require('../Modules/general');
 var Config = require('../config');
-const {JSON} = require('../Modules/allowed-Extensions');
+const { JSON } = require('../Modules/allowed-Extensions');
 var Shows = require('../Model/shows');
 
 
 route.get('/', function (req, res) {
     res.send(`<center style="margin-top: 10%;"><h1> XML Shows</h1></center>`);
 });
+
+
+
+route.get('/add-shows', function (req, res) {
+    res.render("index");
+});
+
+
+route.post('/insert', (req, res) => {
+    const formData = req.body;
+
+    // Create a new instance of the Show modal and populate it with the form data
+    const newShow = {
+        show_id: formData.showID,
+        domain: formData.domain,
+        section: formData.section,
+        link: formData.link,
+        name: formData.name,
+        date: formData.date,
+        tickets: formData.Tickets,
+        priceMin: formData.minPrice,
+        priceMax: formData.maxPrice,
+        dateTo: formData.dateTo,
+        dateFrom: formData.dateFrom,
+        pubDate: formData.pubDate,
+        showLocations: {}
+    };
+
+    
+
+// Process the showLocations array and add each location to the showLocations object
+for (let i = 0; i < formData.showLocations.length; i++) {
+    const location = {
+        day: formData.showLocations[i].day && formData.showLocations[i].day[0],
+        date: formData.showLocations[i].date && formData.showLocations[i].date[0],
+        priceMin: formData.showLocations[i].priceMin && formData.showLocations[i].priceMin[0],
+        priceMax: formData.showLocations[i].priceMax && formData.showLocations[i].priceMax[0],
+        hall: formData.showLocations[i].hall && formData.showLocations[i].hall[0],
+        city: formData.showLocations[i].city && formData.showLocations[i].city[0],
+        location: formData.showLocations[i].location && formData.showLocations[i].location[0],
+        address: formData.showLocations[i].address && formData.showLocations[i].address[0]
+    };
+    newShow.showLocations[i] = location;
+}
+
+console.log(newShow);
+
+
+    // Save the new show entry to the database
+    // newShow.save()
+    //     .then(() => {
+    //         res.send('Form data inserted successfully');
+    //     })
+    //     .catch((error) => {
+    //         console.error('Error inserting form data:', error);
+    //         res.status(500).send('Error inserting form data');
+    //     });
+});
+
+
 
 route.get('/healthcheck', function (req, res) {
     res.send(res.statusCode.toString());
@@ -19,7 +79,7 @@ route.post('/fetch-shows', async function (req, res) {
 
     let isoDate = new Date();
     gteDate = isoDate.toISOString().substring(0, 10);
-    
+
     filterParams = req.body.filter;
     pageParams = req.body.page;
 
@@ -46,12 +106,12 @@ route.post('/fetch-shows', async function (req, res) {
         main_query["showLocations.address"] = new RegExp(filterParams.address, "i");
 
     if (filterParams.date)
-        main_query["showLocations.date"] = {$gte: filterParams.date}
+        main_query["showLocations.date"] = { $gte: filterParams.date }
     else
-        main_query["showLocations.date"] = {$gte: TodayDate}
+        main_query["showLocations.date"] = { $gte: TodayDate }
 
     if (!filterParams.date)
-        Query.date = {$gte: gteDate};
+        Query.date = { $gte: gteDate };
 
     if (filterParams.name)
         main_query.name = new RegExp(filterParams.name, "i");
@@ -77,7 +137,7 @@ route.post('/fetch-shows', async function (req, res) {
             $match: main_query
         },
         {
-            $sort: {"showLocations.date": 1}
+            $sort: { "showLocations.date": 1 }
         },
         {
             $skip: perPage * page
@@ -104,7 +164,7 @@ route.post('/fetch-shows', async function (req, res) {
         {
             $group: {
                 _id: null,
-                count: {$sum: 1}
+                count: { $sum: 1 }
             }
         }
     ]);
