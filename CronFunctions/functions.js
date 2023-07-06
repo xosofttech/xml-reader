@@ -602,12 +602,11 @@ exports.XMLToMongo = function () {
                             show_location = val.seances?.seance;
                             if (!(show_location instanceof Array)) {
                                 show_location = [show_location];
-
-                                show_location.map((obj) => {
-                                    obj.link = (obj.link !== undefined) ? `https://buytickets.kartisim.co.il${obj.link}` : "";
-                                    obj.day = GetDay(obj.date);
-                                });
                             }
+                            show_location.map((obj) => {
+                                obj.link = (obj.link !== undefined) ? `https://buytickets.kartisim.co.il${obj.link}` : "";
+                                obj.day = GetDay(obj.date);
+                            });
                         }
 
                         if (val.seances?.seance === undefined) {
