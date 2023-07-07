@@ -141,6 +141,7 @@ route.post('/fetch-shows', async function (req, res) {
         }
         if (filterParams.section.includes("סטנדאפ")) {
             SectionSearchArr.push(new RegExp(`סטנדאפ`, "i"));
+            SectionSearchArr.push(new RegExp(`סטנד אפ`, "i"));
         }
         if (filterParams.section.includes("הצגות")) {
             SectionSearchArr.push(new RegExp(`הצגות`, "i"));
