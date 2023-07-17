@@ -6,21 +6,24 @@ route.get('/', function (req, res) {
     res.render("index");
 });
 
-route.post('/insert', (req, res) => {
+route.post('/save-records', (req, res) => {
     const formData = req.body;
 
-    const showLocations = formData.showLocations.map(locationArray => {
+    const showLocations = formData.date.map((obj, index) => {
+        //console.log(formData.date[index]);
         return {
-            day: locationArray[0],
-            date: locationArray[1],
-            priceMin: locationArray[2],
-            priceMax: locationArray[3],
-            hall: locationArray[4],
-            city: locationArray[5],
-            location: locationArray[6],
-            address: locationArray[7]
+            date: formData.date[index],
+            time: formData.time[index],
+            priceMin: formData.priceMin[index],
+            priceMax: formData.priceMax[index],
+            hall: formData.hall[index],
+            city: formData.city[index],
+            location: formData.location[index],
+            address: formData.address[index]
         };
     });
+
+    //console.log(showLocations);
 
     // Create a new instance of the Show modal and populate it with the form data
     const newShow = {
@@ -29,13 +32,12 @@ route.post('/insert', (req, res) => {
         section: formData.section,
         link: formData.link,
         name: formData.name,
-        date: formData.date,
+        date: formData.maindate,
         tickets: formData.Tickets,
         priceMin: formData.minPrice,
         priceMax: formData.maxPrice,
         dateTo: formData.dateTo,
         dateFrom: formData.dateFrom,
-        pubDate: formData.pubDate,
         showLocations: showLocations
     };
 
