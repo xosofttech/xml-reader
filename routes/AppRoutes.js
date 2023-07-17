@@ -3,7 +3,7 @@ const route = express.Router();
 const Module = require('../Modules/general');
 var Config = require('../config');
 const { JSON } = require('../Modules/allowed-Extensions');
-var Shows = require('../Model/shows');
+var AllEvents = require('../Model/allevents');
 
 
 route.get('/', function (req, res) {
@@ -20,6 +20,20 @@ route.get('/add-shows', function (req, res) {
 route.post('/insert', (req, res) => {
     const formData = req.body;
 
+
+    const showLocations = formData.showLocations.map(locationArray => {
+        return {
+            day: locationArray[0],
+            date: locationArray[1],
+            priceMin: locationArray[2],
+            priceMax: locationArray[3],
+            hall: locationArray[4],
+            city: locationArray[5],
+            location: locationArray[6],
+            address: locationArray[7]
+        };
+    });
+
     // Create a new instance of the Show modal and populate it with the form data
     const newShow = {
         show_id: formData.showID,
@@ -34,38 +48,17 @@ route.post('/insert', (req, res) => {
         dateTo: formData.dateTo,
         dateFrom: formData.dateFrom,
         pubDate: formData.pubDate,
-        showLocations: {}
+        showLocations: showLocations
     };
 
-    
-
-// Process the showLocations array and add each location to the showLocations object
-for (let i = 0; i < formData.showLocations.length; i++) {
-    const location = {
-        day: formData.showLocations[i].day && formData.showLocations[i].day[0],
-        date: formData.showLocations[i].date && formData.showLocations[i].date[0],
-        priceMin: formData.showLocations[i].priceMin && formData.showLocations[i].priceMin[0],
-        priceMax: formData.showLocations[i].priceMax && formData.showLocations[i].priceMax[0],
-        hall: formData.showLocations[i].hall && formData.showLocations[i].hall[0],
-        city: formData.showLocations[i].city && formData.showLocations[i].city[0],
-        location: formData.showLocations[i].location && formData.showLocations[i].location[0],
-        address: formData.showLocations[i].address && formData.showLocations[i].address[0]
-    };
-    newShow.showLocations[i] = location;
-}
-
-console.log(newShow);
-
-
-    // Save the new show entry to the database
-    // newShow.save()
-    //     .then(() => {
-    //         res.send('Form data inserted successfully');
-    //     })
-    //     .catch((error) => {
-    //         console.error('Error inserting form data:', error);
-    //         res.status(500).send('Error inserting form data');
-    //     });
+    AllEvents.create(newShow)
+        .then(() => {
+            res.send('Form data inserted successfully');
+        })
+        .catch((error) => {
+            console.error('Error inserting form data:', error);
+            res.status(500).send('Error inserting form data');
+        });
 });
 
 
