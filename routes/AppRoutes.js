@@ -141,6 +141,7 @@ route.post('/fetch-shows', async function (req, res) {
         }
         if (filterParams.section.includes("סטנדאפ")) {
             SectionSearchArr.push(new RegExp(`סטנדאפ`, "i"));
+            SectionSearchArr.push(new RegExp(`סטנד אפ`, "i"));
         }
         if (filterParams.section.includes("הצגות")) {
             SectionSearchArr.push(new RegExp(`הצגות`, "i"));
@@ -151,7 +152,7 @@ route.post('/fetch-shows', async function (req, res) {
             SectionSearchArr.push(new RegExp(`הופעות מוזיקה קלאסית`, "i"));
             SectionSearchArr.push(new RegExp(`הופעות ג'אז ובלוז`, "i"));
         }
-        
+
         if (SectionSearchArr.length !== 0)
             main_query.section = {$in: SectionSearchArr};
     }
@@ -161,7 +162,7 @@ route.post('/fetch-shows', async function (req, res) {
     if (filterParams.Not_in_Shabath && filterParams.Not_in_Shabath === true) {
         main_query.$or = [
             {
-                "showLocations.day": ["Monday", "Tuesday", "Wednesday", "Thursday", "Sunday"],
+                "showLocations.day": {$in: ["Monday", "Tuesday", "Wednesday", "Thursday", "Sunday"]},
             },
             {
                 "showLocations.day": "Friday",
