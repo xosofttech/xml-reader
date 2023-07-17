@@ -16,6 +16,7 @@ var app = express();
 
 app.use(express.static('public'));
 app.use('*/public', express.static(path.join(__dirname, 'public')));
+app.set('view engine', 'twig');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
