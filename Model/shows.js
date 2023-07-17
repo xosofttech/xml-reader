@@ -28,22 +28,6 @@ var ShowSchema = new Schema({
         type: Date,
         default: "",
     },
-   /* time: {
-        type: "String",
-        default: "",
-    },
-    city: {
-        type: "String",
-        default: "",
-    },
-    address: {
-        type: "String",
-        default: "",
-    },
-    hall: {
-        type: "String",
-        default: "",
-    },*/
     tickets: {
         type: Number,
         default: "",

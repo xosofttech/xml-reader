@@ -41,6 +41,7 @@ route.post('/save-records', (req, res) => {
         showLocations: showLocations
     };
 
+    //console.log(newShow);
     AllEvents.create(newShow)
         .then(() => {
             res.send('Form data inserted successfully');
