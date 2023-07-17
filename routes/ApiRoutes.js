@@ -284,6 +284,22 @@ function checkDatesinShows() {
         });
 }
 
+
+function UpdateCity() {
+    Shows.updateMany({
+            //_id: ObjectId('648099acca71ee467bb4b334'),
+            "showLocations.city": "תל אביב-יפו"
+        },
+        //{"showLocations.city": "תל אביב"},
+        {$set: {"showLocations.$.city": "תל אביב"}},
+        //{},
+        function (err, result) {
+            //console.log(err);
+            console.log(result);
+            checkDatesinShows();
+        });
+}
+
 // Shows.deleteMany({showLocations:{ $exists: true, $size: 0}}, function (err, resp) {
 //     console.log(resp);
 // })
