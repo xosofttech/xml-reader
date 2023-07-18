@@ -40,3 +40,14 @@ exports.SendEmail = async function (Sender, Email, Subject, Emailtext) {
     }
     //console.log(info);
 }
+
+exports.GetDay = function (DateStr) {
+    try {
+        const data = new Date(DateStr);
+        const day = data.getDay();
+        const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        return dayNames[day];
+    } catch (e) {
+        return "";
+    }
+}

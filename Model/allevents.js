@@ -56,6 +56,10 @@ var AllEventsSchema = new Schema({
         type: Object,
         default: {}
     },
+    addedby: {
+        type: "String",
+        default: "",
+    },
     Created: {
         type: Date,
         default: Module.NOW()

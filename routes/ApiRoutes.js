@@ -271,7 +271,7 @@ function checkDatesinShows() {
                 for ([index, object] of show_result.entries()) {
                     //    console.log(object);
                     for ([index1, object1] of object.showLocations.entries()) {
-                        object1.day = GetDay(object1.date);
+                        object1.day = Module.GetDay(object1.date);
                         //      console.log(object1);
                     }
                     //console.log(object.show_id);
@@ -305,7 +305,7 @@ function UpdateCity() {
 // })
 
 
-function GetDay(DateStr) {
+/*function GetDay(DateStr) {
     try {
         const data = new Date(DateStr);
         const day = data.getDay();
@@ -314,6 +314,6 @@ function GetDay(DateStr) {
     } catch (e) {
         return "";
     }
-}
+}*/
 
 module.exports = route

@@ -60,6 +60,10 @@ var ShowSchema = new Schema({
         type: Array,
         default: []
     },
+    addedby: {
+        type: "String",
+        default: "",
+    },
     Created: {
         type: Date,
         default: Module.NOW()
