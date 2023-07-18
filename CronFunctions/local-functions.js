@@ -7,7 +7,7 @@ if (!fs.existsSync(dir)) {
 }
 
 exports.FetchDetails = async function () {
-    var CitiesArr = [],
+    var CitiesArr = [], HallArr = [],
         SectionsArr = [`הרצאות`, `תערוכות`, `אופרה`, `מחול ובלט`, `מחזמר`, `הצגות ילדים`, `סטנדאפ`, `הצגות`, `הופעות`];
     CitiesList = await Shows.aggregate([
         {
@@ -20,7 +20,7 @@ exports.FetchDetails = async function () {
             }
         },
         {
-            $sort: 1
+            $sort: {_id: 1}
         }]);
 
     CitiesList.map((obj) => {
@@ -28,6 +28,26 @@ exports.FetchDetails = async function () {
             CitiesArr.push(obj._id);
     });
 
+
+    HallList = await Shows.aggregate([
+        {
+            $unwind: "$showLocations"
+        },
+        {
+            $group: {
+                _id: "$showLocations.hall",
+                count: {$sum: 1}
+            }
+        },
+        {
+            $sort: {_id: 1}
+        }]);
+
+
+    HallList.map((obj) => {
+        if (obj._id !== undefined && obj._id !== null && obj._id !== "" && obj._id !== "0")
+            HallArr.push(obj._id);
+    });
 
     /*SectionsList = await Shows.aggregate([
         {
@@ -41,7 +61,7 @@ exports.FetchDetails = async function () {
         if (obj._id !== undefined && obj._id !== null && obj._id !== "")
             SectionsArr.push(obj._id);
     });*/
-    Object_Array = {'cities': CitiesArr, 'sections': SectionsArr};
+    Object_Array = {'cities': CitiesArr, 'sections': SectionsArr, 'hall': HallArr};
     let json = JSON.stringify(Object_Array);
     fs.writeFileSync('public/data.txt', json);
 }
