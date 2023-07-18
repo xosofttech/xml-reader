@@ -18,6 +18,9 @@ exports.FetchDetails = async function () {
                 _id: "$showLocations.city",
                 count: {$sum: 1}
             }
+        },
+        {
+            $sort: 1
         }]);
 
     CitiesList.map((obj) => {
