@@ -37,7 +37,7 @@
                                 <div class="form-group">
                                     <label>Enter Date</label>
                                     <input type="date" class="form-control"
-                                           name="date[]"/>
+                                           name="date[]" required/>
                                 </div>
                             </div>
                             <div class="col-sm-3">
@@ -45,7 +45,7 @@
                                     <label>Enter Time</label>
                                     <input type="time" min="0"
                                            class="form-control"
-                                           name="time[]"/>
+                                           name="time[]" required/>
                                 </div>
                             </div>
                             <div class="col-sm-3">
@@ -108,8 +108,8 @@
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
-                                <label>Enter Domain</label>
-                                <input type="text" name="domain" class="form-control"/>
+                                <label>Enter Name</label>
+                                <input type="text" name="name" class="form-control" required/>
                             </div>
                         </div>
                         <div class="col-sm-3">
@@ -121,16 +121,10 @@
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label>Enter Link</label>
-                                <input type="text" name="link" class="form-control"/>
+                                <input type="text" name="link" class="form-control" required/>
                             </div>
                         </div>
-                        <div class="col-sm-3">
-                            <div class="form-group">
-                                <label>Enter Name</label>
-                                <input type="text" name="name" class="form-control" required/>
-                            </div>
-                        </div>
-                        <div class="col-sm-3">
+                       {# <div class="col-sm-3">
                             <div class="form-group">
                                 <label>Enter Date</label>
                                 <input type="date" name="maindate" class="form-control"/>
@@ -159,6 +153,12 @@
                                 <label>Enter Date From</label>
                                 <input type="date" name="dateFrom" class="form-control"/>
                             </div>
+                        </div>#}
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label>Enter Domain</label>
+                                <input type="text" name="domain" class="form-control"/>
+                            </div>
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
@@ -182,7 +182,7 @@
                                                 <div class="form-group">
                                                     <label>Enter Date</label>
                                                     <input type="date" class="form-control"
-                                                           name="date[]"/>
+                                                           name="date[]" required/>
                                                 </div>
                                             </div>
                                             <div class="col-sm-3">
@@ -190,7 +190,7 @@
                                                     <label>Enter Time</label>
                                                     <input type="time" min="0"
                                                            class="form-control"
-                                                           name="time[]"/>
+                                                           name="time[]" required/>
                                                 </div>
                                             </div>
                                             <div class="col-sm-3">

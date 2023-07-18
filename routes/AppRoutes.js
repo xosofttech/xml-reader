@@ -42,12 +42,12 @@ route.post('/save-records', (req, res) => {
         section: formData.section,
         link: formData.link,
         name: formData.name,
-        date: formData.maindate,
+        //date: formData.maindate,
         tickets: formData.Tickets,
-        priceMin: formData.minPrice,
-        priceMax: formData.maxPrice,
-        dateTo: formData.dateTo,
-        dateFrom: formData.dateFrom,
+        // priceMin: formData.minPrice,
+        // priceMax: formData.maxPrice,
+        // dateTo: formData.dateTo,
+        // dateFrom: formData.dateFrom,
         addedby: "user",
         showLocations: showLocations
     };
