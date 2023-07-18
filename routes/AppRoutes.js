@@ -1,10 +1,21 @@
 const express = require('express');
 const route = express.Router();
-var AllEvents = require('../Model/allevents');
+var AllEvents = require('../Model/shows');
 
 route.get('/', function (req, res) {
     res.render("index");
 });
+
+route.get('/shows', async function (req, res) {
+
+    const AllShows = await AllEvents.find();
+    res.render("shows", {
+        response: AllShows
+    });
+
+    // res.render("shows");
+});
+
 
 route.post('/save-records', (req, res) => {
     const formData = req.body;
