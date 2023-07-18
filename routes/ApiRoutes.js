@@ -95,8 +95,30 @@ route.post('/fetch-shows', async function (req, res) {
     /*if (!filterParams.date)
         Query.date = {$gte: gteDate};*/
 
-    if (filterParams.name)
-        main_query.name = new RegExp(filterParams.name, "i");
+    if (filterParams.name) {
+        main_query.$or = [
+            {
+                name: new RegExp(filterParams.name, "i"),
+            },
+            {
+                section: new RegExp(filterParams.name, "i"),
+            },
+            {
+                "showLocations.city": new RegExp(filterParams.name, "i"),
+            },
+            {
+                "showLocations.hall": new RegExp(filterParams.name, "i"),
+            },
+            {
+                "showLocations.location": new RegExp(filterParams.name, "i"),
+            },
+            {
+                "showLocations.address": new RegExp(filterParams.name, "i"),
+            }
+        ]
+
+    }
+
 
     if (filterParams.show_id)
         main_query.show_id = new RegExp(filterParams.show_id, "i");
