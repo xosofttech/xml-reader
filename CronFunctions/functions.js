@@ -797,128 +797,68 @@ exports.LoopAllLinks = async function () {
 
 }
 
+exports.smartTicket = async function () {
+    const links = [
+        'https://afula.smarticket.co.il/',
+        'https://t-hazafon.smarticket.co.il/',
+    ];
 
-// exports.ScrapOshercohen = async function () {
+    async function scrapeTickets(links) {
+        const eventsArray = [];
+        const showLocations = [];
 
-//     request('https://2207.kupat.co.il/show/oshercohen', (error, response, body) => {
-//         if (!error && response.statusCode === 200) {
-//             const $ = cheerio.load(body);
+        for (const link of links) {
 
-//             // Example: Scrape the text from an element with a specific class
-//             const date = $('.ticket-row-inner .date').text();
-//             const starts = $('.ticket-row-inner .starts').text();
-//             const city = $('.ticket-row-inner .city').text();
-//             const hall = $('.ticket-row-inner .hall').text();
-//             const scrapedText = $('.tab-title.only-desktop').text();
-//             const description = $('.info').text();
+            console.log('scrapping', link)
+            await new Promise((resolve, reject) => {
+                request(link, (error, response, body) => {
+                    if (!error && response.statusCode === 200) {
+                        const $ = cheerio.load(body);
 
+                        $('.show_cube').each((index, element) => {
+                            const $element = $(element);
+                            const name = $element.find(`#show_name_${index}`).text().trim();
+                            const date = $element.find('.show_date').text().trim();
+                            var extractedDate = date.split(',')[1].trim();
+                            const category = $element.find('.category').text().trim();
+                            const hall = $element.find('.theater_name').text().trim();
+                            const time = $element.find('.event-time').text().trim();
+                            var timeRegex = /\b(\d{1,2}:\d{2})\b/;
+                            var extractedTime = time.match(timeRegex)[1];
 
-//             console.log('date:', date);
-//             console.log('date:', starts);
-//             console.log('date:', city);
-//             console.log('date:', hall);
-//             console.log('title:', scrapedText);
-//             console.log('description:', description);
+                            showLocations.push({
+                                name: name,
+                                showLocations: {
+                                    name: name,
+                                    date: extractedDate,
+                                    category: category,
+                                    hall: hall,
+                                    time: extractedTime,
+                                }
+                            });
+                        });
 
-//             // Continue scraping other elements as needed
+                        resolve();
+                    } else {
+                        console.error('Error:', error);
+                        reject(error);
+                    }
+                });
+            });
+        }
 
-//         } else {
-//             console.error('Error:', error);
-//         }
-//     });
+        AllEvents.insertMany(showLocations).then(async function () {
+            console.log("done");
+        }).catch(function (error) {
+            console.log(error)
+        });
 
-// }
+    }
 
-// exports.ScrapHananbenari = async function () {
+    // scrapeTickets(links);
 
-//     request('https://2207.kupat.co.il/show/hananbenari', (error, response, body) => {
-//       if (!error && response.statusCode === 200) {
-//         const $ = cheerio.load(body);
-//         const events = [];
-//         const name = $('.order_btn_wrap a').text();
+}
 
-//         $('.days.alldays li').each((index, element) => {
-//           const $element = $(element);
-//           const date = $element.find('.date').text().trim();
-//           const time = $element.find('.starts').text().trim();
-//           const city = $element.find('.city').text().trim();
-//           const hall = $element.find('.hall').text().trim();
-//           const orderLink = $element.find('a.order_show').attr('href');
-
-//           events.push({ date, time, city, hall, orderLink });
-//         });
-
-//         console.log(name)
-//         console.log(events);
-
-//       } else {
-//         console.error('Error:', error);
-//       }
-//     });
-
-
-// }
-
-// exports.ScrapEyalgolan = async function () {
-
-//     request('https://2207.kupat.co.il/show/eyalgolan', (error, response, body) => {
-//       if (!error && response.statusCode === 200) {
-//         const $ = cheerio.load(body);
-//         const events = [];
-//         const name = $('.order_btn_wrap a').text();
-
-//         $('.days.alldays li').each((index, element) => {
-//           const $element = $(element);
-//           const date = $element.find('.date').text().trim();
-//           const time = $element.find('.starts').text().trim();
-//           const city = $element.find('.city').text().trim();
-//           const hall = $element.find('.hall').text().trim();
-//           const orderLink = $element.find('a.order_show').attr('href');
-
-//           events.push({ date, time, city, hall, orderLink });
-//         });
-
-//         console.log(name)
-//         console.log(events);
-
-//       } else {
-//         console.error('Error:', error);
-//       }
-//     });
-
-
-// }
-
-
-// exports.ScrapShlomo = async function () {
-
-//     request('https://2207.kupat.co.il/show/shlomo-artzi', (error, response, body) => {
-//       if (!error && response.statusCode === 200) {
-//         const $ = cheerio.load(body);
-//         const events = [];
-//         const name = $('.order_btn_wrap a').text();
-
-//         $('.days.alldays li').each((index, element) => {
-//           const $element = $(element);
-//           const date = $element.find('.date').text().trim();
-//           const time = $element.find('.starts').text().trim();
-//           const city = $element.find('.city').text().trim();
-//           const hall = $element.find('.hall').text().trim();
-//           const orderLink = $element.find('a.order_show').attr('href');
-
-//           events.push({ date, time, city, hall, orderLink });
-//         });
-
-//         console.log(name)
-//         console.log(events);
-
-//       } else {
-//         console.error('Error:', error);
-//       }
-//     });
-
-
-// }
 
 
 async function EvenTimFunc(pokemons) {
