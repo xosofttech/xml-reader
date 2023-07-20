@@ -22,11 +22,11 @@
                 <th>Name</th>
                 <th>Domain</th>
                 <th>Section</th>
-                <th>Date</th>
+                {#<th>Date</th>
                 <th>Max Price</th>
                 <th>Min Price</th>
                 <th>Date To</th>
-                <th>Date From</th>
+                <th>Date From</th>#}
                 <th>Show Locations</th>
             </tr>
             </thead>
@@ -36,11 +36,11 @@
                     <td>{{ row.name }}</td>
                     <td>{{ row.domain }}</td>
                     <td>{{ row.section }}</td>
-                    <td>{{ row.date }}</td>
+                    {#<td>{{ row.date }}</td>
                     <td>{{ row.priceMax }}</td>
                     <td>{{ row.priceMin }}</td>
                     <td>{{ row.dateTo }}</td>
-                    <td>{{ row.dateFrom }}</td>
+                    <td>{{ row.dateFrom }}</td>#}
                     <td>
                         <button class="btn btn-info" data-bs-toggle="modal"
                                 data-bs-target="#showLocationsModal{{ key }}">Detail
