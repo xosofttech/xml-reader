@@ -258,6 +258,7 @@
         $(document).on("change", ".select-dropdown", function () {
             Val = $(this).val();
             if (Val === "Add New") {
+                $(this).next().find('.form-control').val("");
                 $(this).addClass('hide');
                 $(this).next().removeClass('hide');
             } else {
