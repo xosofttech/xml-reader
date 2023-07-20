@@ -50,31 +50,34 @@
                             </div>
                             <div class="col-sm-3">
                                 <div class="form-group">
-                                    <label>Enter PriceMin</label>
-                                    <input type="number" min="0"
-                                           class="form-control"
-                                           name="priceMin[]"/>
-                                </div>
-                            </div>
-                            <div class="col-sm-3">
-                                <div class="form-group">
-                                    <label>Enter PriceMax</label>
-                                    <input type="number" class="form-control"
-                                           name="priceMax[]"/>
-                                </div>
-                            </div>
-                            <div class="col-sm-3">
-                                <div class="form-group">
                                     <label>Enter Hall</label>
-                                    <input type="text" class="form-control"
-                                           name="hall[]"/>
+                                    <select class="form-control select-dropdown">
+                                        <option value="">Select Hall</option>
+                                        <option value="Add New">+ Add</option>
+                                        {% for obj in data.hall %}
+                                            <option value="{{ obj }}">{{ obj }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="input-box hide">
+                                        <i class="close">x</i>
+                                        <input type="text" name="hall[]" class="form-control"/>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-sm-3">
                                 <div class="form-group">
                                     <label>Enter City</label>
-                                    <input type="text" class="form-control"
-                                           name="city[]"/>
+                                    <select class="form-control select-dropdown">
+                                        <option value="">Select city</option>
+                                        <option value="Add New">+ Add</option>
+                                        {% for obj in data.cities %}
+                                            <option value="{{ obj }}">{{ obj }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="input-box hide">
+                                        <i class="close">x</i>
+                                        <input type="text" name="city[]" class="form-control"/>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-sm-3">
@@ -112,10 +115,27 @@
                                 <input type="text" name="name" class="form-control" required/>
                             </div>
                         </div>
+                        <style>
+                            .close {
+                                position: absolute;
+                                right: 22px;
+                                top: 30px;
+                            }
+                        </style>
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label>Enter Section</label>
-                                <input type="text" name="section" class="form-control"/>
+                                <select class="form-control select-dropdown">
+                                    <option value="">Select Section</option>
+                                    <option value="Add New">+ Add</option>
+                                    {% for obj in data.sections %}
+                                        <option value="{{ obj }}">{{ obj }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="input-box hide">
+                                    <i class="close">x</i>
+                                    <input type="text" name="section" class="form-control"/>
+                                </div>
                             </div>
                         </div>
                         <div class="col-sm-3">
@@ -124,36 +144,6 @@
                                 <input type="text" name="link" class="form-control" required/>
                             </div>
                         </div>
-                       {# <div class="col-sm-3">
-                            <div class="form-group">
-                                <label>Enter Date</label>
-                                <input type="date" name="maindate" class="form-control"/>
-                            </div>
-                        </div>
-                        <div class="col-sm-3">
-                            <div class="form-group">
-                                <label>Enter Max Price</label>
-                                <input type="number" name="maxPrice" class="form-control"/>
-                            </div>
-                        </div>
-                        <div class="col-sm-3">
-                            <div class="form-group">
-                                <label>Enter Min Price</label>
-                                <input type="number" name="minPrice" class="form-control"/>
-                            </div>
-                        </div>
-                        <div class="col-sm-3">
-                            <div class="form-group">
-                                <label>Enter Date To</label>
-                                <input type="date" name="dateTo" class="form-control"/>
-                            </div>
-                        </div>
-                        <div class="col-sm-3">
-                            <div class="form-group">
-                                <label>Enter Date From</label>
-                                <input type="date" name="dateFrom" class="form-control"/>
-                            </div>
-                        </div>#}
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <label>Enter Domain</label>
@@ -193,33 +183,36 @@
                                                            name="time[]" required/>
                                                 </div>
                                             </div>
-                                            <div class="col-sm-3 hide">
-                                                <div class="form-group">
-                                                    <label>Enter PriceMin</label>
-                                                    <input type="number" min="0"
-                                                           class="form-control"
-                                                           name="priceMin[]"/>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-3 hide">
-                                                <div class="form-group">
-                                                    <label>Enter PriceMax</label>
-                                                    <input type="number" class="form-control"
-                                                           name="priceMax[]"/>
-                                                </div>
-                                            </div>
                                             <div class="col-sm-3">
                                                 <div class="form-group">
                                                     <label>Enter Hall</label>
-                                                    <input type="text" class="form-control"
-                                                           name="hall[]"/>
+                                                    <select class="form-control select-dropdown">
+                                                        <option value="">Select Hall</option>
+                                                        <option value="Add New">+ Add</option>
+                                                        {% for obj in data.hall %}
+                                                            <option value="{{ obj }}">{{ obj }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <div class="input-box hide">
+                                                        <i class="close">x</i>
+                                                        <input type="text" name="hall[]" class="form-control"/>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="col-sm-3">
                                                 <div class="form-group">
                                                     <label>Enter City</label>
-                                                    <input type="text" class="form-control"
-                                                           name="city[]"/>
+                                                    <select class="form-control select-dropdown">
+                                                        <option value="">Select city</option>
+                                                        <option value="Add New">+ Add</option>
+                                                        {% for obj in data.cities %}
+                                                            <option value="{{ obj }}">{{ obj }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <div class="input-box hide">
+                                                        <i class="close">x</i>
+                                                        <input type="text" name="city[]" class="form-control"/>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="col-sm-3">
@@ -262,8 +255,20 @@
 
 <script>
     $(document).ready(function () {
+        $(document).on("change", ".select-dropdown", function () {
+            Val = $(this).val();
+            if (Val === "Add New") {
+                $(this).addClass('hide');
+                $(this).next().removeClass('hide');
+            } else {
+                $(this).next().find('.form-control').val(Val);
+            }
+        });
 
-        //$("#repeater").createRepeater();
+        $(document).on("click", ".close", function () {
+            $(this).parent().addClass("hide");
+            $(this).parent().prev('select.form-control').val("").removeClass("hide");
+        });
 
 
         $('#repeater_form').on('submit', function (event) {

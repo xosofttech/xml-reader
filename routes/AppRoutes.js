@@ -3,9 +3,26 @@ const route = express.Router();
 var AllEvents = require('../Model/allevents');
 var Shows = require('../Model/shows');
 const Module = require("../Modules/general");
+const fs = require("fs");
 
 route.get('/', function (req, res) {
-    res.render("NewShowForm");
+    try {
+        let dataArr = [];
+
+        if (fs.existsSync('public/data.txt')) {
+            dataArr = fs.readFileSync('public/data.txt', 'utf8');
+            // res.setHeader('Content-Type', 'application/json');
+            jsonArr = JSON.parse(dataArr);
+            res.render("NewShowForm", {
+                data: jsonArr
+            });
+        }
+    } catch (err) {
+        dataArr = [];
+        res.render("NewShowForm", {
+            data: dataArr
+        });
+    }
 });
 
 route.get('/shows', async function (req, res) {
@@ -24,8 +41,8 @@ route.post('/save-records', (req, res) => {
             date: formData.date[index],
             day: Module.GetDay(formData.date[index]),
             time: formData.time[index],
-            priceMin: formData.priceMin[index],
-            priceMax: formData.priceMax[index],
+            // priceMin: formData.priceMin[index],
+            // priceMax: formData.priceMax[index],
             hall: formData.hall[index],
             city: formData.city[index],
             location: formData.location[index],
