@@ -27,7 +27,7 @@ route.get('/', function (req, res) {
 });
 
 route.get('/shows', async function (req, res) {
-    const AllShows = await AllEvents.find({addedby: "user"}).sort({_id: -1});
+    const AllShows = await Shows.find({addedby: "user"}).sort({_id: -1});
     res.render("ListAllshows", {
         response: AllShows
     });
@@ -76,7 +76,7 @@ route.post('/save-records', (req, res) => {
     };
 
     //console.log(newShow);
-    AllEvents.create(newShow)
+    Shows.create(newShow)
         .then(() => {
             res.send({
                 error: false,
