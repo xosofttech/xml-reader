@@ -4,6 +4,7 @@ var AllEvents = require('../Model/allevents');
 var Shows = require('../Model/shows');
 const Module = require("../Modules/general");
 const fs = require("fs");
+const URL = require('url');
 
 route.get('/', function (req, res) {
     try {
@@ -50,21 +51,26 @@ route.post('/save-records', (req, res) => {
         };
     });
 
-    //console.log(formData.name);
+    // console.log(URL.parse(formData.link).hostname);
+    let DomainName = "";
+    if (formData.link !== undefined && formData.link !== "") {
+        try {
+            DomainName = URL.parse(formData.link).hostname;
+        } catch (e) {
+            DomainName = "";
+        }
+    }
+
+    //console.log(formData.link);
 
     // Create a new instance of the Show modal and populate it with the form data
     const newShow = {
         show_id: formData.showID,
-        domain: formData.domain,
+        domain: DomainName,
         section: formData.section,
         link: formData.link,
         name: formData.name,
-        //date: formData.maindate,
         tickets: formData.Tickets,
-        // priceMin: formData.minPrice,
-        // priceMax: formData.maxPrice,
-        // dateTo: formData.dateTo,
-        // dateFrom: formData.dateFrom,
         addedby: "user",
         showLocations: showLocations
     };
