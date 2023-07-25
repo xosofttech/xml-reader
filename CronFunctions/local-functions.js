@@ -1,6 +1,7 @@
 // Data Models
 const fs = require('fs');
 var Shows = require('../Model/shows');
+var BlockedData = require('../Model/BlockedData');
 var dir = 'public';
 if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir);
@@ -8,7 +9,15 @@ if (!fs.existsSync(dir)) {
 
 exports.FetchDetails = async function () {
     var CitiesArr = [], HallArr = [],
-        SectionsArr = [`הרצאות`, `תערוכות`, `אופרה`, `מחול ובלט`, `מחזמר`, `הצגות ילדים`, `סטנדאפ`, `הצגות`, `הופעות`];
+        SectionsArr = [`הרצאות`, `תערוכות`, `אופרה`, `מחול ובלט`, `מחזמר`, `הצגות ילדים`, `סטנדאפ`, `הצגות`, `הופעות`],
+        DelCityArr = [];
+
+    BlockedCities = await BlockedData.find({type: "city"}, {_id: 0, value: 1});
+    if (BlockedCities !== undefined && BlockedCities.length !== 0)
+        BlockedCities.map(function (obj) {
+            DelCityArr.push(obj.value);
+        })
+
     CitiesList = await Shows.aggregate([
         {
             $unwind: "$showLocations"
@@ -17,6 +26,11 @@ exports.FetchDetails = async function () {
             $group: {
                 _id: "$showLocations.city",
                 count: {$sum: 1}
+            }
+        },
+        {
+            $match: {
+                _id: {$nin: DelCityArr}
             }
         },
         {
