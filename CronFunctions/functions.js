@@ -520,6 +520,7 @@ exports.XMLToMongo = function () {
                             PageResult = await Shows.updateOne({
                                 "show_id": show_id
                             }, {
+                                link: show_link,
                                 $set: {
                                     "showLocations": show_location
                                 }
