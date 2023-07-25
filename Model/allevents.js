@@ -12,12 +12,40 @@ var AllEventsSchema = new Schema({
         type: "String",
         default: "",
     },
+    section: {
+        type: "String",
+        default: "",
+    },
     link: {
         type: "String",
         default: "",
     },
     name: {
         type: "String",
+        default: "",
+    },
+    date: {
+        type: Date,
+        default: "",
+    },
+    tickets: {
+        type: Number,
+        default: "",
+    },
+    priceMin: {
+        type: Number,
+        default: "",
+    },
+    priceMax: {
+        type: Number,
+        default: "",
+    },
+    dateTo: {
+        type: Date,
+        default: "",
+    },
+    dateFrom: {
+        type: Date,
         default: "",
     },
     showDescription: {
@@ -27,6 +55,10 @@ var AllEventsSchema = new Schema({
     showLocations: {
         type: Object,
         default: {}
+    },
+    addedby: {
+        type: "String",
+        default: "",
     },
     Created: {
         type: Date,

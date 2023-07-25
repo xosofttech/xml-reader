@@ -95,8 +95,30 @@ route.post('/fetch-shows', async function (req, res) {
     /*if (!filterParams.date)
         Query.date = {$gte: gteDate};*/
 
-    if (filterParams.name)
-        main_query.name = new RegExp(filterParams.name, "i");
+    if (filterParams.name) {
+        main_query.$or = [
+            {
+                name: new RegExp(filterParams.name, "i"),
+            },
+            {
+                section: new RegExp(filterParams.name, "i"),
+            },
+            {
+                "showLocations.city": new RegExp(filterParams.name, "i"),
+            },
+            {
+                "showLocations.hall": new RegExp(filterParams.name, "i"),
+            },
+            {
+                "showLocations.location": new RegExp(filterParams.name, "i"),
+            },
+            {
+                "showLocations.address": new RegExp(filterParams.name, "i"),
+            }
+        ]
+
+    }
+
 
     if (filterParams.show_id)
         main_query.show_id = new RegExp(filterParams.show_id, "i");
@@ -271,7 +293,7 @@ function checkDatesinShows() {
                 for ([index, object] of show_result.entries()) {
                     //    console.log(object);
                     for ([index1, object1] of object.showLocations.entries()) {
-                        object1.day = GetDay(object1.date);
+                        object1.day = Module.GetDay(object1.date);
                         //      console.log(object1);
                     }
                     //console.log(object.show_id);
@@ -284,12 +306,28 @@ function checkDatesinShows() {
         });
 }
 
+
+function UpdateCity() {
+    Shows.updateMany({
+            //_id: ObjectId('648099acca71ee467bb4b334'),
+            "showLocations.city": "תל אביב-יפו"
+        },
+        //{"showLocations.city": "תל אביב"},
+        {$set: {"showLocations.$.city": "תל אביב"}},
+        //{},
+        function (err, result) {
+            //console.log(err);
+            console.log(result);
+            checkDatesinShows();
+        });
+}
+
 // Shows.deleteMany({showLocations:{ $exists: true, $size: 0}}, function (err, resp) {
 //     console.log(resp);
 // })
 
 
-function GetDay(DateStr) {
+/*function GetDay(DateStr) {
     try {
         const data = new Date(DateStr);
         const day = data.getDay();
@@ -298,6 +336,6 @@ function GetDay(DateStr) {
     } catch (e) {
         return "";
     }
-}
+}*/
 
 module.exports = route

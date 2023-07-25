@@ -1,47 +1,87 @@
 const express = require('express');
 const route = express.Router();
 var AllEvents = require('../Model/allevents');
+var Shows = require('../Model/shows');
+const Module = require("../Modules/general");
+const fs = require("fs");
+const URL = require('url');
 
 route.get('/', function (req, res) {
-    res.render("index");
+    try {
+        let dataArr = [];
+
+        if (fs.existsSync('public/data.txt')) {
+            dataArr = fs.readFileSync('public/data.txt', 'utf8');
+            // res.setHeader('Content-Type', 'application/json');
+            jsonArr = JSON.parse(dataArr);
+            res.render("NewShowForm", {
+                data: jsonArr
+            });
+        }
+    } catch (err) {
+        dataArr = [];
+        res.render("NewShowForm", {
+            data: dataArr
+        });
+    }
 });
 
-route.post('/insert', (req, res) => {
+route.get('/shows', async function (req, res) {
+    const AllShows = await Shows.find({addedby: "user"}).sort({_id: -1});
+    res.render("ListAllshows", {
+        response: AllShows
+    });
+});
+
+
+route.post('/save-records', (req, res) => {
     const formData = req.body;
 
-    const showLocations = formData.showLocations.map(locationArray => {
+    const showLocations = formData.date.map((obj, index) => {
         return {
-            day: locationArray[0],
-            date: locationArray[1],
-            priceMin: locationArray[2],
-            priceMax: locationArray[3],
-            hall: locationArray[4],
-            city: locationArray[5],
-            location: locationArray[6],
-            address: locationArray[7]
+            date: formData.date[index],
+            day: Module.GetDay(formData.date[index]),
+            time: formData.time[index],
+            // priceMin: formData.priceMin[index],
+            // priceMax: formData.priceMax[index],
+            hall: formData.hall[index],
+            city: formData.city[index],
+            location: formData.location[index],
+            address: formData.address[index]
         };
     });
+
+    // console.log(URL.parse(formData.link).hostname);
+    let DomainName = "";
+    if (formData.link !== undefined && formData.link !== "") {
+        try {
+            DomainName = URL.parse(formData.link).hostname;
+        } catch (e) {
+            DomainName = "";
+        }
+    }
+
+    //console.log(formData.link);
 
     // Create a new instance of the Show modal and populate it with the form data
     const newShow = {
         show_id: formData.showID,
-        domain: formData.domain,
+        domain: DomainName,
         section: formData.section,
         link: formData.link,
         name: formData.name,
-        date: formData.date,
         tickets: formData.Tickets,
-        priceMin: formData.minPrice,
-        priceMax: formData.maxPrice,
-        dateTo: formData.dateTo,
-        dateFrom: formData.dateFrom,
-        pubDate: formData.pubDate,
+        addedby: "user",
         showLocations: showLocations
     };
 
-    AllEvents.create(newShow)
+    //console.log(newShow);
+    Shows.create(newShow)
         .then(() => {
-            res.send('Form data inserted successfully');
+            res.send({
+                error: false,
+                message: "success"
+            });
         })
         .catch((error) => {
             console.error('Error inserting form data:', error);

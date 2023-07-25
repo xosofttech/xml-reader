@@ -1,0 +1,307 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Add new Show</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"
+            integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ"
+            crossorigin="anonymous"></script>
+    {# <script src="assets/js/repeater.js" type="text/javascript"></script> #}
+    <style>
+        .repeater-row {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <br/>
+    <h3 align="center">Fill the following form to add shows</h3>
+    <a class="btn btn-primary pull-right" style="margin-top: -30px;" href="../app/shows">List Shows</a>
+    <br/>
+    <div style="width:100%; margin:0 auto;">
+        <div class="panel panel-default">
+            <div class="panel-heading">Add Shows with Details</div>
+            <div class="panel-body">
+                <div class="alert alert-success" id="success_result" hidden>
+                    <strong>Success!</strong> Record added successfully!!!
+                </div>
+                <div class="repeater-row-new hide">
+                    <div class="col-md-12 repeater-row copy">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label>Enter Date</label>
+                                    <input type="date" class="form-control"
+                                           name="date[]" required/>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label>Enter Time</label>
+                                    <input type="time" min="0"
+                                           class="form-control"
+                                           name="time[]" required/>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label>Enter Hall</label>
+                                    <select class="form-control select-dropdown">
+                                        <option value="">Select Hall</option>
+                                        <option value="Add New">+ Add</option>
+                                        {% for obj in data.hall %}
+                                            <option value="{{ obj }}">{{ obj }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="input-box hide">
+                                        <i class="close">x</i>
+                                        <input type="text" name="hall[]" class="form-control"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label>Enter City</label>
+                                    <select class="form-control select-dropdown">
+                                        <option value="">Select city</option>
+                                        <option value="Add New">+ Add</option>
+                                        {% for obj in data.cities %}
+                                            <option value="{{ obj }}">{{ obj }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="input-box hide">
+                                        <i class="close">x</i>
+                                        <input type="text" name="city[]" class="form-control"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label>Enter Location</label>
+                                    <input type="text" class="form-control"
+                                           name="location[]"/>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label>Enter Address</label>
+                                    <input type="text" class="form-control"
+                                           name="address[]"/>
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <button type="button" class="btn btn-success data-clone">Clone</button>
+                                <button type="button" class="btn btn-danger data-remove">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <form method="post" id="repeater_form">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label>Enter Show ID</label>
+                                <input type="text" name="showID" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label>Enter Name</label>
+                                <input type="text" name="name" class="form-control" required/>
+                            </div>
+                        </div>
+                        <style>
+                            .close {
+                                position: absolute;
+                                right: 22px;
+                                top: 30px;
+                            }
+                        </style>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label>Enter Section</label>
+                                <select class="form-control select-dropdown">
+                                    <option value="">Select Section</option>
+                                    <option value="Add New">+ Add</option>
+                                    {% for obj in data.sections %}
+                                        <option value="{{ obj }}">{{ obj }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="input-box hide">
+                                    <i class="close">x</i>
+                                    <input type="text" name="section" class="form-control"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label>Enter Link</label>
+                                <input type="url" name="link" class="form-control" required/>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label>Enter Tickets</label>
+                                <input type="number" min="1" name="Tickets" class="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <hr/>
+                    <div id="repeater">
+                        <div class="repeater-heading" align="right">
+                            <button type="button" class="btn btn-primary repeater-add-btn">+ Add</button>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="items border" data-group="showLocations">
+                            <div class="item-content">
+                                <div class="row Show-Container">
+                                    <div class="col-md-12 repeater-row">
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <div class="form-group">
+                                                    <label>Enter Date</label>
+                                                    <input type="date" class="form-control"
+                                                           name="date[]" required/>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <div class="form-group">
+                                                    <label>Enter Time</label>
+                                                    <input type="time" min="0"
+                                                           class="form-control"
+                                                           name="time[]" required/>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <div class="form-group">
+                                                    <label>Enter Hall</label>
+                                                    <select class="form-control select-dropdown">
+                                                        <option value="">Select Hall</option>
+                                                        <option value="Add New">+ Add</option>
+                                                        {% for obj in data.hall %}
+                                                            <option value="{{ obj }}">{{ obj }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <div class="input-box hide">
+                                                        <i class="close">x</i>
+                                                        <input type="text" name="hall[]" class="form-control"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <div class="form-group">
+                                                    <label>Enter City</label>
+                                                    <select class="form-control select-dropdown">
+                                                        <option value="">Select city</option>
+                                                        <option value="Add New">+ Add</option>
+                                                        {% for obj in data.cities %}
+                                                            <option value="{{ obj }}">{{ obj }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <div class="input-box hide">
+                                                        <i class="close">x</i>
+                                                        <input type="text" name="city[]" class="form-control"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <div class="form-group">
+                                                    <label>Enter Location</label>
+                                                    <input type="text" class="form-control"
+                                                           name="location[]"/>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <div class="form-group">
+                                                    <label>Enter Address</label>
+                                                    <input type="text" class="form-control"
+                                                           name="address[]"/>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <button type="button" class="btn btn-success data-clone">Clone</button>
+                                                <button type="button" class="btn btn-danger data-remove">Remove</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr/>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+                    <div class="form-group" align="right">
+                        <br/>
+                        <input type="submit" name="insert" class="btn btn-info btn-lg" value="Save" id="Save-Btn"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $(document).on("change", ".select-dropdown", function () {
+            Val = $(this).val();
+            if (Val === "Add New") {
+                $(this).next().find('.form-control').val("");
+                $(this).addClass('hide');
+                $(this).next().removeClass('hide');
+            } else {
+                $(this).next().find('.form-control').val(Val);
+            }
+        });
+
+        $(document).on("click", ".close", function () {
+            $(this).parent().addClass("hide");
+            $(this).parent().prev('select.form-control').val("").removeClass("hide");
+        });
+
+
+        $('#repeater_form').on('submit', function (event) {
+            event.preventDefault();
+            $("#Save-Btn").attr("disabled", "disabled");
+            $.ajax({
+                url: "app/save-records",
+                method: "POST",
+                data: $(this).serialize(),
+                success: function (data) {
+                    $('#repeater_form')[0].reset();
+                    $('#success_result').show();
+                    $("#Save-Btn").removeAttr("disabled");
+                    $('#repeater_form .copy').remove();
+                    setTimeout(function () {
+                        $('#success_result').slideUp(300);
+                    }, 3000)
+                }
+            });
+        });
+
+    });
+
+    $(document).on("click", ".data-remove", function () {
+        $(this).parents('.repeater-row').remove();
+    });
+
+
+    $(document).on("click", ".data-clone", function () {
+        //$(".Show-Container").append($(this).parents('.repeater-row').clone());
+        $(this).parent().parent().parent().after($(this).parents('.repeater-row').clone());
+    });
+
+    $(document).on("click", ".repeater-add-btn", function () {
+        $(".Show-Container").append($(".repeater-row-new").html())
+    });
+
+    //repeater-add-btn
+</script>
+</body>
+</html>

@@ -28,22 +28,6 @@ var ShowSchema = new Schema({
         type: Date,
         default: "",
     },
-   /* time: {
-        type: "String",
-        default: "",
-    },
-    city: {
-        type: "String",
-        default: "",
-    },
-    address: {
-        type: "String",
-        default: "",
-    },
-    hall: {
-        type: "String",
-        default: "",
-    },*/
     tickets: {
         type: Number,
         default: "",
@@ -75,6 +59,10 @@ var ShowSchema = new Schema({
     showObj: {
         type: Array,
         default: []
+    },
+    addedby: {
+        type: "String",
+        default: "",
     },
     Created: {
         type: Date,
