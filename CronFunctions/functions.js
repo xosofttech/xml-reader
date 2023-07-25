@@ -420,144 +420,6 @@ exports.ScrapComy = async function () {
 }
 
 exports.XMLToMongo = function () {
-    /* async.waterfall([
-         function (callback) {
-             https.get('https://buytickets.kartisim.co.il/xml/partner/shows.xml', function (res) {
-                 var response_data = '';
-                 res.setEncoding('utf8');
-                 res.on('data', function (chunk) {
-                     response_data += chunk;
-                 });
-                 res.on('end', function () {
-                     callback(null, response_data)
-                 });
-                 res.on('error', function (err) {
-                     callback(err);
-                 });
-             });
-         },
-         function (xml, callback) {
-             var parser = new xml2js.Parser({explicitArray: false});
-             parser.parseString(xml, function (err, result) {
-                 if (err) {
-                     callback(err);
-                 } else {
-                     callback(null, result);
-                 }
-             });
-         },
-         async function (json, callback) {
-             // do something usefull with the json
-             // eyes.inspect(json.bravo.shows);sky
-             var Result = json.bravo.shows.show;
-             // console.log(Result)
-             for (var [key, val] of Result.entries()) {
-
-                 show_domain = "buytickets.kartisim.co.il";
-                 show_name = val.name;
-                 show_anounce = val.announce;
-                 show_link = `https://buytickets.kartisim.co.il${val.link}`;
-                 show_pubDate = val.pubDate;
-                 show_section = val.section;
-                 if (val.priceMin === undefined) {
-                     show_priceMin = null;
-                 } else {
-                     show_priceMin = val.priceMin;
-                 }
-                 if (val.priceMax === undefined) {
-                     show_priceMax = null;
-                 } else {
-                     show_priceMax = val.priceMax;
-                 }
-                 if (val.dateFrom === undefined) {
-                     show_dateFrom = null;
-                 } else {
-                     show_dateFrom = val.dateFrom;
-                 }
-                 if (val.dateTo === undefined) {
-                     show_dateTo = null;
-                 } else {
-                     show_dateTo = val.dateTo;
-                 }
-
-                 show_location = val.seances?.seance;
-
-
-                 if (!(show_location instanceof Array)) {
-                     show_location = [show_location];
-                 }
-
-                 if (val.seances?.seance === undefined) {
-                     show_date = null;
-                     show_time = null;
-                     show_hall = null;
-                     show_address = null;
-                     show_city = null;
-                     show_tickets = null;
-                 } else {
-                     show_date = val.seances.seance.date;
-                     show_time = val.seances.seance.time;
-                     show_hall = val.seances.seance.hall;
-                     show_address = val.seances.seance.address;
-                     show_city = val.seances.seance.city;
-                     show_tickets = val.seances.seance.tickets;
-                 }
-
-                 show_object = val;
-
-                 var parts = show_link.split('/');
-                 show_id = parts.pop() || parts.pop();
-                 // console.log(Result)
-                 response = {
-                     show_id: show_id,
-                     domain: show_domain,
-                     name: show_name,
-                     anounce: show_anounce,
-                     link: show_link,
-                     pubDate: show_pubDate,
-                     section: show_section,
-                     priceMin: show_priceMin,
-                     priceMax: show_priceMax,
-                     dateFrom: show_dateFrom,
-                     dateTo: show_dateTo,
-                     hall: show_hall,
-                     address: show_address,
-                     date: show_date,
-                     time: show_time,
-                     city: show_city,
-                     tickets: show_tickets,
-                     showLocations: show_location,
-                     showObj: show_object
-                 };
-
-                 ShowExist = await Shows.findOne({"show_id": show_id});
-                 if (ShowExist != null) {
-                     console.log("ShowID => ", show_id, " Exist already Found & Updated");
-                     PageResult = await Shows.updateOne({
-                         "show_id": show_id
-                     }, {
-                         $set: {
-                             "showLocations": show_location
-                         }
-                     });
-                 } else {
-                     console.log("Show ID - ", show_id, "Inserted");
-                     obj = new Shows(response);
-                     await obj.save();
-                 }
-
-             }
-             // callback();
-         }
-     ], function (err, result) {
-         if (err) {
-             console.log('Got error');
-             console.log(err);
-         } else {
-             console.log('Done.');
-         }
-     });*/
-
     try {
         execute(`curl https://buytickets.kartisim.co.il/xml/partner/shows.xml`, function (err, data, outerr) {
             if (err) throw err;
@@ -573,7 +435,7 @@ exports.XMLToMongo = function () {
                         show_domain = "buytickets.kartisim.co.il";
                         show_name = val.name;
                         show_anounce = val.announce;
-                        show_link = `https://buytickets.kartisim.co.il${val.link}`;
+                        show_link = `https://performances.kartisim.co.il${val.link}`;
                         show_pubDate = val.pubDate;
                         show_section = val.section;
                         if (val.priceMin === undefined) {
@@ -604,7 +466,7 @@ exports.XMLToMongo = function () {
                                 show_location = [show_location];
                             }
                             show_location.map((obj) => {
-                                obj.link = (obj.link !== undefined) ? `https://buytickets.kartisim.co.il${obj.link}` : "";
+                                obj.link = (obj.link !== undefined) ? `https://performances.kartisim.co.il${obj.link}` : "";
                                 obj.day = GetDay(obj.date);
                             });
                         }
