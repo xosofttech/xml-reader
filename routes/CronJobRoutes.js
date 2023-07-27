@@ -22,11 +22,11 @@ if (CONFIG.CRON === "on") {
     }, null, true, TIMEZONE);
     ScrapComy.start();
 
-    var ScrapEvenTim = new CronJob('50 */3 * * *', function () {
+    /*var ScrapEvenTim = new CronJob('50 *!/3 * * *', function () {
         console.log("Scrap EvenTim Cron Running Start");
         FN.ScrapEvenTim();
     }, null, true, TIMEZONE);
-    ScrapEvenTim.start();
+    ScrapEvenTim.start();*/
 }
 
 /*Test Funtions to check Crons*/
