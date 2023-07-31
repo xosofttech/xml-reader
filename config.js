@@ -3,7 +3,7 @@ exports.PORT = process.env.PORT;
 var DATABASEUSERNAME = process.env.DBUSER,
     DATABASEPASSWORD = process.env.DBPASSWORD,
     DATABASEHOST = process.env.DBHOST,
-    DATABASENAME = process.env.DBNAME;
+    DATABASENAME = (process.env.ENV === "LOCAL") ? process.env.DBNAME_STAGE : process.env.DBNAME;
 
 exports.CONFIG = {
     CRON: "on",
