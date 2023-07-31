@@ -156,7 +156,7 @@ route.post('/delete-concert-hall', (req, res) => {
 
     const deletedRecord = new DeletedData({
         value: concertHall,
-        type: 'concert-hall'
+        type: 'hall'
     });
 
     deletedRecord.save()
