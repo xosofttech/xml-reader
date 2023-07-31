@@ -9,7 +9,10 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"
             integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ"
-            crossorigin="anonymous"></script>
+            crossorigin="anonymous">
+    </script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>        
     {# <script src="assets/js/repeater.js" type="text/javascript"></script> #}
     <style>
         .repeater-row {
@@ -302,6 +305,33 @@
     });
 
     //repeater-add-btn
+</script>
+
+<script>
+    $(document).ready(function () {
+        // Initialize the Select2 plugin on the <select> element with the class "select-dropdown"
+        $(".select-dropdown").select2({
+            placeholder: "Select Section",
+            allowClear: true, // Option to clear the selection
+            tags: true, // Allow custom tags (e.g., "Add New")
+            tokenSeparators: [',', ' '], // Allow multiple tags to be entered separated by commas or spaces
+        });
+        
+        // Show the text input when "+ Add" is selected
+        $(".select-dropdown").on("select2:select", function (e) {
+            if (e.params.data.text === "+ Add") {
+                $(this).next().removeClass("hide");
+            }
+        });
+        
+        // Hide the text input and clear selection when "x" is clicked
+        $(".close").click(function () {
+            const container = $(this).parent();
+            const select = container.prev();
+            container.addClass("hide");
+            select.val("").trigger("change");
+        });
+    });
 </script>
 </body>
 </html>
