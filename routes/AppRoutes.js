@@ -23,6 +23,62 @@ route.get('/', function (req, res) {
         res.render("NewShowForm", {
             data: dataArr
         });
+
+
+        res.render("EditHalls", {
+            data: jsonArr
+        });
+    }
+});
+
+route.get('/edit-cities', (req, res) => {
+    try {
+        let dataArr = [];
+
+        if (fs.existsSync('public/data.txt')) {
+            dataArr = fs.readFileSync('public/data.txt', 'utf8');
+            jsonArr = JSON.parse(dataArr);
+
+            res.render("EditCities", {
+                data: jsonArr
+            });
+        } else {
+            dataArr = [];
+            res.render("EditCities", {
+                data: dataArr
+            });
+        }
+    } catch (err) {
+        dataArr = [];
+        res.render("EditCities", {
+            data: dataArr
+        });
+    }
+  });
+
+
+route.get('/edit-halls', (req, res) => {
+    try {
+        let dataArr = [];
+
+        if (fs.existsSync('public/data.txt')) {
+            dataArr = fs.readFileSync('public/data.txt', 'utf8');
+            jsonArr = JSON.parse(dataArr);
+
+            res.render("EditHalls", {
+                data: jsonArr
+            });
+        } else {
+            dataArr = [];
+            res.render("EditHalls", {
+                data: dataArr
+            });
+        }
+    } catch (err) {
+        dataArr = [];
+        res.render("EditHalls", {
+            data: dataArr
+        });
     }
 });
 

@@ -59,6 +59,7 @@
                                         <option value="Add New">+ Add</option>
                                         {% for obj in data.hall %}
                                             <option value="{{ obj }}">{{ obj }}</option>
+                                            
                                         {% endfor %}
                                     </select>
                                     <div class="input-box hide">
@@ -316,15 +317,12 @@
             tags: true, // Allow custom tags (e.g., "Add New")
             tokenSeparators: [',', ' '], // Allow multiple tags to be entered separated by commas or spaces
         });
-        
-        // Show the text input when "+ Add" is selected
         $(".select-dropdown").on("select2:select", function (e) {
             if (e.params.data.text === "+ Add") {
                 $(this).next().removeClass("hide");
             }
         });
         
-        // Hide the text input and clear selection when "x" is clicked
         $(".close").click(function () {
             const container = $(this).parent();
             const select = container.prev();
