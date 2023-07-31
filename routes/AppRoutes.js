@@ -2,6 +2,7 @@ const express = require('express');
 const route = express.Router();
 var AllEvents = require('../Model/allevents');
 var Shows = require('../Model/shows');
+var DeletedData = require('../Model/BlockedData')
 const Module = require("../Modules/general");
 const fs = require("fs");
 const URL = require('url');
@@ -144,5 +145,39 @@ route.post('/save-records', (req, res) => {
             res.status(500).send('Error inserting form data');
         });
 });
+
+
+
+route.post('/delete-concert-hall', (req, res) => {
+    const concertHall = req.body.concertHall;
+
+    console.log('concertHall:', concertHall);
+    const DeletedData = require('../Model/BlockedData'); 
+
+    const deletedRecord = new DeletedData({
+        value: concertHall,
+        type: 'concert-hall'
+    });
+
+    deletedRecord.save()
+        .then(() => {
+            console.log('Record successfully saved');
+            res.send({
+                success: true,
+                message: 'Record successfully deleted'
+            });
+        })
+        .catch((error) => {
+            console.error('Error saving the record:', error);
+            res.status(500).send({
+                success: false,
+                message: 'Error saving the record'
+            });
+        });
+});
+
+
+
+
 
 module.exports = route;

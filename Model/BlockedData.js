@@ -4,11 +4,11 @@ var Schema = mongoose.Schema;
 
 var DataSchema = new Schema({
     value: {
-        type: "String",
+        type: String,
         default: "",
     },
     type: {
-        type: "String",
+        type: String,
         default: "",
     },
     Created: {
