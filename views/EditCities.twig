@@ -21,18 +21,32 @@
                 </tr>
             </thead>
             <tbody>
-                 {% for obj in data.cities %}
+
+            {% for showData in data %}
+            {% for location in showData.showLocations %}
+                {% if location.city %}
+                    <tr>
+                        <td>{{ location.city }}</td>
+                        <td>
+                            {% if location.city in deletedDataCities %}
+                                <i class="fas fa-check-circle text-success" role="button"></i> <!-- Active icon -->
+                            {% else %}
+                                <i class="fas fa-times-circle text-danger" role="button"></i> <!-- Inactive icon -->
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+                 {# {% for obj in data.cities %}
                 <tr>
                     <td>{{ obj }}</td>
                     <td>
-                    {# {% if obj.isActive %} #}
                         <i class="fas fa-check-circle text-success" role="button"></i> <!-- Active icon -->
-                    {# {% else %} #}
                         <i class="fas fa-times-circle text-danger" role="button"></i> <!-- Inactive icon -->
-                    {# {% endif %} #}
                 </td>
                 </tr>
-                {% endfor %}
+                {% endfor %} #}
             </tbody>
         </table>
     </div>

@@ -32,30 +32,61 @@ route.get('/', function (req, res) {
     }
 });
 
+
 route.get('/edit-cities', (req, res) => {
     try {
-        let dataArr = [];
+        Shows.find({}, (err, shows) => {
+            if (err) {
+                console.error('Error fetching data from "shows" table:', err);
+                res.status(500).send('Error fetching data from "shows" table');
+                return;
+            }
 
-        if (fs.existsSync('public/data.txt')) {
-            dataArr = fs.readFileSync('public/data.txt', 'utf8');
-            jsonArr = JSON.parse(dataArr);
+            // Get an array of unique cities from the "DeletedData" collection
+            DeletedData.find({}, { value: 1, _id: 0 }, (err, deletedDataCities) => {
+                if (err) {
+                    console.error('Error fetching data from "deleted_data" table:', err);
+                    res.status(500).send('Error fetching data from "deleted_data" table');
+                    return;
+                }
 
-            res.render("EditCities", {
-                data: jsonArr
+                const uniqueDeletedDataCities = [...new Set(deletedDataCities.map(item => item.value))];
+
+                res.render("EditCities", {
+                    data: shows,
+                    deletedDataCities: uniqueDeletedDataCities,
+                });
             });
-        } else {
-            dataArr = [];
-            res.render("EditCities", {
-                data: dataArr
-            });
-        }
-    } catch (err) {
-        dataArr = [];
-        res.render("EditCities", {
-            data: dataArr
         });
+    } catch (err) {
+        console.error('Error rendering "EditCities" template:', err);
+        res.status(500).send('Error rendering "EditCities" template');
     }
-  });
+});
+
+
+
+// route.get('/edit-cities', (req, res) => {
+//     try {
+//         Shows.find({}, (err, shows) => {
+//             if (err) {
+//                 console.error('Error fetching data from "shows" table:', err);
+//                 res.status(500).send('Error fetching data from "shows" table');
+//                 return;
+//             }
+//             console.log('Data from "shows" table:', shows);
+//             res.render("EditCities", {
+//                 data: shows
+//             });
+//         });
+//     } catch (err) {
+//         console.error('Error rendering "EditCities" template:', err);
+//         res.status(500).send('Error rendering "EditCities" template');
+//     }
+// });
+
+
+
 
 
 route.get('/edit-halls', (req, res) => {
