@@ -88,31 +88,63 @@ route.get('/edit-cities', (req, res) => {
 
 
 
-
 route.get('/edit-halls', (req, res) => {
     try {
-        let dataArr = [];
+        Shows.find({}, (err, shows) => {
+            if (err) {
+                console.error('Error fetching data from "shows" table:', err);
+                res.status(500).send('Error fetching data from "shows" table');
+                return;
+            }
 
-        if (fs.existsSync('public/data.txt')) {
-            dataArr = fs.readFileSync('public/data.txt', 'utf8');
-            jsonArr = JSON.parse(dataArr);
+            // Get an array of unique cities from the "DeletedData" collection
+            DeletedData.find({}, { value: 1, _id: 0 }, (err, deletedDataHalls) => {
+                if (err) {
+                    console.error('Error fetching data from "deleted_data" table:', err);
+                    res.status(500).send('Error fetching data from "deleted_data" table');
+                    return;
+                }
 
-            res.render("EditHalls", {
-                data: jsonArr
+                const uniqueDeletedDataHalls = [...new Set(deletedDataHalls.map(item => item.value))];
+
+                res.render("EditHalls", {
+                    data: shows,
+                    deletedDataHalls: uniqueDeletedDataHalls,
+                });
             });
-        } else {
-            dataArr = [];
-            res.render("EditHalls", {
-                data: dataArr
-            });
-        }
-    } catch (err) {
-        dataArr = [];
-        res.render("EditHalls", {
-            data: dataArr
         });
+    } catch (err) {
+        console.error('Error rendering "EditCities" template:', err);
+        res.status(500).send('Error rendering "EditCities" template');
     }
 });
+
+
+
+// route.get('/edit-halls', (req, res) => {
+//     try {
+//         let dataArr = [];
+
+//         if (fs.existsSync('public/data.txt')) {
+//             dataArr = fs.readFileSync('public/data.txt', 'utf8');
+//             jsonArr = JSON.parse(dataArr);
+
+//             res.render("EditHalls", {
+//                 data: jsonArr
+//             });
+//         } else {
+//             dataArr = [];
+//             res.render("EditHalls", {
+//                 data: dataArr
+//             });
+//         }
+//     } catch (err) {
+//         dataArr = [];
+//         res.render("EditHalls", {
+//             data: dataArr
+//         });
+//     }
+// });
 
 route.get('/shows', async function (req, res) {
     const AllShows = await Shows.find({addedby: "user"}).sort({_id: -1});
