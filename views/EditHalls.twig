@@ -27,7 +27,7 @@
                 <td>{{ obj }}</td>
                 <td>
                     {# {% if obj.isActive %} #}
-                        <i class="fas fa-check-circle text-success" role="button"></i>
+                        <i class="fas fa-check-circle text-success" role="button"></i> <!-- Active icon -->
                     {# {% else %} #}
                         <i class="fas fa-times-circle text-danger" role="button"></i> <!-- Inactive icon -->
                     {# {% endif %} #}
@@ -48,7 +48,7 @@ $('#dataTable').DataTable();
 });
 		</script>
 
-{# Delete the Entry     delete-concert-hall#}
+{# Delete the Entry #}
 <script>
 
    $(document).on('click', '.fa-times-circle', function () {
@@ -61,11 +61,10 @@ $('#dataTable').DataTable();
         concertHall: concertHall
       },
       success: function (response) {
-        showToast('success', 'Record Romoved successfully ');
+        showToast('success', 'Hall Romoved successfully ');
       },
       error: function (err) {
-        console.error('Error Removing the record:', err.responseText);
-        showToast('error', 'Error Romoving the record');
+        showToast('error', 'Error Romoving the Hall');
       }
     });
   });
@@ -95,16 +94,13 @@ $('#dataTable').DataTable();
       },
       success: function (response) {
         if (response.existsInBothCollections) {
-          console.log('Record successfully Recovered');
-          showToast('success', 'Record successfully Recovered');
+          showToast('success', 'Hall successfully Recovered');
         } else {
-          console.log('Value is not deleted');
-          showToast('error', 'Record is not Found');
+          showToast('error', 'Hall is not Found');
         }
       },
       error: function (err) {
-        console.error('Error recovering the record:', err.responseText);
-        showToast('error', 'Error recovering the record');
+        showToast('error', 'Error recovering the Hall');
       }
     });
   });

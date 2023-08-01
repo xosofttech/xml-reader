@@ -247,6 +247,44 @@ route.post('/delete-concert-city', (req, res) => {
 });
 
 
+// Recover City
+
+route.post('/recover-concert-city', (req, res) => {
+    const concertHall = req.body.concertHall;
+  
+    // Perform MongoDB queries to check if the value exists in both "deleted_data" and "shows"
+    DeletedData.findOne({ value: concertHall }, (err, deletedEntry) => {
+      if (err) {
+        console.error('Error finding entry in "deleted_data":', err);
+        res.status(500).send('Error finding entry in "deleted_data"');
+        return;
+      }
+  
+      Shows.findOne({ concertHall: concertHall }, (err, show) => {
+        if (err) {
+          console.error('Error finding entry in "shows":', err);
+          res.status(500).send('Error finding entry in "shows"');
+          return;
+        }
+  
+        if (deletedEntry && show) {
+            DeletedData.findOneAndDelete({ value: concertHall }, (err, deletedDoc) => {
+              if (err) {
+                console.error('Error removing entry from "deleted_data":', err);
+                res.status(500).send('Error removing entry from "deleted_data"');
+              } else {
+                console.log('Value deleted from "deleted_data"');
+                res.json({ existsInBothCollections: true });
+              }
+            });
+          } else {
+            console.log('Value is not deleted');
+            res.json({ existsInBothCollections: false });
+          }
+      });
+    });
+  });
+
 
 
 
