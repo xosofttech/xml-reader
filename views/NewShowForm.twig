@@ -317,24 +317,14 @@
         //$(".Show-Container").append($(this).parents('.repeater-row').clone());
         $(".select-dropdown").select2("destroy");
         $(this).parent().parent().parent().after($(this).parents('.repeater-row').clone());
-        $(".select-dropdown").select2({
-            placeholder: "Select Option",
-            allowClear: false, // Option to clear the selection
-            tags: false, // Allow custom tags (e.g., "Add New")
-            tokenSeparators: [',', ' '], // Allow multiple tags to be entered separated by commas or spaces
-        });
+        Select2Obj();
         $(".select-dropdown").trigger('change');
     });
 
     $(document).on("click", ".repeater-add-btn", function () {
         $(".select-dropdown").select2("destroy");
         $(".Show-Container").append($(".repeater-row-new").html());
-        $(".select-dropdown").select2({
-            placeholder: "Select Option",
-            allowClear: false, // Option to clear the selection
-            tags: false, // Allow custom tags (e.g., "Add New")
-            tokenSeparators: [',', ' '], // Allow multiple tags to be entered separated by commas or spaces
-        });
+        Select2Obj();
         $(".select-dropdown").trigger('change');
     });
 
@@ -344,13 +334,7 @@
 <script>
     $(document).ready(function () {
         // Initialize the Select2 plugin on the <select> element with the class "select-dropdown"
-        $(".select-dropdown").select2({
-            placeholder: "Select Option",
-            allowClear: false, // Option to clear the selection
-            tags: false, // Allow custom tags (e.g., "Add New")
-            tokenSeparators: [',', ' '], // Allow multiple tags to be entered separated by commas or spaces
-        });
-
+        Select2Obj()
 
         $(document).on("change", ".select-dropdown", function () {
             Val = $(this).val();
@@ -387,6 +371,16 @@
              select.val("").trigger("change");
          });*/
     });
+
+
+    function Select2Obj() {
+        $(".select-dropdown").select2({
+            placeholder: "Select Option",
+            allowClear: false, // Option to clear the selection
+            tags: false, // Allow custom tags (e.g., "Add New")
+            tokenSeparators: [',', ' '], // Allow multiple tags to be entered separated by commas or spaces
+        });
+    }
 </script>
 </body>
 </html>
