@@ -65,29 +65,6 @@ route.get('/edit-cities', (req, res) => {
 });
 
 
-
-// route.get('/edit-cities', (req, res) => {
-//     try {
-//         Shows.find({}, (err, shows) => {
-//             if (err) {
-//                 console.error('Error fetching data from "shows" table:', err);
-//                 res.status(500).send('Error fetching data from "shows" table');
-//                 return;
-//             }
-//             console.log('Data from "shows" table:', shows);
-//             res.render("EditCities", {
-//                 data: shows
-//             });
-//         });
-//     } catch (err) {
-//         console.error('Error rendering "EditCities" template:', err);
-//         res.status(500).send('Error rendering "EditCities" template');
-//     }
-// });
-
-
-
-
 route.get('/edit-halls', (req, res) => {
     try {
         Shows.find({}, (err, shows) => {
@@ -96,17 +73,13 @@ route.get('/edit-halls', (req, res) => {
                 res.status(500).send('Error fetching data from "shows" table');
                 return;
             }
-
-            // Get an array of unique cities from the "DeletedData" collection
             DeletedData.find({}, { value: 1, _id: 0 }, (err, deletedDataHalls) => {
                 if (err) {
                     console.error('Error fetching data from "deleted_data" table:', err);
                     res.status(500).send('Error fetching data from "deleted_data" table');
                     return;
                 }
-
                 const uniqueDeletedDataHalls = [...new Set(deletedDataHalls.map(item => item.value))];
-
                 res.render("EditHalls", {
                     data: shows,
                     deletedDataHalls: uniqueDeletedDataHalls,
@@ -119,32 +92,6 @@ route.get('/edit-halls', (req, res) => {
     }
 });
 
-
-
-// route.get('/edit-halls', (req, res) => {
-//     try {
-//         let dataArr = [];
-
-//         if (fs.existsSync('public/data.txt')) {
-//             dataArr = fs.readFileSync('public/data.txt', 'utf8');
-//             jsonArr = JSON.parse(dataArr);
-
-//             res.render("EditHalls", {
-//                 data: jsonArr
-//             });
-//         } else {
-//             dataArr = [];
-//             res.render("EditHalls", {
-//                 data: dataArr
-//             });
-//         }
-//     } catch (err) {
-//         dataArr = [];
-//         res.render("EditHalls", {
-//             data: dataArr
-//         });
-//     }
-// });
 
 route.get('/shows', async function (req, res) {
     const AllShows = await Shows.find({addedby: "user"}).sort({_id: -1});
@@ -194,8 +141,6 @@ route.post('/save-records', (req, res) => {
         addedby: "user",
         showLocations: showLocations
     };
-
-    //console.log(newShow);
     Shows.create(newShow)
         .then(() => {
             res.send({
@@ -245,8 +190,6 @@ route.post('/delete-concert-hall', (req, res) => {
 
 route.post('/recover-concert-hall', (req, res) => {
     const concertHall = req.body.concertHall;
-  
-    // Perform MongoDB queries to check if the value exists in both "deleted_data" and "shows"
     DeletedData.findOne({ value: concertHall }, (err, deletedEntry) => {
       if (err) {
         console.error('Error finding entry in "deleted_data":', err);
@@ -283,15 +226,11 @@ route.post('/recover-concert-hall', (req, res) => {
 
 route.post('/delete-concert-city', (req, res) => {
     const concertHall = req.body.concertHall;
-
-    console.log('concertHall:', concertHall);
     const DeletedData = require('../Model/BlockedData'); 
-
     const deletedRecord = new DeletedData({
         value: concertHall,
         type: 'City'
     });
-
     deletedRecord.save()
         .then(() => {
             console.log('Record successfully saved');
@@ -314,34 +253,28 @@ route.post('/delete-concert-city', (req, res) => {
 
 route.post('/recover-concert-city', (req, res) => {
     const concertHall = req.body.concertHall;
-  
-    // Perform MongoDB queries to check if the value exists in both "deleted_data" and "shows"
     DeletedData.findOne({ value: concertHall }, (err, deletedEntry) => {
       if (err) {
         console.error('Error finding entry in "deleted_data":', err);
         res.status(500).send('Error finding entry in "deleted_data"');
         return;
       }
-  
       Shows.findOne({ concertHall: concertHall }, (err, show) => {
         if (err) {
           console.error('Error finding entry in "shows":', err);
           res.status(500).send('Error finding entry in "shows"');
           return;
         }
-  
         if (deletedEntry && show) {
             DeletedData.findOneAndDelete({ value: concertHall }, (err, deletedDoc) => {
               if (err) {
                 console.error('Error removing entry from "deleted_data":', err);
                 res.status(500).send('Error removing entry from "deleted_data"');
               } else {
-                console.log('Value deleted from "deleted_data"');
                 res.json({ existsInBothCollections: true });
               }
             });
           } else {
-            console.log('Value is not deleted');
             res.json({ existsInBothCollections: false });
           }
       });

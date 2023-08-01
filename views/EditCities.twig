@@ -15,7 +15,6 @@
         <table id="dataTable" class="table table-striped table-bordered">
             <thead>
                 <tr>
-                    {# <th>ID</th> #}
                     <th>City</th>
                     <th>Action</th>
                 </tr>
@@ -38,15 +37,6 @@
                 {% endif %}
             {% endfor %}
         {% endfor %}
-                 {# {% for obj in data.cities %}
-                <tr>
-                    <td>{{ obj }}</td>
-                    <td>
-                        <i class="fas fa-check-circle text-success" role="button"></i> <!-- Active icon -->
-                        <i class="fas fa-times-circle text-danger" role="button"></i> <!-- Inactive icon -->
-                </td>
-                </tr>
-                {% endfor %} #}
             </tbody>
         </table>
     </div>
@@ -61,12 +51,10 @@
     </script>
 
     <script>
-
         $(document).on('click', '.fa-times-circle', function () {
             const row = $(this).closest('tr');
             const concertHall = row.find('td:first').text();
-
-            // AJAX request to send the data to the server
+            const deleteIcon = $(this);
             $.ajax({
                 method: 'POST',
                 url: '/app/delete-concert-city',
@@ -75,6 +63,7 @@
                 },
                 success: function (response) {
                     showToast('success', 'City Romoved successfully ');
+                    deleteIcon.replaceWith('<i class="fas fa-check-circle text-success" role="button"></i>');
                 },
                 error: function (err) {
                     console.error('Error Removing the City:', err.responseText);
@@ -100,6 +89,7 @@
   $(document).on('click', '.fa-check-circle', function () {
     const row = $(this).closest('tr');
     const concertHall = row.find('td:first').text();
+    const deleteIcon = $(this);
     $.ajax({
       method: 'POST',
       url: '/app/recover-concert-city',
@@ -109,6 +99,7 @@
       success: function (response) {
         if (response.existsInBothCollections) {
           showToast('success', 'City successfully Recovered');
+          deleteIcon.replaceWith('<i class="fas fa-times-circle text-danger" role="button"></i>');
         } else {
           console.log('City is not deleted');
           showToast('error', 'City is not Found');
