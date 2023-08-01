@@ -147,6 +147,7 @@ route.post('/save-records', (req, res) => {
 });
 
 
+// delete Hall
 
 route.post('/delete-concert-hall', (req, res) => {
     const concertHall = req.body.concertHall;
@@ -156,7 +157,7 @@ route.post('/delete-concert-hall', (req, res) => {
 
     const deletedRecord = new DeletedData({
         value: concertHall,
-        type: 'hall'
+        type: 'Hall'
     });
 
     deletedRecord.save()
@@ -175,6 +176,76 @@ route.post('/delete-concert-hall', (req, res) => {
             });
         });
 });
+
+
+// Recover Hall
+
+route.post('/recover-concert-hall', (req, res) => {
+    const concertHall = req.body.concertHall;
+  
+    // Perform MongoDB queries to check if the value exists in both "deleted_data" and "shows"
+    DeletedData.findOne({ value: concertHall }, (err, deletedEntry) => {
+      if (err) {
+        console.error('Error finding entry in "deleted_data":', err);
+        res.status(500).send('Error finding entry in "deleted_data"');
+        return;
+      }
+  
+      Shows.findOne({ concertHall: concertHall }, (err, show) => {
+        if (err) {
+          console.error('Error finding entry in "shows":', err);
+          res.status(500).send('Error finding entry in "shows"');
+          return;
+        }
+  
+        if (deletedEntry && show) {
+            DeletedData.findOneAndDelete({ value: concertHall }, (err, deletedDoc) => {
+              if (err) {
+                console.error('Error removing entry from "deleted_data":', err);
+                res.status(500).send('Error removing entry from "deleted_data"');
+              } else {
+                console.log('Value deleted from "deleted_data"');
+                res.json({ existsInBothCollections: true });
+              }
+            });
+          } else {
+            console.log('Value is not deleted');
+            res.json({ existsInBothCollections: false });
+          }
+      });
+    });
+  });
+
+// delete City
+
+route.post('/delete-concert-city', (req, res) => {
+    const concertHall = req.body.concertHall;
+
+    console.log('concertHall:', concertHall);
+    const DeletedData = require('../Model/BlockedData'); 
+
+    const deletedRecord = new DeletedData({
+        value: concertHall,
+        type: 'City'
+    });
+
+    deletedRecord.save()
+        .then(() => {
+            console.log('Record successfully saved');
+            res.send({
+                success: true,
+                message: 'Record successfully deleted'
+            });
+        })
+        .catch((error) => {
+            console.error('Error saving the record:', error);
+            res.status(500).send({
+                success: false,
+                message: 'Error saving the record'
+            });
+        });
+});
+
 
 
 

@@ -24,9 +24,9 @@
                     <td>{{ obj }}</td>
                     <td>
                     {# {% if obj.isActive %} #}
-                        <i class="fas fa-check-circle text-success"></i> <!-- Active icon -->
+                        <i class="fas fa-check-circle text-success" role="button"></i> <!-- Active icon -->
                     {# {% else %} #}
-                        <i class="fas fa-times-circle text-danger"></i> <!-- Inactive icon -->
+                        <i class="fas fa-times-circle text-danger" role="button"></i> <!-- Inactive icon -->
                     {# {% endif %} #}
                 </td>
                 </tr>
@@ -43,5 +43,31 @@
             $('#dataTable').DataTable();
         });
     </script>
+
+    <script>
+
+        $(document).on('click', '.fa-times-circle', function () {
+            const row = $(this).closest('tr');
+            const concertHall = row.find('td:first').text();
+
+            // AJAX request to send the data to the server
+            $.ajax({
+                method: 'POST',
+                url: '/app/delete-concert-city',
+                data: {
+                    concertHall: concertHall
+                },
+                success: function (response) {
+                    // Handle the success response if needed
+                    console.log('Record successfully deleted');
+                },
+                error: function (err) {
+                    // Handle the error response if needed
+                    console.error('Error deleting the record:', err.responseText);
+                }
+            });
+        }); 
+
+</script>
 </body>
 </html>
