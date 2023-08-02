@@ -100,6 +100,13 @@ route.get('/shows', async function (req, res) {
     });
 });
 
+route.get('/all-shows', async function (req, res) {
+    const AllShows = await Shows.find({addedby: { $ne: "user" }}).sort({_id: -1});
+    res.render("ListAllconcerts", {
+        response: AllShows
+    });
+});
+
 
 route.post('/save-records', (req, res) => {
     const formData = req.body;
