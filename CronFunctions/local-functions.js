@@ -10,9 +10,9 @@ if (!fs.existsSync(dir)) {
 exports.FetchDetails = async function () {
     var CitiesArr = [], HallArr = [],
         SectionsArr = [`הרצאות`, `תערוכות`, `אופרה`, `מחול ובלט`, `מחזמר`, `הצגות ילדים`, `סטנדאפ`, `הצגות`, `הופעות`],
-        DelCityArr = [];
+        DelCityArr = [], DelHallArr = [];
 
-    BlockedCities = await BlockedData.find({type: "city"}, {_id: 0, value: 1});
+    BlockedCities = await BlockedData.find({type: "City"}, {_id: 0, value: 1});
     if (BlockedCities !== undefined && BlockedCities.length !== 0)
         BlockedCities.map(function (obj) {
             DelCityArr.push(obj.value);
@@ -43,6 +43,12 @@ exports.FetchDetails = async function () {
     });
 
 
+    BlockedHalls = await BlockedData.find({type: "Hall"}, {_id: 0, value: 1});
+    if (BlockedHalls !== undefined && BlockedHalls.length !== 0)
+        BlockedHalls.map(function (obj) {
+            DelHallArr.push(obj.value);
+        })
+
     HallList = await Shows.aggregate([
         {
             $unwind: "$showLocations"
@@ -51,6 +57,11 @@ exports.FetchDetails = async function () {
             $group: {
                 _id: "$showLocations.hall",
                 count: {$sum: 1}
+            }
+        },
+        {
+            $match: {
+                _id: {$nin: DelHallArr}
             }
         },
         {
