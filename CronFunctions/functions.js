@@ -441,7 +441,7 @@ exports.XMLToMongo = function () {
                         show_discount = (val.discount !== undefined) ? val.discount : 0;
                         show_superprice = (val.superprice !== undefined) ? val.superprice : 0;
 
-                        console.log("Discount: ", show_discount, "Superprice: ", show_superprice);
+                        //console.log("Discount: ", show_discount, "Superprice: ", show_superprice);
 
                         if (val.priceMin === undefined) {
                             show_priceMin = null;
