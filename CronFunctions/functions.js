@@ -438,6 +438,11 @@ exports.XMLToMongo = function () {
                         show_link = `https://performances.kartisim.co.il${val.link}`;
                         show_pubDate = val.pubDate;
                         show_section = val.section;
+                        show_discount = (val.discount !== undefined) ? val.discount : 0;
+                        show_superprice = (val.superprice !== undefined) ? val.superprice : 0;
+
+                        console.log("Discount: ", show_discount, "Superprice: ", show_superprice);
+
                         if (val.priceMin === undefined) {
                             show_priceMin = null;
                         } else {
@@ -500,6 +505,8 @@ exports.XMLToMongo = function () {
                             link: show_link,
                             pubDate: show_pubDate,
                             section: show_section,
+                            discount: show_discount,
+                            superprice: show_superprice,
                             priceMin: show_priceMin,
                             priceMax: show_priceMax,
                             dateFrom: show_dateFrom,
@@ -521,6 +528,8 @@ exports.XMLToMongo = function () {
                                 "show_id": show_id
                             }, {
                                 link: show_link,
+                                discount: show_discount,
+                                superprice: show_superprice,
                                 $set: {
                                     "showLocations": show_location
                                 }
