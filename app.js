@@ -21,11 +21,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-var CronJobRoute = require('./routes/CronJobRoutes');
-var LocalCronJobRoute = require('./routes/LocalCronJobRoutes');
+// var CronJobRoute = require('./routes/CronJobRoutes');
+// var LocalCronJobRoute = require('./routes/LocalCronJobRoutes');
 
-// app.use('/', require('./routes/ApiRoutes'));
-// app.use('/app', require('./routes/AppRoutes'));
+app.use('/', require('./routes/ApiRoutes'));
+app.use('/app', require('./routes/AppRoutes'));
 
 
 app.listen(Config.PORT, () => console.log(`Cron Jobs server currently running on port ${Config.PORT}`));
