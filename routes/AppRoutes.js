@@ -101,7 +101,7 @@ route.get('/shows', async function (req, res) {
 });
 
 route.get('/all-shows', async function (req, res) {
-    const AllShows = await Shows.find({addedby: { $ne: "user" }}).sort({_id: -1});
+    const AllShows = await Shows.find({addedby: { $ne: "user" }}).sort({_id: -1}).limit(10);
     res.render("ListAllconcerts", {
         response: AllShows
     });
