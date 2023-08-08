@@ -196,16 +196,16 @@ route.post('/quick-edit-show', async (req, res) => {
             // Add other fields as needed...
         };
 
-            await Shows.updateOne(
-            { _id: formData.showId },
-            { $set: updateObject },
+        await Shows.updateOne(
+            {_id: formData.showId},
+            {$set: updateObject},
             // Return the updated document
         );
 
-        res.status(200).json({ message: 'Show details updated successfully', });
+        res.status(200).json({message: 'Show details updated successfully',});
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'An error occurred while updating show details' });
+        res.status(500).json({error: 'An error occurred while updating show details'});
     }
 });
 
@@ -223,12 +223,6 @@ route.post('/detail-edit-show', async (req, res) => {
     //console.log(formData);
 
     try {
-        /*var  AddressKey = 'showLocations.' + index + '.address';
-         HallKey = 'showLocations.' + index + '.hall';
-         CityKey = 'showLocations.' + index + '.city';*/
-        //var updatedFields["showLocations." + index + ".address"] = formData.address;
-
-        // var updatedFields['showLocations.' + index + '.address']=formData.address;
         var updatedFields = {
             [`showLocations.${index}.address`]: formData.address,
             [`showLocations.${index}.hall`]: formData.hall,
@@ -237,8 +231,8 @@ route.post('/detail-edit-show', async (req, res) => {
             [`showLocations.${index}.day`]: Module.GetDay(formData.date),
             [`showLocations.${index}.time`]: formData.time
         };
-        console.log(showId);
-        console.log(updatedFields);
+        // console.log(showId);
+        // console.log(updatedFields);
         await Shows.updateOne(
             {_id: showId},
             {$set: updatedFields}
