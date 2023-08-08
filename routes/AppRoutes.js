@@ -203,25 +203,27 @@ route.post('/detail-edit-show', async (req, res) => {
     const showId = formData.showId;
     const key = formData.key;
     const index = formData.index;
-    console.log(formData);
+    //console.log(formData);
 
     try {
-        AddressKey = 'showLocations.' + index + '.address';
-        HallKey = 'showLocations.' + index + '.hall';
-        CityKey = 'showLocations.' + index + '.city';
+        /*var  AddressKey = 'showLocations.' + index + '.address';
+         HallKey = 'showLocations.' + index + '.hall';
+         CityKey = 'showLocations.' + index + '.city';*/
         //var updatedFields["showLocations." + index + ".address"] = formData.address;
 
+        // var updatedFields['showLocations.' + index + '.address']=formData.address;
         var updatedFields = {
-            AddressKey: formData.address,
-            HallKey: formData.hall,
-            CityKey: formData.city,
+            [`showLocations.${index}.address`]: formData.address,
+            [`showLocations.${index}.hall`]: formData.hall,
+            [`showLocations.${index}.city`]: formData.city,
             // `showLocations.${index}.date`: formData.date,
             // `showLocations.${index}.time`: formData.time
             // Add other fields as needed...
         };
+        console.log(showId);
         console.log(updatedFields);
-        await Shows.findOneAndUpdate(
-            {showId: showId},
+        await Shows.updateOne(
+            {show_id: showId},
             {$set: updatedFields}
         );
 
