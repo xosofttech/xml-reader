@@ -72,13 +72,6 @@ route.post('/fetch-shows', async function (req, res) {
     if (filterParams.address)
         main_query["showLocations.address"] = new RegExp(filterParams.address, "i");
 
-    /*if (filterParams.start_date)
-        main_query["showLocations.date"] = {$gte: filterParams.start_date}
-    else
-        main_query["showLocations.date"] = { $gte: TodayDate }
-
-    if (filterParams.end_date)
-        main_query["showLocations.date"] = {$lte: filterParams.end_date}*/
 
     var dateFilter = {};
     if (filterParams.start_date)
@@ -92,8 +85,6 @@ route.post('/fetch-shows', async function (req, res) {
     if (!Empty(dateFilter))
         main_query["showLocations.date"] = dateFilter;
 
-    /*if (!filterParams.date)
-        Query.date = {$gte: gteDate};*/
 
     if (filterParams.name) {
         /*** If Search value mach with any Area then city Arr Fetchd ****/
@@ -131,23 +122,15 @@ route.post('/fetch-shows', async function (req, res) {
     if (filterParams.show_id)
         main_query.show_id = new RegExp(filterParams.show_id, "i");
 
+    if (filterParams.isdiscount && filterParams.isdiscount === 1)
+        main_query.discount = 1;
 
-    //fruits.includes("Banana", 3);
+    if (filterParams.issuperprice && filterParams.issuperprice === 1)
+        main_query.superprice = 1;
 
-    /*if (filterParams.section && Array.isArray(filterParams.section)) {
-        var SectionSearchArr = [];
-        filterParams.section.map((Section_obj) => {
-            SectionSearchArr.push(new RegExp(Section_obj, "i"));
-        })
-        if (SectionSearchArr.length !== 0)
-            main_query.section = {$in: SectionSearchArr};
-    }*/
 
     if (filterParams.section && Array.isArray(filterParams.section)) {
         var SectionSearchArr = [];
-        /*filterParams.section.map((Section_obj) => {
-            SectionSearchArr.push(new RegExp(Section_obj, "i"));
-        })*/
 
         if (filterParams.section.includes("הרצאות")) {
             SectionSearchArr.push(new RegExp(`הרצאות`, "i"));
@@ -204,7 +187,6 @@ route.post('/fetch-shows', async function (req, res) {
             }
         ];
     }
-
 
     ShowsResult = await Shows.aggregate([
         {

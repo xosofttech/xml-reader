@@ -32,6 +32,14 @@ var ShowSchema = new Schema({
         type: Number,
         default: "",
     },
+    discount: {
+        type: Number,
+        default: 0,
+    },
+    superprice: {
+        type: Number,
+        default: 0,
+    },
     priceMin: {
         type: Number,
         default: "",

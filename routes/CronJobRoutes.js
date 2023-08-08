@@ -3,7 +3,7 @@ var CronJob = require('cron').CronJob;
 var FN = require('../CronFunctions/functions');
 var {CONFIG} = require('../config');
 
-if (CONFIG.CRON === "offf") {
+if (CONFIG.CRON === "offff") {
     var PullXMLToMongoObject = new CronJob('01 */3 * * *', function () {
         console.log("Getting XML TO Mongo Cron Running Start");
         FN.XMLToMongo();
@@ -22,11 +22,11 @@ if (CONFIG.CRON === "offf") {
     }, null, true, TIMEZONE);
     ScrapComy.start();
 
-    var ScrapEvenTim = new CronJob('50 */3 * * *', function () {
+    /*var ScrapEvenTim = new CronJob('50 *!/3 * * *', function () {
         console.log("Scrap EvenTim Cron Running Start");
         FN.ScrapEvenTim();
     }, null, true, TIMEZONE);
-    ScrapEvenTim.start();
+    ScrapEvenTim.start();*/
 }
 
 /*Test Funtions to check Crons*/
