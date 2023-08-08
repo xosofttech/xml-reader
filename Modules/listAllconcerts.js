@@ -34,3 +34,6 @@ $(document).ready(function() {
       $(this).closest(".modal").modal("hide");
   });
 });
+
+
+
