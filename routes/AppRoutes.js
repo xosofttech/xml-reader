@@ -187,9 +187,26 @@ route.post('/save-records', (req, res) => {
 route.post('/quick-edit-show', async (req, res) => {
     const formData = req.body;
 
-    console.log(formData);
+    try {
+        // Define the update object with the fields you want to update
+        const updateObject = {
+            domain: formData.domain,
+            section: formData.section,
+            name: formData.name
+            // Add other fields as needed...
+        };
 
+            await Shows.updateOne(
+            { show_id: formData.showId },
+            { $set: updateObject },
+            // Return the updated document
+        );
 
+        res.status(200).json({ message: 'Show details updated successfully', });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while updating show details' });
+    }
 });
 
 
@@ -216,9 +233,9 @@ route.post('/detail-edit-show', async (req, res) => {
             [`showLocations.${index}.address`]: formData.address,
             [`showLocations.${index}.hall`]: formData.hall,
             [`showLocations.${index}.city`]: formData.city,
-            // `showLocations.${index}.date`: formData.date,
-            // `showLocations.${index}.time`: formData.time
-            // Add other fields as needed...
+            [`showLocations.${index}.date`]: formData.date,
+            [`showLocations.${index}.day`]: Module.GetDay(formData.date[index]),
+            [`showLocations.${index}.time`]: formData.time
         };
         console.log(showId);
         console.log(updatedFields);
