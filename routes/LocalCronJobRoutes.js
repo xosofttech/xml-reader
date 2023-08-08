@@ -4,7 +4,7 @@ var FN = require('../CronFunctions/local-functions');
 var {CONFIG} = require('../config');
 
 if (CONFIG.CRON === "on") {
-    var PullFetchCities = new CronJob('01 */3 * * *', function () {
+    var PullFetchCities = new CronJob('01 */1 * * *', function () {
         console.log("Getting City Running Start");
         FN.FetchDetails();
     }, null, true, TIMEZONE);
