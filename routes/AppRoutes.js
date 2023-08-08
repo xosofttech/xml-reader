@@ -125,7 +125,7 @@ route.get('/shows', async function (req, res) {
 });
 
 route.get('/all-shows', async function (req, res) {
-    const AllShows = await Shows.find({addedby: { $ne: "user" }}).sort({_id: -1}).limit(10);
+    const AllShows = await Shows.find({addedby: {$ne: "user"}}).sort({_id: -1}).limit(10);
     res.render("ListAllconcerts", {
         response: AllShows
     });
@@ -184,15 +184,20 @@ route.post('/save-records', (req, res) => {
 });
 
 
-
-
 route.post('/quick-edit-show', async (req, res) => {
     const formData = req.body;
-    
+
     console.log(formData);
 
 
 });
+
+
+/*Shows.updateOne({_id: Object('63e62017b41d1ce764b1e402')}, {"$set": {'showLocations.0.day': "Zeeshan"}}, function (err, results) {
+    console.log(results);
+});*/
+
+
 route.post('/detail-edit-show', async (req, res) => {
     const formData = req.body;
     const showId = formData.showId;
@@ -200,26 +205,31 @@ route.post('/detail-edit-show', async (req, res) => {
     const index = formData.index;
     console.log(formData);
 
-    // try {
-    //     const updatedFields = {
-    //         [`showLocations.${index}.address`]: formData.address,
-    //         [`showLocations.${index}.hall`]: formData.hall,
-    //         [`showLocations.${index}.city`]: formData.city,
-    //         [`showLocations.${index}.date`]: formData.date,
-    //         [`showLocations.${index}.time`]: formData.time
-    //         // Add other fields as needed...
-    //     };
+    try {
+        AddressKey = 'showLocations.' + index + '.address';
+        HallKey = 'showLocations.' + index + '.hall';
+        CityKey = 'showLocations.' + index + '.city';
+        //var updatedFields["showLocations." + index + ".address"] = formData.address;
 
-    //     await Shows.showLocations.findOneAndUpdate(
-    //         { index: index },
-    //         { $set: updatedFields }
-    //     );
+        var updatedFields = {
+            AddressKey: formData.address,
+            HallKey: formData.hall,
+            CityKey: formData.city,
+            // `showLocations.${index}.date`: formData.date,
+            // `showLocations.${index}.time`: formData.time
+            // Add other fields as needed...
+        };
+        console.log(updatedFields);
+        await Shows.findOneAndUpdate(
+            {showId: showId},
+            {$set: updatedFields}
+        );
 
-    //     res.status(200).json({ message: 'Show location details updated successfully' });
-    // } catch (error) {
-    //     console.error(error);
-    //     res.status(500).json({ error: 'An error occurred while updating show location details' });
-    // }
+        res.status(200).json({message: 'Show location details updated successfully'});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({error: 'An error occurred while updating show location details'});
+    }
 });
 
 // delete Hall
