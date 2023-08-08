@@ -116,8 +116,6 @@ route.post('/save-records', (req, res) => {
             date: formData.date[index],
             day: Module.GetDay(formData.date[index]),
             time: formData.time[index],
-            // priceMin: formData.priceMin[index],
-            // priceMax: formData.priceMax[index],
             hall: formData.hall[index],
             city: formData.city[index],
             location: formData.location[index],
@@ -161,6 +159,44 @@ route.post('/save-records', (req, res) => {
         });
 });
 
+
+
+
+route.post('/quick-edit-show', async (req, res) => {
+    const formData = req.body;
+    
+    console.log(formData);
+
+
+});
+route.post('/detail-edit-show', async (req, res) => {
+    const formData = req.body;
+    const showId = formData.showId;
+    const key = formData.key;
+    const index = formData.index;
+    console.log(formData);
+
+    // try {
+    //     const updatedFields = {
+    //         [`showLocations.${index}.address`]: formData.address,
+    //         [`showLocations.${index}.hall`]: formData.hall,
+    //         [`showLocations.${index}.city`]: formData.city,
+    //         [`showLocations.${index}.date`]: formData.date,
+    //         [`showLocations.${index}.time`]: formData.time
+    //         // Add other fields as needed...
+    //     };
+
+    //     await Shows.showLocations.findOneAndUpdate(
+    //         { index: index },
+    //         { $set: updatedFields }
+    //     );
+
+    //     res.status(200).json({ message: 'Show location details updated successfully' });
+    // } catch (error) {
+    //     console.error(error);
+    //     res.status(500).json({ error: 'An error occurred while updating show location details' });
+    // }
+});
 
 // delete Hall
 
