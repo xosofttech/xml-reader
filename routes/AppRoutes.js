@@ -197,7 +197,7 @@ route.post('/quick-edit-show', async (req, res) => {
         };
 
             await Shows.updateOne(
-            { show_id: formData.showId },
+            { _id: formData.showId },
             { $set: updateObject },
             // Return the updated document
         );
@@ -234,13 +234,13 @@ route.post('/detail-edit-show', async (req, res) => {
             [`showLocations.${index}.hall`]: formData.hall,
             [`showLocations.${index}.city`]: formData.city,
             [`showLocations.${index}.date`]: formData.date,
-            [`showLocations.${index}.day`]: Module.GetDay(formData.date[index]),
+            [`showLocations.${index}.day`]: Module.GetDay(formData.date),
             [`showLocations.${index}.time`]: formData.time
         };
         console.log(showId);
         console.log(updatedFields);
         await Shows.updateOne(
-            {show_id: showId},
+            {_id: showId},
             {$set: updatedFields}
         );
 
