@@ -8,19 +8,36 @@ const Module = require("../Modules/general");
 const fs = require("fs");
 const URL = require('url');
 const bcrypt = require('bcrypt');
+const session = require('express-session');
 
+
+
+
+// app.use(session({
+//     secret: 'your-secret-key',
+//     resave: false,
+//     saveUninitialized: true
+// }));
 
 
 route.post('/authentication', async (req, res) => {
     const { email, password } = req.body;
-    console.log("Received email:", email);
-    console.log("Received password:", password);
-
     try {
         const user = await Users.findOne({ email });
-        if (user && password == user.password) {
-            console.log("user got login ");
-            // req.session.user = user;ss
+        if (user && password === user.password) {
+
+            const userJSON = JSON.stringify(user);
+
+            userEmail = user.email;
+            userName = user.username;
+            res.cookie("userEmail", userEmail, {
+                maxAge: 1 * 24 * 60 * 60 * 1000, // 1 day
+                httpOnly: true,
+            });
+            res.cookie("userName", userName, {
+                maxAge: 1 * 24 * 60 * 60 * 1000, // 1 day
+                httpOnly: true,
+            });
             res.json({ success: true });
         } else {
             res.status(401).json({ success: false, message: 'Invalid email or password' });
@@ -31,115 +48,149 @@ route.post('/authentication', async (req, res) => {
     }
 });
 
+function isLoggedIn(req, res, next) {
+    const userName = req.cookies.userName;
+    console.log("Cookies values", userName);
+    if (userName) { // Assuming you're using express-session for sessions
+        next(); // User is logged in, proceed to the next middleware or route handler
+    } else {
+        res.redirect('/login'); // User is not logged in, redirect to login page
+    }
+}
 
+
+// main route
 route.get('/', function (req, res) {
-    try {
-        let dataArr = [];
-
-        if (fs.existsSync('public/data.txt')) {
-            dataArr = fs.readFileSync('public/data.txt', 'utf8');
-            // res.setHeader('Content-Type', 'application/json');
-            jsonArr = JSON.parse(dataArr);
+    const userName = req.cookies.userName;
+    if (userName) {
+        try {
+            let dataArr = [];
+    
+            if (fs.existsSync('public/data.txt')) {
+                dataArr = fs.readFileSync('public/data.txt', 'utf8');
+                // res.setHeader('Content-Type', 'application/json');
+                jsonArr = JSON.parse(dataArr);
+                res.render("NewShowForm", {
+                    data: jsonArr
+                });
+            }
+        } catch (err) {
+            dataArr = [];
             res.render("NewShowForm", {
+                data: dataArr
+            });
+    
+    
+            res.render("EditHalls", {
                 data: jsonArr
             });
         }
-    } catch (err) {
-        dataArr = [];
-        res.render("NewShowForm", {
-            data: dataArr
-        });
-
-
-        res.render("EditHalls", {
-            data: jsonArr
-        });
+    } else {
+        res.redirect('app/login');
     }
+   
 });
 
 
 route.get('/edit-cities', (req, res) => {
-    try {
-        Shows.aggregate([
-            {
-                $unwind: "$showLocations"
-            },
-            {
-                $group: {
-                    _id: "$showLocations.city",
-                    count: {$sum: 1}
-                }
-            },
-            {
-                $sort: {_id: 1}
-            }], (err, shows) => {
-            if (err) {
-                console.error('Error fetching data from "shows" table:', err);
-                res.status(500).send('Error fetching data from "shows" table');
-                return;
-            }
+    const userName = req.cookies.userName;
+    if (userName) {
+        try {
+            Shows.aggregate([
+                {
+                    $unwind: "$showLocations"
+                },
+                {
+                    $group: {
+                        _id: "$showLocations.city",
+                        count: { $sum: 1 }
+                    }
+                },
+                {
+                    $sort: { _id: 1 }
+                }], (err, shows) => {
+                    if (err) {
+                        console.error('Error fetching data from "shows" table:', err);
+                        res.status(500).send('Error fetching data from "shows" table');
+                        return;
+                    }
 
-            // Get an array of unique cities from the "DeletedData" collection
-            DeletedData.find({type: "City"}, {value: 1, _id: 0}, (err, deletedDataCities) => {
-                if (err) {
-                    console.error('Error fetching data from "deleted_data" table:', err);
-                    res.status(500).send('Error fetching data from "deleted_data" table');
-                    return;
-                }
+                    // Get an array of unique cities from the "DeletedData" collection
+                    DeletedData.find({ type: "City" }, { value: 1, _id: 0 }, (err, deletedDataCities) => {
+                        if (err) {
+                            console.error('Error fetching data from "deleted_data" table:', err);
+                            res.status(500).send('Error fetching data from "deleted_data" table');
+                            return;
+                        }
 
-                const uniqueDeletedDataCities = [...new Set(deletedDataCities.map(item => item.value))];
+                        const uniqueDeletedDataCities = [...new Set(deletedDataCities.map(item => item.value))];
 
-                res.render("EditCities", {
-                    data: shows,
-                    deletedDataCities: uniqueDeletedDataCities,
+                        res.render("EditCities", {
+                            data: shows,
+                            deletedDataCities: uniqueDeletedDataCities,
+                        });
+                    });
                 });
-            });
-        });
-    } catch (err) {
-        console.error('Error rendering "EditCities" template:', err);
-        res.status(500).send('Error rendering "EditCities" template');
+        } catch (err) {
+            console.error('Error rendering "EditCities" template:', err);
+            res.status(500).send('Error rendering "EditCities" template');
+        }
+    }else {
+        res.redirect('/app/login');
     }
 });
 
 
 route.get('/edit-halls', (req, res) => {
-    try {
-        Shows.aggregate([
-            {
-                $unwind: "$showLocations"
-            },
-            {
-                $group: {
-                    _id: "$showLocations.hall",
-                    count: {$sum: 1}
-                }
-            },
-            {
-                $sort: {_id: 1}
-            }], (err, shows) => {
-            if (err) {
-                console.error('Error fetching data from "shows" table:', err);
-                res.status(500).send('Error fetching data from "shows" table');
-                return;
-            }
-            DeletedData.find({type: "Hall"}, {value: 1, _id: 0}, (err, deletedDataHalls) => {
+    const userName = req.cookies.userName;
+    if (userName) {
+        try {
+            Shows.aggregate([
+                {
+                    $unwind: "$showLocations"
+                },
+                {
+                    $group: {
+                        _id: "$showLocations.hall",
+                        count: {$sum: 1}
+                    }
+                },
+                {
+                    $sort: {_id: 1}
+                }], (err, shows) => {
                 if (err) {
-                    console.error('Error fetching data from "deleted_data" table:', err);
-                    res.status(500).send('Error fetching data from "deleted_data" table');
+                    console.error('Error fetching data from "shows" table:', err);
+                    res.status(500).send('Error fetching data from "shows" table');
                     return;
                 }
-                const uniqueDeletedDataHalls = [...new Set(deletedDataHalls.map(item => item.value))];
-                res.render("EditHalls", {
-                    data: shows,
-                    deletedDataHalls: uniqueDeletedDataHalls,
+                DeletedData.find({type: "Hall"}, {value: 1, _id: 0}, (err, deletedDataHalls) => {
+                    if (err) {
+                        console.error('Error fetching data from "deleted_data" table:', err);
+                        res.status(500).send('Error fetching data from "deleted_data" table');
+                        return;
+                    }
+                    const uniqueDeletedDataHalls = [...new Set(deletedDataHalls.map(item => item.value))];
+                    res.render("EditHalls", {
+                        data: shows,
+                        deletedDataHalls: uniqueDeletedDataHalls,
+                    });
                 });
             });
-        });
-    } catch (err) {
-        console.error('Error rendering "EditCities" template:', err);
-        res.status(500).send('Error rendering "EditCities" template');
+        } catch (err) {
+            console.error('Error rendering "EditCities" template:', err);
+            res.status(500).send('Error rendering "EditCities" template');
+        }
+    }else {
+        res.redirect('/app/login');
     }
+
+    
 });
+
+
+
+
+
 
 
 route.get('/login', async function (req, res) {
@@ -148,17 +199,29 @@ route.get('/login', async function (req, res) {
 });
 
 route.get('/shows', async function (req, res) {
-    const AllShows = await Shows.find({addedby: "user"}).sort({_id: -1});
-    res.render("ListAllshows", {
-        response: AllShows
-    });
+    const userName = req.cookies.userName;
+    if (userName) {
+       
+        const AllShows = await Shows.find({addedby: "user"}).sort({_id: -1});
+        res.render("ListAllshows", {
+            response: AllShows
+        });
+    }else {
+        res.redirect('/app/login');
+    }
 });
 
 route.get('/all-shows', async function (req, res) {
-    const AllShows = await Shows.find({addedby: {$ne: "user"}}).sort({_id: -1}).limit(10);
-    res.render("ListAllconcerts", {
-        response: AllShows
-    });
+    const userName = req.cookies.userName;
+    if (userName) {
+       
+        const AllShows = await Shows.find({addedby: {$ne: "user"}}).sort({_id: -1}).limit(10);
+        res.render("ListAllconcerts", {
+            response: AllShows
+        });
+    }else {
+        res.redirect('/app/login');
+    }
 });
 
 
