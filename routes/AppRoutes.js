@@ -2,10 +2,35 @@ const express = require('express');
 const route = express.Router();
 var AllEvents = require('../Model/allevents');
 var Shows = require('../Model/shows');
+var Users = require('../Model/users')
 var DeletedData = require('../Model/BlockedData')
 const Module = require("../Modules/general");
 const fs = require("fs");
 const URL = require('url');
+const bcrypt = require('bcrypt');
+
+
+
+route.post('/authentication', async (req, res) => {
+    const { email, password } = req.body;
+    console.log("Received email:", email);
+    console.log("Received password:", password);
+
+    try {
+        const user = await Users.findOne({ email });
+        if (user && password == user.password) {
+            console.log("user got login ");
+            // req.session.user = user;ss
+            res.json({ success: true });
+        } else {
+            res.status(401).json({ success: false, message: 'Invalid email or password' });
+        }
+    } catch (error) {
+        console.error("Database error:", error);
+        res.status(500).json({ success: false, message: 'Database error' });
+    }
+});
+
 
 route.get('/', function (req, res) {
     try {
@@ -116,6 +141,11 @@ route.get('/edit-halls', (req, res) => {
     }
 });
 
+
+route.get('/login', async function (req, res) {
+    res.render("login", {
+    });
+});
 
 route.get('/shows', async function (req, res) {
     const AllShows = await Shows.find({addedby: "user"}).sort({_id: -1});
