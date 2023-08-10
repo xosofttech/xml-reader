@@ -44,6 +44,8 @@
         Shows</a>
     <a class="btn btn-primary" style="margin-top: -30px;" href="../app/edit-cities">Cities</a>
     <a class="btn btn-primary" style="margin-top: -30px;" href="../app/edit-halls">Halls</a>
+    <a id="logoutButton" class="btn btn-danger" style="margin-top: -30px; float: right;">LogOut</a>
+
     <br/>
     <div style="width:100%; margin:0 auto;">
         <div class="panel panel-default">
@@ -384,6 +386,28 @@
             tokenSeparators: [',', ' '], // Allow multiple tags to be entered separated by commas or spaces
         });
     }
+</script>
+
+<script>
+$(document).ready(function() {
+    $('#logoutButton').click(function() {
+        $.ajax({
+            url: 'app/userLogout',
+            type: 'POST', // or 'GET' depending on your server setup
+            data: { action: 'logout' }, // Optional data to send to the server
+            success: function(response) {
+                // Handle the success response here
+                console.log('Logout successful');
+                window.location.href = '/app/login';
+                
+            },
+            error: function(xhr, status, error) {
+                // Handle the error response here
+                console.error('Logout failed:', error);
+            }
+        });
+    });
+});
 </script>
 </body>
 </html>

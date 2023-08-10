@@ -48,13 +48,27 @@ route.post('/authentication', async (req, res) => {
     }
 });
 
+
+
+// New route for logging out and clearing cookies
+route.post('/userLogout', (req, res) => {
+    const msg = req.body;
+    console.log("msg is ", msg.action)
+    if (msg.action == "logout")
+        {
+          res.clearCookie("userEmail");
+          res.clearCookie("userName");
+        }
+    res.json({ success: true });
+});
+
 function isLoggedIn(req, res, next) {
     const userName = req.cookies.userName;
     console.log("Cookies values", userName);
-    if (userName) { // Assuming you're using express-session for sessions
-        next(); // User is logged in, proceed to the next middleware or route handler
+    if (userName) {
+        next(); 
     } else {
-        res.redirect('/login'); // User is not logged in, redirect to login page
+        res.redirect('/login'); 
     }
 }
 
