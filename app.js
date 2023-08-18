@@ -25,6 +25,7 @@ app.use(bodyParser.urlencoded({
 var LocalCronJobRoute = require('./routes/LocalCronJobRoutes');
 
 app.use('/', require('./routes/ApiRoutes'));
+app.use('/mobile', require('./routes/MobileApiRoutes'));
 app.use('/app', require('./routes/AppRoutes'));
 
 

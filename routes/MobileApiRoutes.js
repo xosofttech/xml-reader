@@ -1,19 +1,8 @@
 const express = require('express');
 const route = express.Router();
 const Module = require('../Modules/general');
-var Config = require('../config');
-const {JSON} = require('../Modules/allowed-Extensions');
 var Shows = require('../Model/shows');
-var ObjectId = require('mongodb').ObjectId;
 const fs = require('fs');
-
-route.get('/', function (req, res) {
-    res.render("login", {});
-});
-
-route.get('/healthcheck', function (req, res) {
-    res.send(res.statusCode.toString());
-});
 
 var ShowsResult = [];
 route.post('/fetch-shows', async function (req, res) {
@@ -247,7 +236,7 @@ route.post('/fetch-shows', async function (req, res) {
 
 });
 
-route.post('/fetch-data', async function (req, res) {
+/*route.post('/fetch-data', async function (req, res) {
     try {
         if (fs.existsSync('public/data.txt')) {
             const data = fs.readFileSync('public/data.txt', 'utf8');
@@ -259,69 +248,6 @@ route.post('/fetch-data', async function (req, res) {
     } catch (err) {
         res.send({"cities": [], "sections": []});
     }
-});
-
-
-//checkDatesinShows();
-
-function checkDatesinShows() {
-    Shows.aggregate(
-        [
-            {
-                $match: {
-                    //show_id: "summerinthecity",
-                    "showLocations.day": {$exists: false}, showLocations: {$ne: []}
-                }
-            }
-        ], async function (err, show_result) {
-            //console.log(show_result);
-            (async function () {
-                for ([index, object] of show_result.entries()) {
-                    //    console.log(object);
-                    for ([index1, object1] of object.showLocations.entries()) {
-                        object1.day = Module.GetDay(object1.date);
-                        //      console.log(object1);
-                    }
-                    //console.log(object.show_id);
-                    await Shows.updateOne({_id: ObjectId(object._id)}, {showLocations: object.showLocations});
-                    console.log(object._id, "Updated");
-                }
-
-                //console.log(show_result);
-            })();
-        });
-}
-
-
-function UpdateCity() {
-    Shows.updateMany({
-            //_id: ObjectId('648099acca71ee467bb4b334'),
-            "showLocations.city": "תל אביב-יפו"
-        },
-        //{"showLocations.city": "תל אביב"},
-        {$set: {"showLocations.$.city": "תל אביב"}},
-        //{},
-        function (err, result) {
-            //console.log(err);
-            console.log(result);
-            checkDatesinShows();
-        });
-}
-
-// Shows.deleteMany({showLocations:{ $exists: true, $size: 0}}, function (err, resp) {
-//     console.log(resp);
-// })
-
-
-/*function GetDay(DateStr) {
-    try {
-        const data = new Date(DateStr);
-        const day = data.getDay();
-        const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        return dayNames[day];
-    } catch (e) {
-        return "";
-    }
-}*/
+});*/
 
 module.exports = route
