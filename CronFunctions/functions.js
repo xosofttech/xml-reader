@@ -869,6 +869,125 @@ async function EvenTimFunc(pokemons) {
     driver.close();
 }
 
+exports.ScrapTicketIngo = async function () {
+    console.log("ScrapTmisrael")
+    driver = await new Builder().forBrowser(Browser.FIREFOX).setFirefoxOptions(profile).build();
+    data = await GetBrowserURL(`https://www.ticketingo.co.il/dock/team/barcelona-fc`);
+    const $ = cheerio.load(data);
+    const extractedData = [];
+
+
+    $('.noBgColor .tableRow').each((index, element) => {
+        const $eventInfo = $(element).find('.eventInfo');
+        const $priceCell = $(element).find('.tableCell').eq(2);
+        const $dateCell = $(element).find('.tableCell').eq(1); // Select the second .tableCell
+
+        // Extract name
+        const name = $eventInfo.find('a').text().trim();
+        const price = $priceCell.find('.ticket-price').text().trim();
+        const date = $dateCell.find('span').eq(1).find('font').text().trim(); // Extract the text of the font element inside the second span
+
+        // Print the extracted data
+        console.log('Name:', name);
+        console.log('Price:', price);
+        console.log('Date:', date);
+
+        console.log('---'); // Separator for readability
+    });
+}
+
+
+exports.ScrapTmisrael = async function () {
+    console.log("ScrapTmisrael")
+    driver = await new Builder().forBrowser(Browser.FIREFOX).setFirefoxOptions(profile).build();
+    data = await GetBrowserURL(`https://www.tmisrael.co.il/homepage/ALL/iw`);
+    const $ = cheerio.load(data);
+
+    const hrefArray = [];
+    const ulElement = $('ul.v2');
+    const links = ulElement.find('a');
+
+// Iterate through each 'a' element and extract the href value
+    links.each((index, element) => {
+        const href = $(element).attr('href');
+        hrefArray.push(href);
+    });
+
+    // console.log(hrefArray);
+
+    const filteredHrefs = hrefArray.filter(href =>
+        !href.includes('https://') && !href.includes('event-group')
+    );
+    // console.log(filteredHrefs)
+    await TmisraelFunc(filteredHrefs, driver);
+
+}
+
+
+async function TmisraelFunc(pokemons, driver) {
+    const baseURL = 'https://www.tmisrael.co.il'; // Base URL
+    var productDetails = [];
+    var showID = "";
+    console.log("Total:", pokemons.length);
+
+    for await (const link of pokemons) {
+        const pageAddress = `${baseURL}${link}`;
+        console.log(pageAddress);
+        data = await GetBrowserURL(pageAddress, driver);
+        // console.log(data)
+
+        try {
+            const $ = cheerio.load(data);
+            eventDetails = [];
+            EventData = [];
+            const $pokemon = $('.ContentWrapperInner');
+            const name = $pokemon.find('#eventnameh1 span[itemprop="name"]').text();
+            const startDate = $('h2[itemprop="startDate"]').attr('content');
+            const date = $('h2 span:nth-child(1)').text().trim();
+            const month = $('h2 span:nth-child(2)').text().trim();
+            const year = $('h2 span:nth-child(3)').text().trim();
+            const day = $('h2 span:nth-child(5)').text().trim();
+            const time = $('h2 span:nth-child(6)').text().trim();
+            const location = $('#hidablelocation span[itemprop="name"]').text().trim();
+
+            var locations = {};
+            var showLocations = [];
+            locations.name = name;
+            locations.startDate = startDate;
+            locations.month = month;
+            locations.year = year;
+            locations.day = day;
+            locations.time = time;
+            locations.hall = location;
+            showLocations.push(locations);
+
+            var response = {};
+            response.name = name;
+            response.showLocations= showLocations;
+
+            console.log(response)
+
+
+            // const result = await AllEvents.findOne({name: name});
+            // if (result == null) {
+            //     console.log(showID, "Not Found Pushing in Array");
+            //     await AllEvents.create(response);
+            // } else {
+            //     await AllEvents.updateOne({name: name}, response);
+            //     console.log(showID, "Already Exist & Updated");
+            // }
+
+        } catch (e) {
+            console.log(`Error Cheerio load`, e);
+        }
+    }
+
+
+    console.log(`Execution Completed`);
+
+}
+
+
 async function GetBrowserURL(url) {
     try {
         console.log(url);
