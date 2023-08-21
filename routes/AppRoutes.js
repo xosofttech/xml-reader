@@ -11,8 +11,6 @@ const bcrypt = require('bcrypt');
 const session = require('express-session');
 
 
-
-
 // app.use(session({
 //     secret: 'your-secret-key',
 //     resave: false,
@@ -21,9 +19,9 @@ const session = require('express-session');
 
 
 route.post('/authentication', async (req, res) => {
-    const { email, password } = req.body;
+    const {email, password} = req.body;
     try {
-        const user = await Users.findOne({ email });
+        const user = await Users.findOne({email});
         if (user && password === user.password) {
 
             const userJSON = JSON.stringify(user);
@@ -38,28 +36,26 @@ route.post('/authentication', async (req, res) => {
                 maxAge: 1 * 24 * 60 * 60 * 1000, // 1 day
                 httpOnly: true,
             });
-            res.json({ success: true });
+            res.json({success: true});
         } else {
-            res.status(401).json({ success: false, message: 'Invalid email or password' });
+            res.status(401).json({success: false, message: 'Invalid email or password'});
         }
     } catch (error) {
         console.error("Database error:", error);
-        res.status(500).json({ success: false, message: 'Database error' });
+        res.status(500).json({success: false, message: 'Database error'});
     }
 });
-
 
 
 // New route for logging out and clearing cookies
 route.post('/userLogout', (req, res) => {
     const msg = req.body;
     console.log("msg is ", msg.action)
-    if (msg.action == "logout")
-        {
-          res.clearCookie("userEmail");
-          res.clearCookie("userName");
-        }
-    res.json({ success: true });
+    if (msg.action == "logout") {
+        res.clearCookie("userEmail");
+        res.clearCookie("userName");
+    }
+    res.json({success: true});
 });
 
 function isLoggedIn(req, res, next) {
@@ -117,39 +113,39 @@ route.get('/edit-cities', (req, res) => {
                 {
                     $group: {
                         _id: "$showLocations.city",
-                        count: { $sum: 1 }
+                        count: {$sum: 1}
                     }
                 },
                 {
-                    $sort: { _id: 1 }
+                    $sort: {_id: 1}
                 }], (err, shows) => {
+                if (err) {
+                    console.error('Error fetching data from "shows" table:', err);
+                    res.status(500).send('Error fetching data from "shows" table');
+                    return;
+                }
+
+                // Get an array of unique cities from the "DeletedData" collection
+                DeletedData.find({type: "City"}, {value: 1, _id: 0}, (err, deletedDataCities) => {
                     if (err) {
-                        console.error('Error fetching data from "shows" table:', err);
-                        res.status(500).send('Error fetching data from "shows" table');
+                        console.error('Error fetching data from "deleted_data" table:', err);
+                        res.status(500).send('Error fetching data from "deleted_data" table');
                         return;
                     }
 
-                    // Get an array of unique cities from the "DeletedData" collection
-                    DeletedData.find({ type: "City" }, { value: 1, _id: 0 }, (err, deletedDataCities) => {
-                        if (err) {
-                            console.error('Error fetching data from "deleted_data" table:', err);
-                            res.status(500).send('Error fetching data from "deleted_data" table');
-                            return;
-                        }
+                    const uniqueDeletedDataCities = [...new Set(deletedDataCities.map(item => item.value))];
 
-                        const uniqueDeletedDataCities = [...new Set(deletedDataCities.map(item => item.value))];
-
-                        res.render("EditCities", {
-                            data: shows,
-                            deletedDataCities: uniqueDeletedDataCities,
-                        });
+                    res.render("EditCities", {
+                        data: shows,
+                        deletedDataCities: uniqueDeletedDataCities,
                     });
                 });
+            });
         } catch (err) {
             console.error('Error rendering "EditCities" template:', err);
             res.status(500).send('Error rendering "EditCities" template');
         }
-    }else {
+    } else {
         res.redirect('/app/login');
     }
 });
@@ -194,7 +190,7 @@ route.get('/edit-halls', (req, res) => {
             console.error('Error rendering "EditCities" template:', err);
             res.status(500).send('Error rendering "EditCities" template');
         }
-    }else {
+    } else {
         res.redirect('/app/login');
     }
 
@@ -202,14 +198,8 @@ route.get('/edit-halls', (req, res) => {
 });
 
 
-
-
-
-
-
 route.get('/login', async function (req, res) {
-    res.render("login", {
-    });
+    res.render("login", {});
 });
 
 route.get('/shows', async function (req, res) {
@@ -220,7 +210,7 @@ route.get('/shows', async function (req, res) {
         res.render("ListAllshows", {
             response: AllShows
         });
-    }else {
+    } else {
         res.redirect('/app/login');
     }
 });
@@ -229,11 +219,11 @@ route.get('/all-shows', async function (req, res) {
     const userName = req.cookies.userName;
     if (userName) {
 
-        const AllShows = await Shows.find({addedby: {$ne: "user"}}).sort({_id: -1}).limit(10);
+        const AllShows = await Shows.find({addedby: {$ne: "user"}}).sort({_id: -1});
         res.render("ListAllconcerts", {
             response: AllShows
         });
-    }else {
+    } else {
         res.redirect('/app/login');
     }
 });
