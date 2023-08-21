@@ -18,18 +18,22 @@
             justify-content: center;
             align-items: center;
         }
+
         .login-container {
             max-width: 400px;
+            min-width: 400px;
             padding: 30px;
             background-color: rgba(255, 255, 255, 0.9);
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
             animation: fadeInDown 1s;
         }
+
         .login-container h2 {
             text-align: center;
             margin-bottom: 20px;
         }
+
         .login-btn {
             background-color: #ff6b6b;
             border: none;
@@ -40,9 +44,11 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
+
         .login-btn:hover {
             background-color: #ff4f4f;
         }
+
         @keyframes fadeInDown {
             from {
                 opacity: 0;
@@ -56,27 +62,27 @@
     </style>
 </head>
 <body>
-    <div class="login-container animate__animated animate__fadeInDown">
-        <h2>Welcome Back!</h2>
-        <form id="login-form">
-						<div class="form-group">
-								<label for="email">Email</label>
-								<input type="email" class="form-control" id="email" placeholder="Enter Email Address" required>
-						</div>
-						<div class="form-group">
-								<label for="password">Password</label>
-								<input type="password" class="form-control" id="password" placeholder="Enter password" required>
-						</div>
-						<button type="submit" class="login-btn">Log In</button>
-				</form>
-    </div>
+<div class="login-container animate__animated animate__fadeInDown">
+    <h2>Welcome to <br> XML READER!</h2>
+    <form id="login-form">
+        <div class="form-group">
+            <label for="email">Username</label>
+            <input type="text" class="form-control" id="email" placeholder="Username" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" id="password" placeholder="Password" required>
+        </div>
+        <button type="submit" class="login-btn">Log In</button>
+    </form>
+</div>
 
-{# <script src="routes/AppRoutes"></script> #} 
-		
+{# <script src="routes/AppRoutes"></script> #}
+
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const loginForm = document.getElementById('login-form');
-        loginForm.addEventListener('submit', async function(event) {
+        loginForm.addEventListener('submit', async function (event) {
             event.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
@@ -87,7 +93,7 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ email, password }),
+                    body: JSON.stringify({email, password}),
                 });
 
                 const data = await response.json();

@@ -8,7 +8,8 @@ var ObjectId = require('mongodb').ObjectId;
 const fs = require('fs');
 
 route.get('/', function (req, res) {
-    res.render("login", {});
+    res.redirect("/app")
+    //res.render("login", {});
     //res.send(`<center style="margin-top: 10%;"><h1> XML Shows</h1></center>`);
 });
 
