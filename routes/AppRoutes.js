@@ -315,9 +315,9 @@ route.post('/quick-edit-show', async (req, res) => {
 route.post('/detail-edit-show', async (req, res) => {
     const formData = req.body;
     const showId = formData.showId;
-    const key = formData.key;
     const index = formData.index;
-    //console.log(formData);
+    console.log(formData);
+    console.log(showId);
 
     try {
         var updatedFields = {

@@ -46,7 +46,7 @@
 										<button class="btn btn-info showLocationDetail" data-showindex="{{ key }}" data-bs-toggle="modal" data-bs-target="#showLocationsModal">Detail</button>
 								</td>
 								<td>
-									<button class="btn btn-primary editButton" data-bs-toggle="modal" data-showid="{{ row.show_id }}" data-name="{{ row.name }}" data-domain="{{ row.domain }}" data-section="{{ row.section }}" data-bs-target=".editModal">Edit</button>
+									<button class="btn btn-primary editButton" data-bs-toggle="modal" data-showid="{{ row._id }}" data-name="{{ row.name }}" data-domain="{{ row.domain }}" data-section="{{ row.section }}" data-bs-target=".editModal">Edit</button>
 								</td>
                                 
 							
@@ -131,6 +131,7 @@
 										</div>
 										<div class="modal-body">
 												<form >
+														<input type="text" classs"form-control showID" value="{{ "123456" }}">
 														<div class="mb-3">
 																<label  class="form-label">Address</label>
 																<input type="text" class="form-control editAddress" value="">
@@ -159,7 +160,7 @@
 										</div>
 										<div class="modal-footer">
 												<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-												<button type="button" class="btn btn-primary" id="saveLocationChanges">Save changes</button>
+												<button type="button" class="btn btn-primary saveLocationChanges" >Save changes</button>
 										</div>
 								</div>
 						</div>
@@ -169,27 +170,21 @@
 			</div>
 		</div>
 	<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-		<script src="/Modules/listAllconcerts.js"></script>
+	<script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="/Modules/listAllconcerts.js"></script>
 
                
 <script>
     $(document).ready(function () {
         $('#showsTable').DataTable({ "ordering": false });
     });
-
-    // JavaScript code for modal content loading here...
-
 </script>
-{# modal script #}
 
 <script>
     var responseData = {{ response|json_encode|raw }};
 
     $(document).ready(function () {
-			// console.log("responseData", responseData[0]._doc.showLocations)
 			$('.showLocationDetail').click(function () {
             var showIndex = $(this).data('showindex');
             var showLocations = responseData[showIndex]._doc.showLocations;
@@ -229,7 +224,6 @@
 
             var modal = $('.editShowLocationModal');
 
-            // Populate modal fields with show location data
             modal.find('.form-control.editAddress').val(address);
             modal.find('.form-control.editHall').val(hall);
             modal.find('.form-control.editCity').val(city);
@@ -239,20 +233,37 @@
         });
 
         // Save Changes Button Click Event
-        $('.saveLocationChanges').on('click', function() {
-            var modal = $(this).closest('.modal');
-            var editedAddress = modal.find('.form-control.editAddress').val();
-            var editedHall = modal.find('.form-control.editHall').val();
-            var editedCity = modal.find('.form-control.editCity').val();
-            var editedDate = modal.find('.form-control.editDate').val();
-            var editedDay = modal.find('.form-control.editDay').val();
-            var editedTime = modal.find('.form-control.editTime').val();
-
-            // ... Your AJAX request and handling code ...
-
-            // Close the modal
-            modal.modal('hide');
-        });
+        $(document).on('click', '.saveLocationChanges', function() {
+						var modal = $(this).closest('.modal');
+						var showID = modal.find('.form-control.showID').val();
+						var editedAddress = modal.find('.form-control.editAddress').val();
+						var editedHall = modal.find('.form-control.editHall').val();
+						var editedCity = modal.find('.form-control.editCity').val();
+						var editedDate = modal.find('.form-control.editDate').val();
+						var editedDay = modal.find('.form-control.editDay').val();
+						var editedTime = modal.find('.form-control.editTime').val();
+						var requestData = {
+								showID: showID,
+								address: editedAddress,
+								hall: editedHall,
+								city: editedCity,
+								date: editedDate,
+								day: editedDay,
+								time: editedTime
+						};
+						$.ajax({
+								url: 'detail-edit-show',
+								method: 'POST', 
+								data: requestData,
+								success: function(response) {
+										console.log('Update successful:', response);
+										modal.modal('hide');
+								},
+								error: function(error) {
+										console.error('Error:', error);
+								}
+					});
+});
   
 </script>
 
