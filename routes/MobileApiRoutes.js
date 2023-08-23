@@ -228,7 +228,7 @@ route.post('/fetch-shows', async function (req, res) {
     console.log(main_query);
 
     res.send({
-        "result": Object.assign({}, ShowsResult),
+        "result": ShowsResult,
         "TotalRecords": TotalRows,
         "CurrPage": pageParams.page,
         "Totalpages": (Math.ceil(TotalRows / perPage))
