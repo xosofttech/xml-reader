@@ -137,7 +137,8 @@
                     </div>
                     <div class="modal-body">
                         <form>
-                            <input type="text" class="form-control" id="Default-showID" value="">
+                            <input type="hidden" class="form-control" id="Default-showID" value="">
+                            <input type="hidden" class="form-control editindex"   value="">
                             <div class="mb-3">
                                 <label class="form-label">Address</label>
                                 <input type="text" class="form-control editAddress" value="">
@@ -152,15 +153,15 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Date</label>
-                                <input type="text" class="form-control editDate" value="">
+                                <input type="date" class="form-control editDate" value="">
                             </div>
-                            <div class="mb-3">
+                            {# <div class="mb-3">
                                 <label class="form-label">Day</label>
                                 <input type="text" class="form-control editDay" value="">
-                            </div>
+                            </div> #}
                             <div class="mb-3">
                                 <label class="form-label">Time</label>
-                                <input type="text" class="form-control editTime" value="">
+                                <input type="time" class="form-control editTime" value="">
                             </div>
                         </form>
                     </div>
@@ -200,6 +201,9 @@
             tableBody.empty();
 
             $.each(showLocations, function (index, location) {
+							console.log("showIndex", index)
+							$("#Default-showIndex").val($(this).data('index'));
+
                 var row = '<tr>' +
                     '<td>' + location.address + '</td>' +
                     '<td>' + location.hall + '</td>' +
@@ -207,7 +211,7 @@
                     '<td>' + location.date + '</td>' +
                     '<td>' + location.day + '</td>' +
                     '<td>' + location.time + '</td>' +
-                    '<td><button class="btn btn-primary editLocation" data-bs-toggle="modal" data-address="' + location.address + '" data-hall="' + location.hall + '" data-city="' + location.city + '" data-date="' + location.date + '" data-day="' + location.day + '" data-time="' + location.time + '" data-bs-target=".editShowLocationModal">Edit</button></td>' +
+                    '<td><button class="btn btn-primary editLocation" data-bs-toggle="modal"  data-index= "'+ index +'" data-address="' + location.address + '" data-hall="' + location.hall + '" data-city="' + location.city + '" data-date="' + location.date + '" data-day="' + location.day + '" data-time="' + location.time + '" data-bs-target=".editShowLocationModal">Edit</button></td>' +
                     '</tr>';
                 tableBody.append(row);
             });
@@ -220,7 +224,6 @@
 
     // Edit Button Click Event
     $(document).on('click', '.editLocation', function () {
-        console.log("button is clicked");
         var button = $(this);
         var address = button.data('address');
         var hall = button.data('hall');
@@ -228,6 +231,8 @@
         var date = button.data('date');
         var day = button.data('day');
         var time = button.data('time');
+				var index = (button).data('index');
+				console.log("index here", index);
         // var showLocations = button.data('showlocations');
 
         var modal = $('.editShowLocationModal');
@@ -238,40 +243,50 @@
         modal.find('.form-control.editDate').val(date);
         modal.find('.form-control.editDay').val(day);
         modal.find('.form-control.editTime').val(time);
+        modal.find('.form-control.editindex').val(index);
     });
 
     // Save Changes Button Click Event
-    $(document).on('click', '.saveLocationChanges', function () {
+    $(document).ready(function() {
+    $(document).on('click', '.saveLocationChanges', function() {
         var modal = $(this).closest('.modal');
-        var showID = modal.find('.form-control.showID').val();
         var editedAddress = modal.find('.form-control.editAddress').val();
         var editedHall = modal.find('.form-control.editHall').val();
         var editedCity = modal.find('.form-control.editCity').val();
         var editedDate = modal.find('.form-control.editDate').val();
-        var editedDay = modal.find('.form-control.editDay').val();
         var editedTime = modal.find('.form-control.editTime').val();
+        var index = modal.find('.form-control.editindex').val();
+        var showId = modal.find('.form-control#Default-showID').val();
+				
+
         var requestData = {
-            showID: showID,
+            showId: showId,
+						index: index,
             address: editedAddress,
             hall: editedHall,
             city: editedCity,
             date: editedDate,
-            day: editedDay,
             time: editedTime
         };
+
         $.ajax({
-            url: 'detail-edit-show',
+            url: 'detail-edit-show', // Update the URL as needed
             method: 'POST',
             data: requestData,
-            success: function (response) {
+            success: function(response) {
+							toastr.success('Update successful!');
                 console.log('Update successful:', response);
+
+                // Close the modal
                 modal.modal('hide');
             },
-            error: function (error) {
+            error: function(error) {
+							toastr.error('An error occurred while updating.');
                 console.error('Error:', error);
             }
         });
     });
+});
 
 </script>
 
@@ -314,7 +329,7 @@
                 },
                 success: function (response) {
                     toastr.success('Update successful!');
-                    $('#editModal' + key).modal('hide');
+                    modal.modal('hide');
                 },
                 error: function (error) {
                     toastr.error('An error occurred while updating.');

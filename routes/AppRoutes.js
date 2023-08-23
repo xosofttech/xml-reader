@@ -316,8 +316,6 @@ route.post('/detail-edit-show', async (req, res) => {
     const formData = req.body;
     const showId = formData.showId;
     const index = formData.index;
-    console.log(formData);
-    console.log(showId);
 
     try {
         var updatedFields = {
@@ -328,17 +326,16 @@ route.post('/detail-edit-show', async (req, res) => {
             [`showLocations.${index}.day`]: Module.GetDay(formData.date),
             [`showLocations.${index}.time`]: formData.time
         };
-        // console.log(showId);
-        // console.log(updatedFields);
+
         await Shows.updateOne(
-            {_id: showId},
-            {$set: updatedFields}
+            { _id: showId },
+            { $set: updatedFields }
         );
 
-        res.status(200).json({message: 'Show location details updated successfully'});
+        res.status(200).json({ message: 'Show location details updated successfully' });
     } catch (error) {
         console.error(error);
-        res.status(500).json({error: 'An error occurred while updating show location details'});
+        res.status(500).json({ error: 'An error occurred while updating show location details' });
     }
 });
 
