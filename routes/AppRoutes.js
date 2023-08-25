@@ -229,6 +229,17 @@ route.get('/all-shows', async function (req, res) {
 });
 
 
+
+route.delete('/delete-show/:id', async (req, res) => {
+    try {
+        const deletedShow = await Shows.findByIdAndDelete(req.params.id);
+        res.status(200).json({ message: 'Show deleted successfully', deletedShow });
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while deleting the show' });
+    }
+});
+
+
 route.post('/save-records', (req, res) => {
     const formData = req.body;
 

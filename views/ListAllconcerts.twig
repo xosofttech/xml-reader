@@ -13,6 +13,17 @@
         .table-responsive {
             overflow-x: auto;
         }
+
+        .action-header {
+        width: 150px; /* Set the desired width */
+    }
+
+    /* Adjust the width as needed */
+    #showsTable td:nth-child(5),
+    #showsTable th:nth-child(5) {
+        width: 150px; /* Set the same desired width as above */
+    }
+
     </style>
 </head>
 <body>
@@ -31,7 +42,7 @@
                 <th>Domain</th>
                 <th>Section</th>
                 <th>Show Locations</th>
-                <th>Action</th>
+                <th class="action-header">Action</th>
             </tr>
             </thead>
             <tbody>
@@ -48,8 +59,10 @@
                     </td>
                     <td>
                         <button class="btn btn-primary editButton" data-bs-toggle="modal" data-showid="{{ row._id }}"
-                                data-name="{{ row.name }}" data-domain="{{ row.domain }}"
-                                data-section="{{ row.section }}" data-bs-target=".editModal">Edit
+                            data-name="{{ row.name }}" data-domain="{{ row.domain }}"
+                            data-section="{{ row.section }}" data-bs-target=".editModal">Edit
+                        </button>
+                        <button class="btn btn-danger deleteButton"  data-rowid={{ row._id }} >Delete
                         </button>
                     </td>
 
@@ -341,6 +354,34 @@
                     toastr.error('An error occurred while updating.');
                 }
             });
+        });
+    });
+</script>
+
+<script>
+    $(document).on('click', '.deleteButton', function () {
+        var rowId = $(this).data('rowid');
+        var rowElement = $(this).closest('tr');
+
+        // Display a confirmation alert
+        var confirmation = confirm('Are you sure you want to delete this entry?');
+        if (!confirmation) {
+            return; // If user cancels, do nothing
+        }
+
+        $.ajax({
+            type: 'DELETE',
+            url: `delete-show/${rowId}`, // Replace with the actual server route
+            success: function (response) {
+                // If the deletion was successful, remove the row from the table
+                toastr.success('Deleted successful!');
+                rowElement.remove();
+                console.log(response.message); // Log the server response
+            },
+            error: function (error) {
+                console.error('Error deleting show:', error);
+                toastr.error('An error occurred while Deleting.');
+            }
         });
     });
 </script>
