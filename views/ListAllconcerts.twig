@@ -75,7 +75,7 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Domain</label>
-                                <input type="text" class="form-control editDomain" value="">
+                                <input type="text" class="form-control editDomain" value="" disabled>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Section</label>
@@ -296,7 +296,13 @@
 
 
         $('.editButton').on('click', function () {
+
+        });
+
+
+        $(document).on('click', '.editButton', function () {
             var button = $(this);
+            //console.log(button);
             var name = button.data('name');
             var domain = button.data('domain');
             var section = button.data('section');
