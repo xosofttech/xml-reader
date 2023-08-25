@@ -43,7 +43,7 @@
                     <td>
                         <button class="btn btn-info showLocationDetail" data-showindex="{{ key }}"
                                 data-showid="{{ row._id }}"
-                                data-bs-toggle="modal" data-bs-target="#showLocationsModal">Detail
+                                {# data-bs-toggle="modal" data-bs-target="#showLocationsModal" #}>Detail
                         </button>
                     </td>
                     <td>
@@ -138,7 +138,7 @@
                     <div class="modal-body">
                         <form>
                             <input type="hidden" class="form-control" id="Default-showID" value="">
-                            <input type="hidden" class="form-control editindex"   value="">
+                            <input type="hidden" class="form-control editindex" value="">
                             <div class="mb-3">
                                 <label class="form-label">Address</label>
                                 <input type="text" class="form-control editAddress" value="">
@@ -191,32 +191,32 @@
 <script>
     var responseData = {{ response|json_encode|raw }};
 
-    $(document).ready(function () {
-        $('.showLocationDetail').click(function () {
-            // console.log($(this).data('showid'));
-            $("#Default-showID").val($(this).data('showid'));
-            var showIndex = $(this).data('showindex');
-            var showLocations = responseData[showIndex]._doc.showLocations;
-            var tableBody = $('#showLocationsTableBody');
-            tableBody.empty();
+    $(document).on('click', '.showLocationDetail', function () {
+        //console.log($(this).data('showid'));
+        $("#Default-showID").val($(this).data('showid'));
+        var showIndex = $(this).data('showindex');
+        var showLocations = responseData[showIndex]._doc.showLocations;
+        var tableBody = $('#showLocationsTableBody');
+        tableBody.empty();
 
-            $.each(showLocations, function (index, location) {
-							console.log("showIndex", index)
-							$("#Default-showIndex").val($(this).data('index'));
+        $.each(showLocations, function (index, location) {
+            console.log("showIndex", index)
+            $("#Default-showIndex").val($(this).data('index'));
 
-                var row = '<tr>' +
-                    '<td>' + location.address + '</td>' +
-                    '<td>' + location.hall + '</td>' +
-                    '<td>' + location.city + '</td>' +
-                    '<td>' + location.date + '</td>' +
-                    '<td>' + location.day + '</td>' +
-                    '<td>' + location.time + '</td>' +
-                    '<td><button class="btn btn-primary editLocation" data-bs-toggle="modal"  data-index= "'+ index +'" data-address="' + location.address + '" data-hall="' + location.hall + '" data-city="' + location.city + '" data-date="' + location.date + '" data-day="' + location.day + '" data-time="' + location.time + '" data-bs-target=".editShowLocationModal">Edit</button></td>' +
-                    '</tr>';
-                tableBody.append(row);
-            });
+            var row = '<tr>' +
+                '<td>' + location.address + '</td>' +
+                '<td>' + location.hall + '</td>' +
+                '<td>' + location.city + '</td>' +
+                '<td>' + location.date + '</td>' +
+                '<td>' + location.day + '</td>' +
+                '<td>' + location.time + '</td>' +
+                '<td><button class="btn btn-primary editLocation" data-bs-toggle="modal"  data-index= "' + index + '" data-address="' + location.address + '" data-hall="' + location.hall + '" data-city="' + location.city + '" data-date="' + location.date + '" data-day="' + location.day + '" data-time="' + location.time + '" data-bs-target=".editShowLocationModal">Edit</button></td>' +
+                '</tr>';
+            tableBody.append(row);
         });
+        $("#showLocationsModal").modal('show');
     });
+
 </script>
 
 
@@ -231,8 +231,8 @@
         var date = button.data('date');
         var day = button.data('day');
         var time = button.data('time');
-				var index = (button).data('index');
-				console.log("index here", index);
+        var index = (button).data('index');
+        console.log("index here", index);
         // var showLocations = button.data('showlocations');
 
         var modal = $('.editShowLocationModal');
@@ -247,46 +247,46 @@
     });
 
     // Save Changes Button Click Event
-    $(document).ready(function() {
-    $(document).on('click', '.saveLocationChanges', function() {
-        var modal = $(this).closest('.modal');
-        var editedAddress = modal.find('.form-control.editAddress').val();
-        var editedHall = modal.find('.form-control.editHall').val();
-        var editedCity = modal.find('.form-control.editCity').val();
-        var editedDate = modal.find('.form-control.editDate').val();
-        var editedTime = modal.find('.form-control.editTime').val();
-        var index = modal.find('.form-control.editindex').val();
-        var showId = modal.find('.form-control#Default-showID').val();
-				
+    $(document).ready(function () {
+        $(document).on('click', '.saveLocationChanges', function () {
+            var modal = $(this).closest('.modal');
+            var editedAddress = modal.find('.form-control.editAddress').val();
+            var editedHall = modal.find('.form-control.editHall').val();
+            var editedCity = modal.find('.form-control.editCity').val();
+            var editedDate = modal.find('.form-control.editDate').val();
+            var editedTime = modal.find('.form-control.editTime').val();
+            var index = modal.find('.form-control.editindex').val();
+            var showId = modal.find('.form-control#Default-showID').val();
 
-        var requestData = {
-            showId: showId,
-						index: index,
-            address: editedAddress,
-            hall: editedHall,
-            city: editedCity,
-            date: editedDate,
-            time: editedTime
-        };
 
-        $.ajax({
-            url: 'detail-edit-show', // Update the URL as needed
-            method: 'POST',
-            data: requestData,
-            success: function(response) {
-							toastr.success('Update successful!');
-                console.log('Update successful:', response);
+            var requestData = {
+                showId: showId,
+                index: index,
+                address: editedAddress,
+                hall: editedHall,
+                city: editedCity,
+                date: editedDate,
+                time: editedTime
+            };
 
-                // Close the modal
-                modal.modal('hide');
-            },
-            error: function(error) {
-							toastr.error('An error occurred while updating.');
-                console.error('Error:', error);
-            }
+            $.ajax({
+                url: 'detail-edit-show', // Update the URL as needed
+                method: 'POST',
+                data: requestData,
+                success: function (response) {
+                    toastr.success('Update successful!');
+                    console.log('Update successful:', response);
+
+                    // Close the modal
+                    modal.modal('hide');
+                },
+                error: function (error) {
+                    toastr.error('An error occurred while updating.');
+                    console.error('Error:', error);
+                }
+            });
         });
     });
-});
 
 </script>
 
