@@ -350,6 +350,39 @@ route.post('/detail-edit-show', async (req, res) => {
     }
 });
 
+// delete location detail
+// console.log(show.showLocations[index])
+
+route.delete('/deleteLocationDetail', async (req, res) => {
+    const { index, showId } = req.body;
+    console.log(" :obj id is : ", showId ," index is", index );
+
+    try {
+        const show = await Shows.findById(showId);
+
+        if (!show) {
+            return res.status(404).send('Show not found');
+        }
+
+        if (index >= 0 && index < show.showLocations.length) {
+            console.log('Before deletion:', show.showLocations);
+
+            show.showLocations.splice(index, 1); // Remove the object at the specified index
+            await show.save(); // Save the updated document
+
+            console.log('After deletion:', show.showLocations);
+            
+            return res.status(200).send('Location detail deleted');
+        } else {
+            return res.status(400).send('Invalid index');
+        }
+    } catch (error) {
+        console.error('Error deleting location detail:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
 // delete Hall
 
 route.post('/delete-concert-hall', (req, res) => {

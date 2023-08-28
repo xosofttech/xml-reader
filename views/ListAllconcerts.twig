@@ -124,7 +124,7 @@
                                 <th>Date</th>
                                 <th>Day</th>
                                 <th>Time</th>
-                                <th>Action</th>
+                                <th style=" width: 150px;">Action</th>
                             </tr>
                             </thead>
                             <tbody
@@ -206,6 +206,7 @@
 
     $(document).on('click', '.showLocationDetail', function () {
         //console.log($(this).data('showid'));
+        var showid = $(this).data('showid');
         $("#Default-showID").val($(this).data('showid'));
         var showIndex = $(this).data('showindex');
         var showLocations = responseData[showIndex]._doc.showLocations;
@@ -223,7 +224,10 @@
                 '<td>' + location.date + '</td>' +
                 '<td>' + location.day + '</td>' +
                 '<td>' + location.time + '</td>' +
-                '<td><button class="btn btn-primary editLocation" data-bs-toggle="modal"  data-index= "' + index + '" data-address="' + location.address + '" data-hall="' + location.hall + '" data-city="' + location.city + '" data-date="' + location.date + '" data-day="' + location.day + '" data-time="' + location.time + '" data-bs-target=".editShowLocationModal">Edit</button></td>' +
+                '<td> <div class="btn-group"><button class="btn btn-primary editLocation" data-bs-toggle="modal"  data-index= "' + index + '" data-address="' + location.address + '" data-hall="' + location.hall + '" data-city="' + location.city + '" data-date="' + location.date + '" data-day="' + location.day + '" data-time="' + location.time + '" data-bs-target=".editShowLocationModal">Edit</button>' +
+
+
+                '<button class="btn btn-danger editLocation"   data-index= "' + index + '" data-showid="'+ showid +'" >Delete</button></div></td>' +
                 '</tr>';
             tableBody.append(row);
         });
@@ -308,9 +312,7 @@
     $(document).ready(function () {
 
 
-        $('.editButton').on('click', function () {
-
-        });
+        
 
 
         $(document).on('click', '.editButton', function () {
@@ -373,7 +375,6 @@
             type: 'DELETE',
             url: `delete-show/${rowId}`, // Replace with the actual server route
             success: function (response) {
-                // If the deletion was successful, remove the row from the table
                 toastr.success('Deleted successful!');
                 rowElement.remove();
                 console.log(response.message); // Log the server response
@@ -384,6 +385,34 @@
             }
         });
     });
+</script>
+
+
+{# delete Show Location Detail #}
+<script>
+$(document).on('click', '.editLocation', function () {
+    var index = $(this).data('index');
+    var showId = $(this).data('showid');
+    $.ajax({
+        url: 'deleteLocationDetail', 
+        type: 'DELETE',
+        data: {
+            index: index,
+            showId: showId
+        }, 
+        success: function (data) {
+            console.log('Object deleted successfully');
+            $("#showLocationsTableBody tr:eq(" + index + ")").remove();
+            toastr.success('Deleted successful!');
+        },
+        error: function (error) {
+            console.error('Error deleting object:', error);
+            toastr.error('An error occurred while Deleting.');
+        }
+    });
+});
+
+
 </script>
 
 
