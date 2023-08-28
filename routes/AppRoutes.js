@@ -368,7 +368,11 @@ route.delete('/deleteLocationDetail', async (req, res) => {
             console.log('Before deletion:', show.showLocations);
 
             show.showLocations.splice(index, 1); // Remove the object at the specified index
-            await show.save(); // Save the updated document
+            // await show.save(); // Save the updated document
+            await Shows.updateOne(
+                { _id: showId },
+                { $set: { showLocations: show.showLocations } } // Update the array
+            );
 
             console.log('After deletion:', show.showLocations);
             

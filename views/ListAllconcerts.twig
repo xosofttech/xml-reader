@@ -199,7 +199,13 @@
     $(document).ready(function () {
         $('#showsTable').DataTable({"ordering": false});
     });
+
+//     $(document).ready(function () {
+//     $('#showLocationsTable').DataTable(); // Initialize DataTable
+// });
 </script>
+
+
 
 <script>
     var responseData = {{ response|json_encode|raw }};
@@ -227,12 +233,40 @@
                 '<td> <div class="btn-group"><button class="btn btn-primary editLocation" data-bs-toggle="modal"  data-index= "' + index + '" data-address="' + location.address + '" data-hall="' + location.hall + '" data-city="' + location.city + '" data-date="' + location.date + '" data-day="' + location.day + '" data-time="' + location.time + '" data-bs-target=".editShowLocationModal">Edit</button>' +
 
 
-                '<button class="btn btn-danger editLocation"   data-index= "' + index + '" data-showid="'+ showid +'" >Delete</button></div></td>' +
+                '<button class="btn btn-danger deleteLocation"   data-index= "' + index + '" data-showid="'+ showid +'" >Delete</button></div></td>' +
                 '</tr>';
             tableBody.append(row);
         });
         $("#showLocationsModal").modal('show');
     });
+
+    $(document).on('click', '.deleteLocation', function () {
+    var index = $(this).data('index');
+    var showId = $(this).data('showid');
+
+     var confirmation = confirm('Are you sure you want to delete this entry?');
+        if (!confirmation) {
+            return; // If user cancels, do nothing
+        }
+    $.ajax({
+        url: 'deleteLocationDetail', 
+        type: 'DELETE',
+        data: {
+            index: index,
+            showId: showId
+        }, 
+        success: function (data) {
+            console.log('Object deleted successfully');
+            $("#showLocationsTableBody tr:eq(" + index + ")").remove();
+            toastr.success('Deleted successful!');
+            $('#showLocationsTable').DataTable().draw();
+        },
+        error: function (error) {
+            console.error('Error deleting object:', error);
+            toastr.error('An error occurred while Deleting.');
+        }
+    });
+});
 
 </script>
 
@@ -263,7 +297,7 @@
         modal.find('.form-control.editindex').val(index);
     });
 
-    // Save Changes Button Click Event
+    // Edit location Button Click Event
     $(document).ready(function () {
         $(document).on('click', '.saveLocationChanges', function () {
             var modal = $(this).closest('.modal');
@@ -390,27 +424,7 @@
 
 {# delete Show Location Detail #}
 <script>
-$(document).on('click', '.editLocation', function () {
-    var index = $(this).data('index');
-    var showId = $(this).data('showid');
-    $.ajax({
-        url: 'deleteLocationDetail', 
-        type: 'DELETE',
-        data: {
-            index: index,
-            showId: showId
-        }, 
-        success: function (data) {
-            console.log('Object deleted successfully');
-            $("#showLocationsTableBody tr:eq(" + index + ")").remove();
-            toastr.success('Deleted successful!');
-        },
-        error: function (error) {
-            console.error('Error deleting object:', error);
-            toastr.error('An error occurred while Deleting.');
-        }
-    });
-});
+
 
 
 </script>
