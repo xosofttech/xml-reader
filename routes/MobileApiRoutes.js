@@ -1,7 +1,8 @@
 const express = require('express');
 const route = express.Router();
 const Module = require('../Modules/general');
-var Shows = require('../Model/shows');
+const Shows = require('../Model/shows');
+const Devices = require('../Model/devices');
 const fs = require('fs');
 
 var ShowsResult = [];
@@ -234,6 +235,34 @@ route.post('/fetch-shows', async function (req, res) {
         "Totalpages": (Math.ceil(TotalRows / perPage))
     });
 
+});
+
+route.post('/register-device', async function (req, res) {
+    try {
+        var deviceID = req.body.deviceID;
+        var deviceIP = req.body.deviceIP;
+        var NotificationStatus = req.body.NotificationStatus;
+
+        Devices.findOne({deviceID: deviceID}, async function (err, deviceData) {
+            if (deviceData === null) {
+                var obj = new Devices({
+                    deviceID: deviceID,
+                    deviceIP: deviceIP,
+                    NotificationStatus: NotificationStatus
+                });
+                await obj.save();
+            } else {
+                await Devices.updateOne({deviceID: deviceID}, {
+                    deviceID: deviceID,
+                    deviceIP: deviceIP,
+                    NotificationStatus: NotificationStatus
+                })
+            }
+            res.send({"error": false, "message": "Updated Successfully"});
+        });
+    } catch (err) {
+        res.send({"error": true, "message": "Failed", "Required Fields": "deviceID, deviceIP & NotificationStatus"});
+    }
 });
 
 /*route.post('/fetch-data', async function (req, res) {
