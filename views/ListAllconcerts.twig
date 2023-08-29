@@ -370,13 +370,10 @@
 
         $(document).on('click', '.editButton', function () {
             var button = $(this);
-            //console.log(button);
             var name = button.data('name');
             var domain = button.data('domain');
             var section = button.data('section');
             var showid = button.data('showid');
-            // console.log(showid)
-
             var modal = $('.editModal');
 
             modal.find('.form-control.editName').val(name);
@@ -415,29 +412,36 @@
 
 <script>
     $(document).on('click', '.deleteButton', function () {
-        var rowId = $(this).data('rowid');
-        var rowElement = $(this).closest('tr');
+    var rowId = $(this).data('rowid');
+    var rowElement = $(this).closest('tr');
+    var dataTable = $('#showsTable').DataTable();
 
-        // Display a confirmation alert
-        var confirmation = confirm('Are you sure you want to delete this entry?');
-        if (!confirmation) {
-            return; // If user cancels, do nothing
+    var confirmation = confirm('Are you sure you want to delete this entry?');
+    if (!confirmation) {
+        return;
+    }
+
+    $.ajax({
+        type: 'DELETE',
+        url: `delete-show/${rowId}`, 
+        success: function (response) {
+            toastr.success('Deleted successful!');
+            rowElement.remove();
+            dataTable.row(rowElement).remove().draw(); // Remove and redraw DataTable
+
+            // Update the "Showing x to y of z entries" message
+            var info = dataTable.page.info();
+            var paginationInfo = $('#showsTable_info');
+            paginationInfo.text('Showing ' + (info.start + 1) + ' to ' + (info.start + info.length) + ' of ' + info.recordsTotal + ' entries');
+
+            console.log(response.message);
+        },
+        error: function (error) {
+            console.error('Error deleting show:', error);
+            toastr.error('An error occurred while Deleting.');
         }
-
-        $.ajax({
-            type: 'DELETE',
-            url: `delete-show/${rowId}`, // Replace with the actual server route
-            success: function (response) {
-                toastr.success('Deleted successful!');
-                rowElement.remove();
-                console.log(response.message); // Log the server response
-            },
-            error: function (error) {
-                console.error('Error deleting show:', error);
-                toastr.error('An error occurred while Deleting.');
-            }
-        });
     });
+});
 </script>
 
 
