@@ -108,22 +108,18 @@
  <script>
     $(document).ready(function() {
         $('.delete-button').on('click', function() {
-            var deleteButton = $(this); // Store the reference to the clicked button
-            var objectId = deleteButton.data('objid'); // Use lowercased attribute name
+            var deleteButton = $(this); 
+            var objectId = deleteButton.data('objid'); 
 
-            // Make an AJAX request to delete the record
             $.ajax({
-                url: `delete-show/${objectId}`, // Endpoint URL with the ID parameter
+                url: `delete-show/${objectId}`, 
                 method: 'DELETE',
                 success: function(response) {
-                    // Handle success, maybe refresh the table or show a success message
                     console.log(response.message);
-                    // Remove the deleted row from the table using the stored button reference
                     deleteButton.closest('tr').remove();
                     toastr.success('Deleted successfully!');
                 },
                 error: function(error) {
-                    // Handle error, show an error message or log the error
                     console.error('Error deleting record:', error.responseJSON.error);
                     toastr.error('An error occurred while Deleting.');
                 }
@@ -140,7 +136,6 @@
             var objectId = deleteButton.data('objid');
             var index = deleteButton.data('index');
 
-            // Make an AJAX request to delete the location detail
             $.ajax({
                 url: 'deleteLocationDetail',
                 method: 'DELETE',
@@ -149,14 +144,11 @@
                     showId: objectId
                 },
                 success: function(response) {
-                    // Handle success, maybe refresh the table or show a success message
                     console.log(response);
-                    // Remove the deleted row from the table using the stored button reference
                     deleteButton.closest('tr').remove();
                     toastr.success('Deleted successfully!');
                 },
                 error: function(error) {
-                    // Handle error, show an error message or log the error
                     console.error('Error deleting location detail:', error.responseText);
                     toastr.error('An error occurred while Deleting.');
                 }
