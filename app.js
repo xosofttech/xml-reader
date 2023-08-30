@@ -3,6 +3,7 @@ var Config = require('./config');
 //var CronJobRoutes = require('./routes/CronJobRoutes');
 const path = require("path");
 const bodyParser = require("body-parser");
+const cookiesParser  = require('cookie-parser');
 
 var {dburl} = require('./config');
 var mongoose = require('mongoose');
@@ -12,6 +13,7 @@ mongoose.connect(dburl, {sslValidate: false, useNewUrlParser: true, useUnifiedTo
 
 
 var app = express();
+app.use(cookiesParser());
 
 
 app.use(express.static('public'));
@@ -25,6 +27,7 @@ app.use(bodyParser.urlencoded({
 var LocalCronJobRoute = require('./routes/LocalCronJobRoutes');
 
 app.use('/', require('./routes/ApiRoutes'));
+app.use('/mobile', require('./routes/MobileApiRoutes'));
 app.use('/app', require('./routes/AppRoutes'));
 
 

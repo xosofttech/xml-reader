@@ -2,133 +2,241 @@ const express = require('express');
 const route = express.Router();
 var AllEvents = require('../Model/allevents');
 var Shows = require('../Model/shows');
+var Users = require('../Model/users')
 var DeletedData = require('../Model/BlockedData')
 const Module = require("../Modules/general");
 const fs = require("fs");
 const URL = require('url');
+const bcrypt = require('bcrypt');
+const session = require('express-session');
 
-route.get('/', function (req, res) {
+
+// app.use(session({
+//     secret: 'your-secret-key',
+//     resave: false,
+//     saveUninitialized: true
+// }));
+
+
+route.post('/authentication', async (req, res) => {
+    const {email, password} = req.body;
     try {
-        let dataArr = [];
+        const user = await Users.findOne({email});
+        if (user && password === user.password) {
 
-        if (fs.existsSync('public/data.txt')) {
-            dataArr = fs.readFileSync('public/data.txt', 'utf8');
-            // res.setHeader('Content-Type', 'application/json');
-            jsonArr = JSON.parse(dataArr);
-            res.render("NewShowForm", {
-                data: jsonArr
+            const userJSON = JSON.stringify(user);
+
+            userEmail = user.email;
+            userName = user.username;
+            res.cookie("userEmail", userEmail, {
+                maxAge: 1 * 24 * 60 * 60 * 1000, // 1 day
+                httpOnly: true,
             });
+            res.cookie("userName", userName, {
+                maxAge: 1 * 24 * 60 * 60 * 1000, // 1 day
+                httpOnly: true,
+            });
+            res.json({success: true});
+        } else {
+            res.status(401).json({success: false, message: 'Invalid email or password'});
         }
-    } catch (err) {
-        dataArr = [];
-        res.render("NewShowForm", {
-            data: dataArr
-        });
-
-
-        res.render("EditHalls", {
-            data: jsonArr
-        });
+    } catch (error) {
+        console.error("Database error:", error);
+        res.status(500).json({success: false, message: 'Database error'});
     }
 });
 
 
-route.get('/edit-cities', (req, res) => {
-    try {
-        Shows.aggregate([
-            {
-                $unwind: "$showLocations"
-            },
-            {
-                $group: {
-                    _id: "$showLocations.city",
-                    count: {$sum: 1}
-                }
-            },
-            {
-                $sort: {_id: 1}
-            }], (err, shows) => {
-            if (err) {
-                console.error('Error fetching data from "shows" table:', err);
-                res.status(500).send('Error fetching data from "shows" table');
-                return;
-            }
+// New route for logging out and clearing cookies
+route.post('/userLogout', (req, res) => {
+    const msg = req.body;
+    console.log("msg is ", msg.action)
+    if (msg.action == "logout") {
+        res.clearCookie("userEmail");
+        res.clearCookie("userName");
+    }
+    res.json({success: true});
+});
 
-            // Get an array of unique cities from the "DeletedData" collection
-            DeletedData.find({type: "City"}, {value: 1, _id: 0}, (err, deletedDataCities) => {
+function isLoggedIn(req, res, next) {
+    const userName = req.cookies.userName;
+    console.log("Cookies values", userName);
+    if (userName) {
+        next();
+    } else {
+        res.redirect('/login');
+    }
+}
+
+
+// main route
+route.get('/', function (req, res) {
+    const userName = req.cookies.userName;
+    if (userName) {
+        try {
+            let dataArr = [];
+
+            if (fs.existsSync('public/data.txt')) {
+                dataArr = fs.readFileSync('public/data.txt', 'utf8');
+                // res.setHeader('Content-Type', 'application/json');
+                jsonArr = JSON.parse(dataArr);
+                res.render("NewShowForm", {
+                    data: jsonArr
+                });
+            }
+        } catch (err) {
+            dataArr = [];
+            res.render("NewShowForm", {
+                data: dataArr
+            });
+
+
+            res.render("EditHalls", {
+                data: jsonArr
+            });
+        }
+    } else {
+        res.redirect('app/login');
+    }
+
+});
+
+
+route.get('/edit-cities', (req, res) => {
+    const userName = req.cookies.userName;
+    if (userName) {
+        try {
+            Shows.aggregate([
+                {
+                    $unwind: "$showLocations"
+                },
+                {
+                    $group: {
+                        _id: "$showLocations.city",
+                        count: {$sum: 1}
+                    }
+                },
+                {
+                    $sort: {_id: 1}
+                }], (err, shows) => {
                 if (err) {
-                    console.error('Error fetching data from "deleted_data" table:', err);
-                    res.status(500).send('Error fetching data from "deleted_data" table');
+                    console.error('Error fetching data from "shows" table:', err);
+                    res.status(500).send('Error fetching data from "shows" table');
                     return;
                 }
 
-                const uniqueDeletedDataCities = [...new Set(deletedDataCities.map(item => item.value))];
+                // Get an array of unique cities from the "DeletedData" collection
+                DeletedData.find({type: "City"}, {value: 1, _id: 0}, (err, deletedDataCities) => {
+                    if (err) {
+                        console.error('Error fetching data from "deleted_data" table:', err);
+                        res.status(500).send('Error fetching data from "deleted_data" table');
+                        return;
+                    }
 
-                res.render("EditCities", {
-                    data: shows,
-                    deletedDataCities: uniqueDeletedDataCities,
+                    const uniqueDeletedDataCities = [...new Set(deletedDataCities.map(item => item.value))];
+
+                    res.render("EditCities", {
+                        data: shows,
+                        deletedDataCities: uniqueDeletedDataCities,
+                    });
                 });
             });
-        });
-    } catch (err) {
-        console.error('Error rendering "EditCities" template:', err);
-        res.status(500).send('Error rendering "EditCities" template');
+        } catch (err) {
+            console.error('Error rendering "EditCities" template:', err);
+            res.status(500).send('Error rendering "EditCities" template');
+        }
+    } else {
+        res.redirect('/app/login');
     }
 });
 
 
 route.get('/edit-halls', (req, res) => {
-    try {
-        Shows.aggregate([
-            {
-                $unwind: "$showLocations"
-            },
-            {
-                $group: {
-                    _id: "$showLocations.hall",
-                    count: {$sum: 1}
-                }
-            },
-            {
-                $sort: {_id: 1}
-            }], (err, shows) => {
-            if (err) {
-                console.error('Error fetching data from "shows" table:', err);
-                res.status(500).send('Error fetching data from "shows" table');
-                return;
-            }
-            DeletedData.find({type: "Hall"}, {value: 1, _id: 0}, (err, deletedDataHalls) => {
+    const userName = req.cookies.userName;
+    if (userName) {
+        try {
+            Shows.aggregate([
+                {
+                    $unwind: "$showLocations"
+                },
+                {
+                    $group: {
+                        _id: "$showLocations.hall",
+                        count: {$sum: 1}
+                    }
+                },
+                {
+                    $sort: {_id: 1}
+                }], (err, shows) => {
                 if (err) {
-                    console.error('Error fetching data from "deleted_data" table:', err);
-                    res.status(500).send('Error fetching data from "deleted_data" table');
+                    console.error('Error fetching data from "shows" table:', err);
+                    res.status(500).send('Error fetching data from "shows" table');
                     return;
                 }
-                const uniqueDeletedDataHalls = [...new Set(deletedDataHalls.map(item => item.value))];
-                res.render("EditHalls", {
-                    data: shows,
-                    deletedDataHalls: uniqueDeletedDataHalls,
+                DeletedData.find({type: "Hall"}, {value: 1, _id: 0}, (err, deletedDataHalls) => {
+                    if (err) {
+                        console.error('Error fetching data from "deleted_data" table:', err);
+                        res.status(500).send('Error fetching data from "deleted_data" table');
+                        return;
+                    }
+                    const uniqueDeletedDataHalls = [...new Set(deletedDataHalls.map(item => item.value))];
+                    res.render("EditHalls", {
+                        data: shows,
+                        deletedDataHalls: uniqueDeletedDataHalls,
+                    });
                 });
             });
+        } catch (err) {
+            console.error('Error rendering "EditCities" template:', err);
+            res.status(500).send('Error rendering "EditCities" template');
+        }
+    } else {
+        res.redirect('/app/login');
+    }
+
+
+});
+
+
+route.get('/login', async function (req, res) {
+    res.render("login", {});
+});
+
+route.get('/shows', async function (req, res) {
+    const userName = req.cookies.userName;
+    if (userName) {
+
+        const AllShows = await Shows.find({addedby: "user"}).sort({_id: -1});
+        res.render("ListAllshows", {
+            response: AllShows
         });
-    } catch (err) {
-        console.error('Error rendering "EditCities" template:', err);
-        res.status(500).send('Error rendering "EditCities" template');
+    } else {
+        res.redirect('/app/login');
+    }
+});
+
+route.get('/all-shows', async function (req, res) {
+    const userName = req.cookies.userName;
+    if (userName) {
+
+        const AllShows = await Shows.find({addedby: {$ne: "user"}}).sort({_id: -1});
+        res.render("ListAllconcerts", {
+            response: AllShows
+        });
+    } else {
+        res.redirect('/app/login');
     }
 });
 
 
-route.get('/shows', async function (req, res) {
-    const AllShows = await Shows.find({addedby: "user"}).sort({_id: -1});
-    res.render("ListAllshows", {
-        response: AllShows
-    });
-});
 
-route.get('/all-shows', async function (req, res) {
-    const AllShows = await Shows.find({addedby: {$ne: "user"}}).sort({_id: -1}).limit(10);
-    res.render("ListAllconcerts", {
-        response: AllShows
-    });
+route.delete('/delete-show/:id', async (req, res) => {
+    try {
+        const deletedShow = await Shows.findByIdAndDelete(req.params.id);
+        res.status(200).json({ message: 'Show deleted successfully', deletedShow });
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while deleting the show' });
+    }
 });
 
 
@@ -218,9 +326,7 @@ route.post('/quick-edit-show', async (req, res) => {
 route.post('/detail-edit-show', async (req, res) => {
     const formData = req.body;
     const showId = formData.showId;
-    const key = formData.key;
     const index = formData.index;
-    //console.log(formData);
 
     try {
         var updatedFields = {
@@ -231,19 +337,55 @@ route.post('/detail-edit-show', async (req, res) => {
             [`showLocations.${index}.day`]: Module.GetDay(formData.date),
             [`showLocations.${index}.time`]: formData.time
         };
-        // console.log(showId);
-        // console.log(updatedFields);
+
         await Shows.updateOne(
-            {_id: showId},
-            {$set: updatedFields}
+            { _id: showId },
+            { $set: updatedFields }
         );
 
-        res.status(200).json({message: 'Show location details updated successfully'});
+        res.status(200).json({ message: 'Show location details updated successfully' });
     } catch (error) {
         console.error(error);
-        res.status(500).json({error: 'An error occurred while updating show location details'});
+        res.status(500).json({ error: 'An error occurred while updating show location details' });
     }
 });
+
+// delete location detail
+// console.log(show.showLocations[index])
+
+route.delete('/deleteLocationDetail', async (req, res) => {
+    const { index, showId } = req.body;
+    console.log(" :obj id is : ", showId ," index is", index );
+
+    try {
+        const show = await Shows.findById(showId);
+
+        if (!show) {
+            return res.status(404).send('Show not found');
+        }
+
+        if (index >= 0 && index < show.showLocations.length) {
+            console.log('Before deletion:', show.showLocations);
+
+            show.showLocations.splice(index, 1); // Remove the object at the specified index
+            // await show.save(); // Save the updated document
+            await Shows.updateOne(
+                { _id: showId },
+                { $set: { showLocations: show.showLocations } } // Update the array
+            );
+
+            console.log('After deletion:', show.showLocations);
+            
+            return res.status(200).send('Location detail deleted');
+        } else {
+            return res.status(400).send('Invalid index');
+        }
+    } catch (error) {
+        console.error('Error deleting location detail:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 
 // delete Hall
 

@@ -3,19 +3,38 @@
 <head>
     <title>List All Shows</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <style>
         .table-responsive {
             overflow-x: auto;
         }
+
+        .action-header {
+        width: 150px; /* Set the desired width */
+    }
+
+    /* Adjust the width as needed */
+    #showsTable td:nth-child(5),
+    #showsTable th:nth-child(5) {
+        width: 150px; /* Set the same desired width as above */
+    }
+
     </style>
 </head>
 <body>
 
 <div class="container mt-5">
+
     <div class="table-responsive">
-        <h2>All Shows</h2>
+        <div style="display: -webkit-inline-box;">
+            <h2>All Shows</h2>
+            <a class="btn btn-primary ms-2" href="../app">Home</a>
+        </div>
         <table id="showsTable" class="table table-striped table-bordered">
             <thead>
             <tr>
@@ -23,7 +42,7 @@
                 <th>Domain</th>
                 <th>Section</th>
                 <th>Show Locations</th>
-                <th>Action</th>
+                <th class="action-header">Action</th>
             </tr>
             </thead>
             <tbody>
@@ -33,232 +52,404 @@
                     <td>{{ row.domain }}</td>
                     <td>{{ row.section }}</td>
                     <td>
-                        <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#showLocationsModal{{ key }}" data-key="{{ key }}">Detail</button>
+                        <button class="btn btn-info showLocationDetail" data-showindex="{{ key }}"
+                                data-showid="{{ row._id }}"
+                                {# data-bs-toggle="modal" data-bs-target="#showLocationsModal" #}>Detail
+                        </button>
                     </td>
                     <td>
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal{{ key }}" data-key="{{ key }}">Edit</button>
+                        <button class="btn btn-primary editButton" data-bs-toggle="modal" data-showid="{{ row._id }}"
+                            data-name="{{ row.name }}" data-domain="{{ row.domain }}"
+                            data-section="{{ row.section }}" data-bs-target=".editModal">Edit
+                        </button>
+                        <button class="btn btn-danger deleteButton"  data-rowid={{ row._id }} >Delete
+                        </button>
                     </td>
+
+
                 </tr>
             {% endfor %}
             </tbody>
         </table>
 
-        <!-- Show Locations Modal -->
-        {% for key, row in response %}
-            <div class="modal fade" id="showLocationsModal{{ key }}" tabindex="-1" aria-labelledby="showLocationsModalLabel{{ key }}" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="showLocationsModalLabel{{ key }}">Show Locations</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th>Address</th>
-                                    <th>Hall</th>
-                                    <th>City</th>
-                                    <th>Date</th>
-                                    <th>Day</th>
-                                    <th>Time</th>
-                                    <th>Action</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for location in row.showLocations %}
-                                    <tr>
-                                        <td>{{ location.address }}</td>
-                                        <td>{{ location.hall }}</td>
-                                        <td>{{ location.city }}</td>
-                                        <td>{{ location.date }}</td>
-                                        <td>{{ location.day }}</td>
-                                        <td>{{ location.time }}</td>
-                                        <td>
-                                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editShowLocationModal{{ key }}_{{ loop.index0 }}">Edit</button>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        </div>
+        <!-- editModal -->
+        <div class="modal fade editModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Show Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label">Name</label>
+                                <input type="text" class="form-control editName" value="">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Domain</label>
+                                <input type="text" class="form-control editDomain" value="" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Section</label>
+                                <input type="text" class="form-control editSection" value="">
+                            </div>
+                            <input type="hidden" class="form-control showid">
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary saveChanges">Save Changes</button>
                     </div>
                 </div>
             </div>
-        {% endfor %}
+        </div>
 
-        <!-- Edit Show Location Modal -->
-        {% for key, row in response %}
-            {% for index, location in row.showLocations %}
-                <div class="modal fade" id="editShowLocationModal{{ key }}_{{ index }}" tabindex="-1" aria-labelledby="editShowLocationModalLabel{{ key }}_{{ index }}" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="editShowLocationModalLabel{{ key }}_{{ index }}">Edit Show Location Details</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form>
-                                    <input type="hidden" id="showID{{ key }}_{{ index }}" value="{{ row._id }}">
-                                    <div class="mb-3">
-                                        <label for="editAddress{{ key }}_{{ index }}" class="form-label">Address</label>
-                                        <input type="text" class="form-control" id="editAddress{{ key }}_{{ index }}" value="{{ location.address }}">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="editHall{{ key }}_{{ index }}" class="form-label">Hall</label>
-                                        <input type="text" class="form-control" id="editHall{{ key }}_{{ index }}" value="{{ location.hall }}">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="editCity{{ key }}_{{ index }}" class="form-label">City</label>
-                                        <input type="text" class="form-control" id="editCity{{ key }}_{{ index }}" value="{{ location.city }}">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="editDate{{ key }}_{{ index }}" class="form-label">Date</label>
-                                        <input type="date" class="form-control" id="editDate{{ key }}_{{ index }}" value="{{ location.date }}">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="editDay{{ key }}_{{ index }}" class="form-label">Day</label>
-                                        <input type="text" class="form-control" id="editDay{{ key }}_{{ index }}" value="{{ location.day }}" disabled>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="editTime{{ key }}_{{ index }}" class="form-label">Time</label>
-                                        <input type="time" class="form-control" id="editTime{{ key }}_{{ index }}" value="{{ location.time }}">
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                {# <button type="button" class="btn btn-primary">Save Changes</button> #}
-                                <button type="button" class="btn btn-primary" onclick="updateShowLocations('{{ key }}', '{{ index }}')">Save Changes</button>
-                            </div>
-                        </div>
+        <!-- Modal for showing details -->
+        <div class="modal fade" id="showLocationsModal" tabindex="-1" aria-labelledby="showLocationsModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="showLocationsModalLabel">Show Locations Detail</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                </div>
-            {% endfor %}
-        {% endfor %}
-
-        <!-- Edit Modal -->
-        {% for key, row in response %}
-            <div class="modal fade" id="editModal{{ key }}" tabindex="-1" aria-labelledby="editModal{{ key }}Label" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="editModal{{ key }}Label">Edit Show Details</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form>
-                                <input type="hidden" id="showID{{ key }}" value="{{ row._id }}">
-                                <div class="mb-3">
-                                    <label for="editName{{ key }}" class="form-label">Name</label>
-                                    <input type="text" class="form-control" id="editName{{ key }}" value="{{ row.name }}">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="editDomain{{ key }}" class="form-label">Domain</label>
-                                    <input type="text" class="form-control" id="editDomain{{ key }}" value="{{ row.domain }}">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="editSection{{ key }}" class="form-label">Section</label>
-                                    <input type="text" class="form-control" id="editSection{{ key }}" value="{{ row.section }}">
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            {# <button type="button" class="btn btn-primary">Save Changes</button> #}
-                            <button type="button" class="btn btn-primary" onclick="updateValues('{{ key }}')">Save Changes</button>
-                        </div>
+                    <div class="modal-body">
+                        <table id="showLocationsTable" class="table table-striped table-bordered">
+                            <thead>
+                            <tr>
+                                <th>Address</th>
+                                <th>Hall</th>
+                                <th>City</th>
+                                <th>Date</th>
+                                <th>Day</th>
+                                <th>Time</th>
+                                <th style=" width: 150px;">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody
+                                    id="showLocationsTableBody"><!-- Data will be populated here using JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
-        {% endfor %}
+        </div>
+
+        <!-- Modal for editing location -->
+        <div class="modal fade editShowLocationModal" id="editShowLocationModal" tabindex="-1"
+             aria-labelledby="editShowLocationModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editShowLocationModalLabel">Edit Show Location</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <input type="hidden" class="form-control" id="Default-showID" value="">
+                            <input type="hidden" class="form-control editindex" value="">
+                            <div class="mb-3">
+                                <label class="form-label">Address</label>
+                                <input type="text" class="form-control editAddress" value="">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Hall</label>
+                                <input type="text" class="form-control editHall" value="">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">City</label>
+                                <input type="text" class="form-control editCity" value="">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Date</label>
+                                <input type="date" class="form-control editDate" value="">
+                            </div>
+                            {# <div class="mb-3">
+                                <label class="form-label">Day</label>
+                                <input type="text" class="form-control editDay" value="">
+                            </div> #}
+                            <div class="mb-3">
+                                <label class="form-label">Time</label>
+                                <input type="time" class="form-control editTime" value="">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary saveLocationChanges">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
     </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/Modules/listAllconcerts.js"></script>
 
+
 <script>
     $(document).ready(function () {
-        $('#showsTable').DataTable({ "ordering": false });
+        $('#showsTable').DataTable({"ordering": false});
     });
 
-    // JavaScript code for modal content loading here...
-
+//     $(document).ready(function () {
+//     $('#showLocationsTable').DataTable(); // Initialize DataTable
+// });
 </script>
-<script>
-// Quick edit modal
-function updateValues(key) {
-    var showId = $('#showID' + key).val();
-    var name = $('#editName' + key).val();
-    var domain = $('#editDomain' + key).val();
-    var section = $('#editSection' + key).val();
 
-    // Send AJAX request to update values
-    $.ajax({
-        url: 'quick-edit-show', // Replace with your server endpoint
-        method: 'POST',
-        data: {
-            showId: showId,
-            name: name,
-            domain: domain,
-            section: section
-        },
-        success: function(response) {
-            // Handle success response if needed
-            // For example, close the modal or show a success message
-            $('#editModal' + key).modal('hide');
-        },
-        error: function(error) {
-            // Handle error response if needed
-        }
+
+
+<script>
+    var responseData = {{ response|json_encode|raw }};
+    var showLocations;
+
+    $(document).on('click', '.showLocationDetail', function () {
+        //console.log($(this).data('showid'));
+        var showid = $(this).data('showid');
+        $("#Default-showID").val($(this).data('showid'));
+        var showIndex = $(this).data('showindex');
+        showLocations = responseData[showIndex]._doc.showLocations;
+        console.log("before deletion", showLocations)
+        var tableBody = $('#showLocationsTableBody');
+        tableBody.empty();
+
+        $.each(showLocations, function (index, location) {
+            console.log("showIndex", index)
+            $("#Default-showIndex").val($(this).data('index'));
+
+            var row = '<tr>' +
+                '<td>' + location.address + '</td>' +
+                '<td>' + location.hall + '</td>' +
+                '<td>' + location.city + '</td>' +
+                '<td>' + location.date + '</td>' +
+                '<td>' + location.day + '</td>' +
+                '<td>' + location.time + '</td>' +
+                '<td> <div class="btn-group"><button class="btn btn-primary editLocation" data-bs-toggle="modal"  data-index= "' + index + '" data-address="' + location.address + '" data-hall="' + location.hall + '" data-city="' + location.city + '" data-date="' + location.date + '" data-day="' + location.day + '" data-time="' + location.time + '" data-bs-target=".editShowLocationModal">Edit</button>' +
+
+
+                '<button class="btn btn-danger deleteLocation"   data-index= "' + index + '" data-showid="'+ showid +'" >Delete</button></div></td>' +
+                '</tr>';
+            tableBody.append(row);
+        });
+        $("#showLocationsModal").modal('show');
     });
-}
-</script>
 
-<script>
-// Detail edit modal 
-function updateShowLocations( key, index) {
-    var showId = $('#showID' + key + '_' + index).val();
-    var address = $('#editAddress' + key + '_' + index).val();
-    var hall = $('#editHall' + key + '_' + index).val();
-    var city = $('#editCity' + key + '_' + index).val();
-    var date = $('#editDate' + key + '_' + index).val();
-    var day = $('#editDay' + key + '_' + index).val();
-    var time = $('#editTime' + key + '_' + index).val();
+    $(document).on('click', '.deleteLocation', function () {
+    var index = $(this).data('index');
+    var showId = $(this).data('showid');
 
-    // Send AJAX request to update location values
+    var confirmation = confirm('Are you sure you want to delete this entry?');
+    if (!confirmation) {
+        return; // If the user cancels, do nothing
+    }
+
     $.ajax({
-        url: 'detail-edit-show', // Replace with your server endpoint
-        method: 'POST',
+        url: 'deleteLocationDetail', 
+        type: 'DELETE',
         data: {
-            showId: showId,
-            key: key,
             index: index,
-            address: address,
-            hall: hall,
-            city: city,
-            date: date,
-            // day: day,
-            time: time
+            showId: showId
+        }, 
+        success: function (data) {
+            console.log('Object deleted successfully');
+            $("#showLocationsTableBody tr:eq(" + index + ")").remove();
+            toastr.success('Deleted successfully!');
+
+            // Update the indexes in the remaining array elements
+            showLocations.splice(index, 1);
+            console.log("after deletion", showLocations)
+
+
+            // Update data-index attributes in the remaining rows
+            $('#showLocationsTableBody tr').each(function (newIndex) {
+                $(this).find('.editLocation').data('index', newIndex);
+                $(this).find('.deleteLocation').data('index', newIndex);
+            });
+
+            // Clear the DataTable and redraw with updated data
+            // var dataTable = $('#showLocationsTable').DataTable();
+            // modal.modal('');
+            //$("#showLocationsModal").modal('hide');
+            // dataTable.clear().rows.add(showLocations).draw();
         },
-        success: function(response) {
-            // Handle success response if needed
-            // For example, close the modal or show a success message
-            $('#editModal' + key + '_' + index).modal('hide');
-        },
-        error: function(error) {
-            // Handle error response if needed
+        error: function (error) {
+            console.error('Error deleting object:', error);
+            toastr.error('An error occurred while Deleting.');
         }
     });
-}
+});
+
+</script>
+
+
+<script>
+
+    // Edit Button Click Event
+    $(document).on('click', '.editLocation', function () {
+        var button = $(this);
+        var address = button.data('address');
+        var hall = button.data('hall');
+        var city = button.data('city');
+        var date = button.data('date');
+        var day = button.data('day');
+        var time = button.data('time');
+        var index = (button).data('index');
+        console.log("index here", index);
+        // var showLocations = button.data('showlocations');
+
+        var modal = $('.editShowLocationModal');
+
+        modal.find('.form-control.editAddress').val(address);
+        modal.find('.form-control.editHall').val(hall);
+        modal.find('.form-control.editCity').val(city);
+        modal.find('.form-control.editDate').val(date);
+        modal.find('.form-control.editDay').val(day);
+        modal.find('.form-control.editTime').val(time);
+        modal.find('.form-control.editindex').val(index);
+    });
+
+    // Edit location Button Click Event
+    $(document).ready(function () {
+        $(document).on('click', '.saveLocationChanges', function () {
+            var modal = $(this).closest('.modal');
+            var editedAddress = modal.find('.form-control.editAddress').val();
+            var editedHall = modal.find('.form-control.editHall').val();
+            var editedCity = modal.find('.form-control.editCity').val();
+            var editedDate = modal.find('.form-control.editDate').val();
+            var editedTime = modal.find('.form-control.editTime').val();
+            var index = modal.find('.form-control.editindex').val();
+            var showId = modal.find('.form-control#Default-showID').val();
+
+
+            var requestData = {
+                showId: showId,
+                index: index,
+                address: editedAddress,
+                hall: editedHall,
+                city: editedCity,
+                date: editedDate,
+                time: editedTime
+            };
+
+            $.ajax({
+                url: 'detail-edit-show', // Update the URL as needed
+                method: 'POST',
+                data: requestData,
+                success: function (response) {
+                    toastr.success('Update successful!');
+                    console.log('Update successful:', response);
+
+                    // Close the modal
+                    modal.modal('hide');
+                },
+                error: function (error) {
+                    toastr.error('An error occurred while updating.');
+                    console.error('Error:', error);
+                }
+            });
+        });
+    });
+
+</script>
+
+
+<script>
+    $(document).ready(function () {
+
+
+        
+
+
+        $(document).on('click', '.editButton', function () {
+            var button = $(this);
+            var name = button.data('name');
+            var domain = button.data('domain');
+            var section = button.data('section');
+            var showid = button.data('showid');
+            var modal = $('.editModal');
+
+            modal.find('.form-control.editName').val(name);
+            modal.find('.form-control.editDomain').val(domain);
+            modal.find('.form-control.editSection').val(section);
+            modal.find('.form-control.showid').val(showid);
+        });
+
+        $('.saveChanges').on('click', function () {
+            var modal = $(this).closest('.modal');
+            var name = modal.find('.form-control.editName').val();
+            var domain = modal.find('.form-control.editDomain').val();
+            var section = modal.find('.form-control.editSection').val();
+            var showid = modal.find('.form-control.showid').val();
+            // var showId = $('#showID' + key).val();
+            $.ajax({
+                url: 'quick-edit-show',
+                method: 'POST',
+                data: {
+                    showId: showid,
+                    name: name,
+                    domain: domain,
+                    section: section
+                },
+                success: function (response) {
+                    toastr.success('Update successful!');
+                    modal.modal('hide');
+                },
+                error: function (error) {
+                    toastr.error('An error occurred while updating.');
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+    $(document).on('click', '.deleteButton', function () {
+    var rowId = $(this).data('rowid');
+    var rowElement = $(this).closest('tr');
+    var dataTable = $('#showsTable').DataTable();
+
+    var confirmation = confirm('Are you sure you want to delete this entry?');
+    if (!confirmation) {
+        return;
+    }
+
+    $.ajax({
+        type: 'DELETE',
+        url: `delete-show/${rowId}`, 
+        success: function (response) {
+            toastr.success('Deleted successful!');
+            rowElement.remove();
+            dataTable.row(rowElement).remove().draw(); // Remove and redraw DataTable
+
+            // Update the "Showing x to y of z entries" message
+            var info = dataTable.page.info();
+            var paginationInfo = $('#showsTable_info');
+            paginationInfo.text('Showing ' + (info.start + 1) + ' to ' + (info.start + info.length) + ' of ' + info.recordsTotal + ' entries');
+
+            console.log(response.message);
+        },
+        error: function (error) {
+            console.error('Error deleting show:', error);
+            toastr.error('An error occurred while Deleting.');
+        }
+    });
+});
+</script>
+
+
+{# delete Show Location Detail #}
+<script>
+
+
+
 </script>
 
 

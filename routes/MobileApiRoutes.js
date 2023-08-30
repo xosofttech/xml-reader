@@ -1,21 +1,9 @@
 const express = require('express');
 const route = express.Router();
 const Module = require('../Modules/general');
-var Config = require('../config');
-const {JSON} = require('../Modules/allowed-Extensions');
-var Shows = require('../Model/shows');
-var ObjectId = require('mongodb').ObjectId;
+const Shows = require('../Model/shows');
+const Devices = require('../Model/devices');
 const fs = require('fs');
-
-route.get('/', function (req, res) {
-    res.redirect("/app")
-    //res.render("login", {});
-    //res.send(`<center style="margin-top: 10%;"><h1> XML Shows</h1></center>`);
-});
-
-route.get('/healthcheck', function (req, res) {
-    res.send(res.statusCode.toString());
-});
 
 var ShowsResult = [];
 route.post('/fetch-shows', async function (req, res) {
@@ -241,7 +229,7 @@ route.post('/fetch-shows', async function (req, res) {
     console.log(main_query);
 
     res.send({
-        "result": Object.assign({}, ShowsResult),
+        "result": ShowsResult,
         "TotalRecords": TotalRows,
         "CurrPage": pageParams.page,
         "Totalpages": (Math.ceil(TotalRows / perPage))
@@ -249,7 +237,35 @@ route.post('/fetch-shows', async function (req, res) {
 
 });
 
-route.post('/fetch-data', async function (req, res) {
+route.post('/register-device', async function (req, res) {
+    try {
+        var deviceID = req.body.deviceID;
+        var deviceIP = req.body.deviceIP;
+        var NotificationStatus = req.body.NotificationStatus;
+
+        Devices.findOne({deviceID: deviceID}, async function (err, deviceData) {
+            if (deviceData === null) {
+                var obj = new Devices({
+                    deviceID: deviceID,
+                    deviceIP: deviceIP,
+                    NotificationStatus: NotificationStatus
+                });
+                await obj.save();
+            } else {
+                await Devices.updateOne({deviceID: deviceID}, {
+                    deviceID: deviceID,
+                    deviceIP: deviceIP,
+                    NotificationStatus: NotificationStatus
+                })
+            }
+            res.send({"error": false, "message": "Updated Successfully"});
+        });
+    } catch (err) {
+        res.send({"error": true, "message": "Failed", "Required Fields": "deviceID, deviceIP & NotificationStatus"});
+    }
+});
+
+/*route.post('/fetch-data', async function (req, res) {
     try {
         if (fs.existsSync('public/data.txt')) {
             const data = fs.readFileSync('public/data.txt', 'utf8');
@@ -261,69 +277,6 @@ route.post('/fetch-data', async function (req, res) {
     } catch (err) {
         res.send({"cities": [], "sections": []});
     }
-});
-
-
-//checkDatesinShows();
-
-function checkDatesinShows() {
-    Shows.aggregate(
-        [
-            {
-                $match: {
-                    //show_id: "summerinthecity",
-                    "showLocations.day": {$exists: false}, showLocations: {$ne: []}
-                }
-            }
-        ], async function (err, show_result) {
-            //console.log(show_result);
-            (async function () {
-                for ([index, object] of show_result.entries()) {
-                    //    console.log(object);
-                    for ([index1, object1] of object.showLocations.entries()) {
-                        object1.day = Module.GetDay(object1.date);
-                        //      console.log(object1);
-                    }
-                    //console.log(object.show_id);
-                    await Shows.updateOne({_id: ObjectId(object._id)}, {showLocations: object.showLocations});
-                    console.log(object._id, "Updated");
-                }
-
-                //console.log(show_result);
-            })();
-        });
-}
-
-
-function UpdateCity() {
-    Shows.updateMany({
-            //_id: ObjectId('648099acca71ee467bb4b334'),
-            "showLocations.city": "תל אביב-יפו"
-        },
-        //{"showLocations.city": "תל אביב"},
-        {$set: {"showLocations.$.city": "תל אביב"}},
-        //{},
-        function (err, result) {
-            //console.log(err);
-            console.log(result);
-            checkDatesinShows();
-        });
-}
-
-// Shows.deleteMany({showLocations:{ $exists: true, $size: 0}}, function (err, resp) {
-//     console.log(resp);
-// })
-
-
-/*function GetDay(DateStr) {
-    try {
-        const data = new Date(DateStr);
-        const day = data.getDay();
-        const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        return dayNames[day];
-    } catch (e) {
-        return "";
-    }
-}*/
+});*/
 
 module.exports = route

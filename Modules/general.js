@@ -51,3 +51,7 @@ exports.GetDay = function (DateStr) {
         return "";
     }
 }
+
+exports.Empty = function (object) {
+    return Object.keys(object).length === 0
+}
