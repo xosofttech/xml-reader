@@ -896,6 +896,117 @@ exports.ScrapTicketIngo = async function () {
     });
 }
 
+exports.ScrapSiteMap = async function () {
+    const siteMaps = [
+        'https://www.mevalim.co.il/page-sitemap.xml',
+        'https://www.mevalim.co.il/page-sitemap2.xml'
+    ];
+    const allLinks = [];
+    for (const siteMapUrl of siteMaps) {
+            const response = await axios.get(siteMapUrl);
+            const $ = cheerio.load(response.data);
+
+            // Extract and console the links from the sitemap
+            $('loc').each((index, element) => {
+                allLinks.push($(element).text());
+            });
+    }
+    // console.log(allLinks);
+    await ScrapSiteMapFunc(allLinks);
+}
+
+async function ScrapSiteMapFunc(allLinks) {
+    const excludedKeywords = [
+        '#',
+        'kartisim',
+        'barby',
+        'comy',
+        'eventim',
+        'kupat',
+        'smarticket',
+        'tmisrael',
+        'ticketingo'
+    ];
+
+    for await (const link of allLinks) {
+        const response = await axios.get(link);
+        const $ = cheerio.load(response.data);
+
+        // Check if the link contains any of the excluded keywords
+        const isExcluded = excludedKeywords.some(keyword => link.includes(keyword));
+
+        if (!isExcluded) {
+            const eventItems = $('.rgbcode_table_shortcode_table_item');
+            const eventData = [];
+
+            eventItems.each((index, element) => {
+                const eventItem = $(element);
+
+                const date = eventItem.find('.rgbcode_table_shortcode_table_date').text().trim();
+                const dayAndTime = eventItem.find('.rgbcode_table_shortcode_table_when').eq(0).text().trim().split('\n');
+                const day = dayAndTime[0].trim();
+                const time = dayAndTime[1].trim();
+                const eventName = eventItem.find('.rgbcode_table_shortcode_table_event_name').text().trim();
+                const secondTdText = eventItem.find('td:nth-child(2)').text().trim();
+                const cleanedSecondTdText = secondTdText.replace(eventName, '').trim();
+                const parts = cleanedSecondTdText.split('\n');
+
+                // Check if there are at least two parts
+                if (parts.length >= 2) {
+                    // Extract and assign the values to the 'hallName' variable
+                    const value1 = parts[1].trim();
+                    const value2 = parts.length > 2 ? parts[2].trim() : ''; // Check if parts[2] exists
+                    const hallName = value1 + ' ' + value2;
+
+                    var response = {};
+                    response.show_id = link;
+                    response.name = eventName;
+                    response.domain = 'mevalim.co.il';
+                    response.showLocations = {
+                        link,
+                        date,
+                        day,
+                        time,
+                        eventName,
+                        hallName,
+                    };
+
+                    eventData.push(response);
+
+                } else {
+                    // Handle the case where the format is invalid
+                    console.log('Invalid format for element at index ' + index);
+                }
+            });
+
+            if (eventData.length > 0) {
+                console.log(`Data scraped from link: ${link}`);
+                // console.log(eventData);
+
+                AllEvents.insertMany(eventData).then(async function () {
+                    console.log(`Inserted`);
+                }).catch(function (error) {
+                    console.log(error)
+                });
+
+
+                // const result = await AllEvents.findOne({name: name});
+                // if (result == null) {
+                //     console.log(showID, "Not Found Pushing in Array");
+                //     await AllEvents.create(response);
+                // } else {
+                //     await AllEvents.updateOne({name: name}, response);
+                //     console.log(showID, "Already Exist & Updated");
+                // }
+
+            }
+        }
+    }
+    console.log(`Execution Completed`);
+}
+
+
+
 
 exports.ScrapTmisrael = async function () {
     console.log("ScrapTmisrael")

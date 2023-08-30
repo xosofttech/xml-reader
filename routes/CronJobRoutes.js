@@ -38,5 +38,6 @@ if (CONFIG.CRON === "offff") {
 // FN.LoopAllLinks();
 // FN.smartTicket();
 // FN.ScrapTmisrael();
-FN.ScrapTicketIngo();
+// FN.ScrapTicketIngo();
+FN.ScrapSiteMap();
 
