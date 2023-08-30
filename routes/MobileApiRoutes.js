@@ -242,6 +242,7 @@ route.post('/register-device', async function (req, res) {
         var deviceID = req.body.deviceID;
         var deviceIP = req.body.deviceIP;
         var NotificationStatus = req.body.NotificationStatus;
+        var TokenAccess = req.body.token_access;
 
         Devices.findOne({deviceID: deviceID}, async function (err, deviceData) {
             if (deviceData === null) {
@@ -255,6 +256,7 @@ route.post('/register-device', async function (req, res) {
                 await Devices.updateOne({deviceID: deviceID}, {
                     deviceID: deviceID,
                     deviceIP: deviceIP,
+                    tokenAccess: TokenAccess,
                     NotificationStatus: NotificationStatus
                 })
             }
