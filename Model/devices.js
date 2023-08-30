@@ -12,6 +12,10 @@ var DeviceSchema = new Schema({
         type: "String",
         default: ""
     },
+    tokenAccess: {
+        type: "String",
+        default: ""
+    },
     NotificationStatus: {
         type: Boolean,
         default: false

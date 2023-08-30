@@ -249,6 +249,7 @@ route.post('/register-device', async function (req, res) {
                 var obj = new Devices({
                     deviceID: deviceID,
                     deviceIP: deviceIP,
+                    tokenAccess: TokenAccess,
                     NotificationStatus: NotificationStatus
                 });
                 await obj.save();
