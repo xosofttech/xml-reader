@@ -36,4 +36,8 @@ if (CONFIG.CRON === "offff") {
 // FN.ScrapComy();
 // FN.ScrapEvenTim();
 // FN.LoopAllLinks();
+// FN.smartTicket();
+// FN.ScrapTmisrael();
+// FN.ScrapTicketIngo();
+// FN.ScrapSiteMap();
 

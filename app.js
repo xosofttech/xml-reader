@@ -23,8 +23,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-// var CronJobRoute = require('./routes/CronJobRoutes');
 var LocalCronJobRoute = require('./routes/LocalCronJobRoutes');
+var CronJobRoute = require('./routes/CronJobRoutes');
 
 app.use('/', require('./routes/ApiRoutes'));
 app.use('/mobile', require('./routes/MobileApiRoutes'));
