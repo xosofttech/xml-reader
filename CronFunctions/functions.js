@@ -948,6 +948,10 @@ async function ScrapSiteMapFunc(allLinks) {
                 const time = dayAndTime[1].trim();
                 const eventName = eventItem.find('.rgbcode_table_shortcode_table_event_name').text().trim();
                 const secondTdText = eventItem.find('td:nth-child(2)').text().trim();
+                const eventLinks = eventItem.find('td:nth-child(3) a').attr('href');
+                var thirdSlashIndex = eventLinks.indexOf('/', eventLinks.indexOf('/', eventLinks.indexOf('/') + 1) + 1);
+                var showID = eventLinks.substring(thirdSlashIndex + 1);
+                // we are saving eventLinks instead of showID
                 const cleanedSecondTdText = secondTdText.replace(eventName, '').trim();
                 const parts = cleanedSecondTdText.split('\n');
 
@@ -959,11 +963,12 @@ async function ScrapSiteMapFunc(allLinks) {
                     const hallName = value1 + ' ' + value2;
 
                     var response = {};
-                    response.show_id = link;
+                    response.show_id = eventLinks;
                     response.name = eventName;
+                    response.eventLinks = eventLinks;
                     response.domain = 'mevalim.co.il';
                     response.showLocations = {
-                        link,
+                        eventLinks,
                         date,
                         day,
                         time,
@@ -983,20 +988,26 @@ async function ScrapSiteMapFunc(allLinks) {
                 console.log(`Data scraped from link: ${link}`);
                 // console.log(eventData);
 
-                AllEvents.insertMany(eventData).then(async function () {
-                    console.log(`Inserted`);
-                }).catch(function (error) {
-                    console.log(error)
-                });
+                for (const response of eventData) {
+                    const result = await AllEvents.findOne({ show_id: response.show_id });
+                    if (result == null) {
+                        console.log(response.show_id, "Not Found Pushing in Array");
+                        await AllEvents.create(response);
+                    } else {
+                        await AllEvents.updateOne({ show_id: response.show_id }, response);
+                        console.log(response.show_id, "Already Exist & Updated");
+                    }
+                }
 
 
-                // const result = await AllEvents.findOne({name: name});
+
+                // const result = await AllEvents.findOne({ show_id: response.show_id });
                 // if (result == null) {
-                //     console.log(showID, "Not Found Pushing in Array");
+                //     console.log(response, "Not Found Pushing in Array");
                 //     await AllEvents.create(response);
                 // } else {
-                //     await AllEvents.updateOne({name: name}, response);
-                //     console.log(showID, "Already Exist & Updated");
+                //     await AllEvents.updateOne({ show_id: response.show_id }, response);
+                //     console.log(response, "Already Exist & Updated");
                 // }
 
             }
