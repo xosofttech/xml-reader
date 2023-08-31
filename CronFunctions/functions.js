@@ -731,7 +731,6 @@ exports.smartTicket = async function () {
 }
 
 
-
 async function EvenTimFunc(pokemons) {
 
     var ArrData = [];
@@ -903,13 +902,13 @@ exports.ScrapSiteMap = async function () {
     ];
     const allLinks = [];
     for (const siteMapUrl of siteMaps) {
-            const response = await axios.get(siteMapUrl);
-            const $ = cheerio.load(response.data);
+        const response = await axios.get(siteMapUrl);
+        const $ = cheerio.load(response.data);
 
-            // Extract and console the links from the sitemap
-            $('loc').each((index, element) => {
-                allLinks.push($(element).text());
-            });
+        // Extract and console the links from the sitemap
+        $('loc').each((index, element) => {
+            allLinks.push($(element).text());
+        });
     }
     // console.log(allLinks);
     await ScrapSiteMapFunc(allLinks);
@@ -919,6 +918,7 @@ async function ScrapSiteMapFunc(allLinks) {
     const excludedKeywords = [
         '#',
         'kartisim',
+        'mevalim',
         'barby',
         'comy',
         'eventim',
@@ -932,90 +932,87 @@ async function ScrapSiteMapFunc(allLinks) {
         const response = await axios.get(link);
         const $ = cheerio.load(response.data);
 
-            const eventItems = $('.rgbcode_table_shortcode_table_item');
-            const eventData = [];
+        const eventItems = $('.rgbcode_table_shortcode_table_item');
+        const eventData = [];
 
-            eventItems.each((index, element) => {
-                const eventItem = $(element);
+        eventItems.each((index, element) => {
+            const eventItem = $(element);
 
-                const date = eventItem.find('.rgbcode_table_shortcode_table_date').text().trim();
-                const dayAndTime = eventItem.find('.rgbcode_table_shortcode_table_when').eq(0).text().trim().split('\n');
-                const day = dayAndTime[0].trim();
-                const time = dayAndTime[1].trim();
-                const eventName = eventItem.find('.rgbcode_table_shortcode_table_event_name').text().trim();
-                const secondTdText = eventItem.find('td:nth-child(2)').text().trim();
-                const eventLinks = eventItem.find('td:nth-child(3) a').attr('href');
-                var thirdSlashIndex = eventLinks.indexOf('/', eventLinks.indexOf('/', eventLinks.indexOf('/') + 1) + 1);
-                var showID = eventLinks.substring(thirdSlashIndex + 1);
-                // we are saving eventLinks instead of showID
-                const cleanedSecondTdText = secondTdText.replace(eventName, '').trim();
-                const parts = cleanedSecondTdText.split('\n');
+            const date = eventItem.find('.rgbcode_table_shortcode_table_date').text().trim();
+            const dayAndTime = eventItem.find('.rgbcode_table_shortcode_table_when').eq(0).text().trim().split('\n');
+            const day = dayAndTime[0].trim();
+            const time = dayAndTime[1].trim();
+            const eventName = eventItem.find('.rgbcode_table_shortcode_table_event_name').text().trim();
+            const secondTdText = eventItem.find('td:nth-child(2)').text().trim();
+            const eventLinks = eventItem.find('td:nth-child(3) a').attr('href');
+            var thirdSlashIndex = eventLinks.indexOf('/', eventLinks.indexOf('/', eventLinks.indexOf('/') + 1) + 1);
+            var showID = eventLinks.substring(thirdSlashIndex + 1);
+            // we are saving eventLinks instead of showID
+            const cleanedSecondTdText = secondTdText.replace(eventName, '').trim();
+            const parts = cleanedSecondTdText.split('\n');
 
-                // Check if there are at least two parts
-                if (parts.length >= 2) {
-                    // Extract and assign the values to the 'hallName' variable
-                    const value1 = parts[1].trim();
-                    const value2 = parts.length > 2 ? parts[2].trim() : ''; // Check if parts[2] exists
-                    const hallName = value1 + ' ' + value2;
+            // Check if there are at least two parts
+            if (parts.length >= 2) {
+                // Extract and assign the values to the 'hallName' variable
+                const value1 = parts[1].trim();
+                const value2 = parts.length > 2 ? parts[2].trim() : ''; // Check if parts[2] exists
+                const hall = value1 + ' ' + value2;
 
-                    var response = {};
-                    response.show_id = eventLinks;
-                    response.name = eventName;
-                    response.eventLinks = eventLinks;
-                    response.domain = 'mevalim.co.il';
-                    response.showLocations = {
-                        eventLinks,
-                        date,
-                        day,
-                        time,
-                        eventName,
-                        hallName,
-                    };
-                    // Check if the link contains any of the excluded keywords
-                    const isExcluded = excludedKeywords.some(keyword => eventLinks.includes(keyword));
+                var response = {};
+                response.show_id = eventLinks;
+                response.name = eventName;
+                response.eventLinks = eventLinks;
+                response.domain = 'mevalim.co.il';
+                response.showLocations = {
+                    eventLinks,
+                    date,
+                    day,
+                    time,
+                    //eventName,
+                    hall,
+                };
+                // Check if the link contains any of the excluded keywords
+                const isExcluded = excludedKeywords.some(keyword => eventLinks.includes(keyword));
 
-                    if (!isExcluded) {
-                        eventData.push(response);   
-                    }
-
-                } else {
-                    // Handle the case where the format is invalid
-                    console.log('Invalid format for element at index ' + index);
-                }
-            });
-
-            if (eventData.length > 0) {
-                console.log(`Data scraped from link: ${link}`);
-                // console.log(eventData);
-
-                for (const response of eventData) {
-                    const result = await AllEvents.findOne({ show_id: response.show_id });
-                    if (result == null) {
-                        console.log(response.show_id, "Not Found Pushing in Array");
-                        await AllEvents.create(response);
-                    } else {
-                        await AllEvents.updateOne({ show_id: response.show_id }, response);
-                        console.log(response.show_id, "Already Exist & Updated");
-                    }
+                if (!isExcluded) {
+                    eventData.push(response);
                 }
 
-
-
-                // const result = await AllEvents.findOne({ show_id: response.show_id });
-                // if (result == null) {
-                //     console.log(response, "Not Found Pushing in Array");
-                //     await AllEvents.create(response);
-                // } else {
-                //     await AllEvents.updateOne({ show_id: response.show_id }, response);
-                //     console.log(response, "Already Exist & Updated");
-                // }
-
+            } else {
+                // Handle the case where the format is invalid
+                console.log('Invalid format for element at index ' + index);
             }
+        });
+
+        if (eventData.length > 0) {
+            console.log(`Data scraped from link: ${link}`);
+            // console.log(eventData);
+
+            for (const response of eventData) {
+                const result = await AllEvents.findOne({show_id: response.show_id});
+                if (result == null) {
+                    console.log(response.show_id, "Not Found Pushing in Array");
+                    await AllEvents.create(response);
+                } else {
+                    await AllEvents.updateOne({show_id: response.show_id}, response);
+                    console.log(response.show_id, "Already Exist & Updated");
+                }
+            }
+
+
+            // const result = await AllEvents.findOne({ show_id: response.show_id });
+            // if (result == null) {
+            //     console.log(response, "Not Found Pushing in Array");
+            //     await AllEvents.create(response);
+            // } else {
+            //     await AllEvents.updateOne({ show_id: response.show_id }, response);
+            //     console.log(response, "Already Exist & Updated");
+            // }
+
+        }
     }
     console.log(`Execution Completed`);
 }
-
-
 
 
 exports.ScrapTmisrael = async function () {
@@ -1084,7 +1081,7 @@ async function TmisraelFunc(pokemons, driver) {
 
             var response = {};
             response.name = name;
-            response.showLocations= showLocations;
+            response.showLocations = showLocations;
 
             console.log(response)
 
