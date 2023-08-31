@@ -967,7 +967,7 @@ async function ScrapSiteMapFunc(allLinks) {
                 var response = {};
                 response.show_id = link;
                 response.name = eventName;
-                response.eventLinks = link;
+                response.link = link;
                 response.domain = domain;
                 response.showLocations = {
                     link,
