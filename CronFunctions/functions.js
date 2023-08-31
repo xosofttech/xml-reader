@@ -943,14 +943,14 @@ async function ScrapSiteMapFunc(allLinks) {
             const [Fromattedday, Fromattedmonth] = Unfromatteddate.split('.');
             const date = `${Fromattedyear}-${Fromattedmonth}-${Fromattedday}`;
             const dayAndTime = eventItem.find('.rgbcode_table_shortcode_table_when').eq(0).text().trim().split('\n');
-            const Unformattedday = dayAndTime[0].trim();
+            //const Unformattedday = dayAndTime[0].trim();
             const time = dayAndTime[1].trim();
             const eventName = eventItem.find('.rgbcode_table_shortcode_table_event_name').text().trim();
             const secondTdText = eventItem.find('td:nth-child(2)').text().trim();
             const link = eventItem.find('td:nth-child(3) a').attr('href');
             var thirdSlashIndex = link.indexOf('/', link.indexOf('/', link.indexOf('/') + 1) + 1);
             var tempDomain = link.substring(0, thirdSlashIndex + 1);
-            var domain = tempDomain.replace('https://www.','').replace('/', '');
+            var domain = tempDomain.replace('https://www.', '').replace('/', '');
             var showID = link.substring(thirdSlashIndex + 1);
             // we are saving link instead of showID
             const cleanedSecondTdText = secondTdText.replace(eventName, '').trim();
@@ -963,7 +963,7 @@ async function ScrapSiteMapFunc(allLinks) {
                 const value2 = parts.length > 2 ? parts[2].trim() : ''; // Check if parts[2] exists
                 const hall = value1 + ' ' + value2;
 
-                day = GetDay(Unformattedday);
+                const day = GetDay(date);
 
                 var response = {};
                 response.show_id = link;
@@ -992,19 +992,19 @@ async function ScrapSiteMapFunc(allLinks) {
         });
 
         if (eventData.length > 0) {
-            console.log(`Data scraped from link: ${link}`);
-            console.log(eventData);
+            // console.log(`Data scraped from link: ${link}`);
+            // console.log(eventData);
 
-          /*  for (const response of eventData) {
+            for (const response of eventData) {
                 const result = await AllEvents.findOne({show_id: response.show_id});
                 if (result == null) {
                     console.log(response.show_id, "Not Found Pushing in Array");
-                    await AllEvents.create(response);
+                    await Shows.create(response);
                 } else {
-                    await AllEvents.updateOne({show_id: response.show_id}, response);
+                    await Shows.updateOne({show_id: response.show_id}, response);
                     console.log(response.show_id, "Already Exist & Updated");
                 }
-            }*/
+            }
 
         }
     }
