@@ -938,16 +938,20 @@ async function ScrapSiteMapFunc(allLinks) {
         eventItems.each((index, element) => {
             const eventItem = $(element);
 
-            const date = eventItem.find('.rgbcode_table_shortcode_table_date').text().trim();
+            const Unfromatteddate = eventItem.find('.rgbcode_table_shortcode_table_date').text().trim();
+            const Fromattedyear = new Date().getFullYear(); // Get the current year
+            const [Fromattedday, Fromattedmonth] = Unfromatteddate.split('.');
+            const date = `${Fromattedyear}-${Fromattedmonth}-${Fromattedday}`;
             const dayAndTime = eventItem.find('.rgbcode_table_shortcode_table_when').eq(0).text().trim().split('\n');
-            const day = dayAndTime[0].trim();
+            const Unformattedday = dayAndTime[0].trim();
             const time = dayAndTime[1].trim();
             const eventName = eventItem.find('.rgbcode_table_shortcode_table_event_name').text().trim();
             const secondTdText = eventItem.find('td:nth-child(2)').text().trim();
-            const eventLinks = eventItem.find('td:nth-child(3) a').attr('href');
-            var thirdSlashIndex = eventLinks.indexOf('/', eventLinks.indexOf('/', eventLinks.indexOf('/') + 1) + 1);
-            var showID = eventLinks.substring(thirdSlashIndex + 1);
-            // we are saving eventLinks instead of showID
+            const link = eventItem.find('td:nth-child(3) a').attr('href');
+            var thirdSlashIndex = link.indexOf('/', link.indexOf('/', link.indexOf('/') + 1) + 1);
+            var domain = link.substring(0, thirdSlashIndex + 1);
+            var showID = link.substring(thirdSlashIndex + 1);
+            // we are saving link instead of showID
             const cleanedSecondTdText = secondTdText.replace(eventName, '').trim();
             const parts = cleanedSecondTdText.split('\n');
 
@@ -958,13 +962,15 @@ async function ScrapSiteMapFunc(allLinks) {
                 const value2 = parts.length > 2 ? parts[2].trim() : ''; // Check if parts[2] exists
                 const hall = value1 + ' ' + value2;
 
+                day = GetDay(Unformattedday);
+
                 var response = {};
-                response.show_id = eventLinks;
+                response.show_id = link;
                 response.name = eventName;
-                response.eventLinks = eventLinks;
-                response.domain = 'mevalim.co.il';
+                response.eventLinks = link;
+                response.domain = domain;
                 response.showLocations = {
-                    eventLinks,
+                    link,
                     date,
                     day,
                     time,
@@ -972,7 +978,7 @@ async function ScrapSiteMapFunc(allLinks) {
                     hall,
                 };
                 // Check if the link contains any of the excluded keywords
-                const isExcluded = excludedKeywords.some(keyword => eventLinks.includes(keyword));
+                const isExcluded = excludedKeywords.some(keyword => link.includes(keyword));
 
                 if (!isExcluded) {
                     eventData.push(response);
@@ -986,9 +992,9 @@ async function ScrapSiteMapFunc(allLinks) {
 
         if (eventData.length > 0) {
             console.log(`Data scraped from link: ${link}`);
-            // console.log(eventData);
+            console.log(eventData);
 
-            for (const response of eventData) {
+          /*  for (const response of eventData) {
                 const result = await AllEvents.findOne({show_id: response.show_id});
                 if (result == null) {
                     console.log(response.show_id, "Not Found Pushing in Array");
@@ -997,17 +1003,7 @@ async function ScrapSiteMapFunc(allLinks) {
                     await AllEvents.updateOne({show_id: response.show_id}, response);
                     console.log(response.show_id, "Already Exist & Updated");
                 }
-            }
-
-
-            // const result = await AllEvents.findOne({ show_id: response.show_id });
-            // if (result == null) {
-            //     console.log(response, "Not Found Pushing in Array");
-            //     await AllEvents.create(response);
-            // } else {
-            //     await AllEvents.updateOne({ show_id: response.show_id }, response);
-            //     console.log(response, "Already Exist & Updated");
-            // }
+            }*/
 
         }
     }
