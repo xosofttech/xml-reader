@@ -949,7 +949,8 @@ async function ScrapSiteMapFunc(allLinks) {
             const secondTdText = eventItem.find('td:nth-child(2)').text().trim();
             const link = eventItem.find('td:nth-child(3) a').attr('href');
             var thirdSlashIndex = link.indexOf('/', link.indexOf('/', link.indexOf('/') + 1) + 1);
-            var domain = link.substring(0, thirdSlashIndex + 1);
+            var tempDomain = link.substring(0, thirdSlashIndex + 1);
+            var domain = tempDomain.replace('https://www.','').replace('/', '');
             var showID = link.substring(thirdSlashIndex + 1);
             // we are saving link instead of showID
             const cleanedSecondTdText = secondTdText.replace(eventName, '').trim();
