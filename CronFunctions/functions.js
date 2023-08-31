@@ -932,10 +932,6 @@ async function ScrapSiteMapFunc(allLinks) {
         const response = await axios.get(link);
         const $ = cheerio.load(response.data);
 
-        // Check if the link contains any of the excluded keywords
-        const isExcluded = excludedKeywords.some(keyword => link.includes(keyword));
-
-        if (!isExcluded) {
             const eventItems = $('.rgbcode_table_shortcode_table_item');
             const eventData = [];
 
@@ -975,8 +971,12 @@ async function ScrapSiteMapFunc(allLinks) {
                         eventName,
                         hallName,
                     };
+                    // Check if the link contains any of the excluded keywords
+                    const isExcluded = excludedKeywords.some(keyword => eventLinks.includes(keyword));
 
-                    eventData.push(response);
+                    if (!isExcluded) {
+                        eventData.push(response);   
+                    }
 
                 } else {
                     // Handle the case where the format is invalid
@@ -1011,7 +1011,6 @@ async function ScrapSiteMapFunc(allLinks) {
                 // }
 
             }
-        }
     }
     console.log(`Execution Completed`);
 }
