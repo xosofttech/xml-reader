@@ -973,7 +973,7 @@ async function ScrapSiteMapFunc(allLinks) {
                     response.link = link;
                     response.domain = domain;
                     response.showLocations = [{
-                        //DemoLink: DemoLink,
+                        DemoLink: DemoLink,
                         date: date,
                         day: day,
                         time: time,
