@@ -910,7 +910,7 @@ exports.ScrapSiteMap = async function () {
             allLinks.push($(element).text());
         });
     }
-    // console.log(allLinks);
+
     await ScrapSiteMapFunc(allLinks);
 }
 
@@ -919,6 +919,7 @@ async function ScrapSiteMapFunc(allLinks) {
         '#',
         'kartisim',
         'mevalim',
+        'eventer',
         'barby',
         'comy',
         'eventim',
@@ -928,14 +929,14 @@ async function ScrapSiteMapFunc(allLinks) {
         'ticketingo'
     ];
 
+    var ArrData = [];
+
     for await (const link of allLinks) {
-        const response = await axios.get(link);
-        const $ = cheerio.load(response.data);
-
+        const Htmlresponse = await axios.get(link);
+        const $ = cheerio.load(Htmlresponse.data);
         const eventItems = $('.rgbcode_table_shortcode_table_item');
-        const eventData = [];
-
-        eventItems.each((index, element) => {
+        var DemoLink = link;
+        for await (var element of eventItems) {
             const eventItem = $(element);
 
             const Unfromatteddate = eventItem.find('.rgbcode_table_shortcode_table_date').text().trim();
@@ -943,7 +944,6 @@ async function ScrapSiteMapFunc(allLinks) {
             const [Fromattedday, Fromattedmonth] = Unfromatteddate.split('.');
             const date = `${Fromattedyear}-${Fromattedmonth}-${Fromattedday}`;
             const dayAndTime = eventItem.find('.rgbcode_table_shortcode_table_when').eq(0).text().trim().split('\n');
-            //const Unformattedday = dayAndTime[0].trim();
             const time = dayAndTime[1].trim();
             const eventName = eventItem.find('.rgbcode_table_shortcode_table_event_name').text().trim();
             const secondTdText = eventItem.find('td:nth-child(2)').text().trim();
@@ -962,52 +962,42 @@ async function ScrapSiteMapFunc(allLinks) {
                 const value1 = parts[1].trim();
                 const value2 = parts.length > 2 ? parts[2].trim() : ''; // Check if parts[2] exists
                 const hall = value1 + ' ' + value2;
-
                 const day = GetDay(date);
-
-                var response = {};
-                response.show_id = link;
-                response.name = eventName;
-                response.link = link;
-                response.domain = domain;
-                response.showLocations = {
-                    link,
-                    date,
-                    day,
-                    time,
-                    //eventName,
-                    hall,
-                };
                 // Check if the link contains any of the excluded keywords
                 const isExcluded = excludedKeywords.some(keyword => link.includes(keyword));
 
                 if (!isExcluded) {
-                    eventData.push(response);
-                }
+                    var response = {};
+                    response.show_id = link;
+                    response.name = eventName;
+                    response.link = link;
+                    response.domain = domain;
+                    response.showLocations = [{
+                        //DemoLink: DemoLink,
+                        date: date,
+                        day: day,
+                        time: time,
+                        hall: (hall && hall != null && hall != undefined) ? hall.trim() : ""
+                    }];
 
-            } else {
-                // Handle the case where the format is invalid
-                console.log('Invalid format for element at index ' + index);
-            }
-        });
-
-        if (eventData.length > 0) {
-            // console.log(`Data scraped from link: ${link}`);
-            // console.log(eventData);
-
-            for (const response of eventData) {
-                const result = await Shows.findOne({show_id: response.show_id});
-                if (result == null) {
-                    console.log(response.show_id, "Not Found Pushing in Array");
-                    await Shows.create(response);
-                } else {
-                    await Shows.updateOne({show_id: response.show_id}, response);
-                    console.log(response.show_id, "Already Exist & Updated");
+                    const result = await Shows.findOne({show_id: response.show_id});
+                    if (result == null) {
+                        console.log(response.show_id, "New Found");
+                        await Shows.create(response);
+                        ArrData.push(response);
+                    } else {
+                        await Shows.updateOne({show_id: response.show_id}, response);
+                        console.log(response.show_id, "Already Exist & Updated");
+                    }
                 }
             }
 
         }
     }
+    /*if (ArrData.length > 0) {
+        console.log(`New scraped from link: ${ArrData.length}`);
+        await Shows.insertMany(ArrData);
+    }*/
     console.log(`Execution Completed`);
 }
 
