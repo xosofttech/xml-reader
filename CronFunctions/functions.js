@@ -982,8 +982,8 @@ async function ScrapSiteMapFunc(allLinks) {
 
                     const result = await Shows.findOne({show_id: response.show_id});
                     if (result == null) {
-                        console.log(response.show_id, "New Found");
-                        await Shows.create(response);
+                        console.log(response.show_id, "New Found Pushed in Arr");
+                        //await Shows.create(response);
                         ArrData.push(response);
                     } else {
                         await Shows.updateOne({show_id: response.show_id}, response);
@@ -991,13 +991,13 @@ async function ScrapSiteMapFunc(allLinks) {
                     }
                 }
             }
-
         }
     }
-    /*if (ArrData.length > 0) {
+    
+    if (ArrData.length > 0) {
         console.log(`New scraped from link: ${ArrData.length}`);
         await Shows.insertMany(ArrData);
-    }*/
+    }
     console.log(`Execution Completed`);
 }
 
