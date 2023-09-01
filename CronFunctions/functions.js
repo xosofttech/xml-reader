@@ -9,6 +9,7 @@ const cheerio = require('cheerio');
 const jsdom = require('jsdom');
 const moment = require('moment');
 const request = require('request');
+const GET_HOST = require('url');
 const {JSDOM} = jsdom;
 const {
     Scraper,
@@ -35,6 +36,7 @@ var AllEvents = require('../Model/allevents');
 const fs = require("fs");
 const {start} = require('repl');
 const {Console} = require('console');
+const URL = require("url");
 // var Barbie = require('../Model/barbie');
 // var Zappa = require('../Model/zappa');
 // var EvenTim = require('../Model/eventim');
@@ -948,14 +950,14 @@ async function ScrapSiteMapFunc(allLinks) {
             const eventName = eventItem.find('.rgbcode_table_shortcode_table_event_name').text().trim();
             const secondTdText = eventItem.find('td:nth-child(2)').text().trim();
             const link = eventItem.find('td:nth-child(3) a').attr('href');
-            var thirdSlashIndex = link.indexOf('/', link.indexOf('/', link.indexOf('/') + 1) + 1);
-            var tempDomain = link.substring(0, thirdSlashIndex + 1);
-            var domain = tempDomain.replace('https://www.', '').replace('/', '');
-            var showID = link.substring(thirdSlashIndex + 1);
+            //var thirdSlashIndex = link.indexOf('/', link.indexOf('/', link.indexOf('/') + 1) + 1);
+            var URLObj = GET_HOST.parse(link);
+            // var domain = tempDomain.replace('https://www.', '').replace('/', '');
+            var domain = URLObj.hostname;
+            var showID = URLObj.path;
             // we are saving link instead of showID
             const cleanedSecondTdText = secondTdText.replace(eventName, '').trim();
             const parts = cleanedSecondTdText.split('\n');
-
             // Check if there are at least two parts
             if (parts.length >= 2) {
                 // Extract and assign the values to the 'hallName' variable
@@ -968,10 +970,10 @@ async function ScrapSiteMapFunc(allLinks) {
 
                 if (!isExcluded) {
                     var response = {};
-                    response.show_id = link;
+                    response.show_id = showID;
                     response.name = eventName;
                     response.link = link;
-                    response.domain = domain;
+                    response.domain = (domain && domain != null && domain != undefined) ? domain.replace('www.', '') : "";
                     response.showLocations = [{
                         DemoLink: DemoLink,
                         date: date,

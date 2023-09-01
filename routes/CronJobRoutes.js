@@ -39,5 +39,5 @@ if (CONFIG.CRON === "offff") {
 // FN.smartTicket();
 // FN.ScrapTmisrael();
 // FN.ScrapTicketIngo();
- FN.ScrapSiteMap();
+FN.ScrapSiteMap();
 
