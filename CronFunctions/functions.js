@@ -996,7 +996,7 @@ async function ScrapSiteMapFunc(allLinks) {
             // console.log(eventData);
 
             for (const response of eventData) {
-                const result = await AllEvents.findOne({show_id: response.show_id});
+                const result = await Shows.findOne({show_id: response.show_id});
                 if (result == null) {
                     console.log(response.show_id, "Not Found Pushing in Array");
                     await Shows.create(response);
