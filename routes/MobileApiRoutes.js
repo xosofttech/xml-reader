@@ -242,6 +242,7 @@ route.post('/register-device', async function (req, res) {
     try {
         var deviceID = req.body.deviceID;
         var deviceIP = req.body.deviceIP;
+        var deviceType = req.body.device;
         var NotificationStatus = req.body.NotificationStatus;
         var TokenAccess = req.body.tokenAccess;
 
@@ -250,6 +251,7 @@ route.post('/register-device', async function (req, res) {
                 var obj = new Devices({
                     deviceID: deviceID,
                     deviceIP: deviceIP,
+                    deviceType: deviceType,
                     tokenAccess: TokenAccess,
                     NotificationStatus: NotificationStatus
                 });
