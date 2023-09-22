@@ -118,9 +118,10 @@ route.post('/fetch-shows', async function (req, res) {
     if (filterParams.issuperprice && filterParams.issuperprice === 1)
         main_query.superprice = 1;
 
+    console.log(filterParams.section)
+
     SectionArr = (filterParams.section = undefined && filterParams.section !== "" && filterParams.section.length != 0) ? splitStr(filterParams.section, ',') : "";
 
-    console.log(filterParams.section)
     console.log(SectionArr)
 
     if (filterParams.section && Array.isArray(SectionArr)) {
