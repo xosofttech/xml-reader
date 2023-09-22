@@ -120,6 +120,9 @@ route.post('/fetch-shows', async function (req, res) {
 
     SectionArr = (filterParams.section = undefined && filterParams.section !== "" && filterParams.section.length != 0) ? splitStr(filterParams.section, ',') : "";
 
+    console.log(filterParams.section)
+    console.log(SectionArr)
+
     if (filterParams.section && Array.isArray(SectionArr)) {
         var SectionSearchArr = [];
 
