@@ -41,6 +41,7 @@
     "request-promise": "^4.2.6",
     "selenium-webdriver": "^4.8.0",
     "twig": "^1.16.0",
+    "url": "^0.11.1",
     "xml2js": "^0.4.23",
     "xmlbuilder": "^15.1.1"
   },

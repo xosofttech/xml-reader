@@ -9,7 +9,8 @@ const cheerio = require('cheerio');
 const jsdom = require('jsdom');
 const moment = require('moment');
 const request = require('request');
-const { JSDOM } = jsdom;
+const GET_HOST = require('url');
+const {JSDOM} = jsdom;
 const {
     Scraper,
     Root,
@@ -35,8 +36,9 @@ var AllEvents = require('../Model/allevents');
 var SportSiteMap = require('../Model/SportSiteMap');
 
 const fs = require("fs");
-const { start } = require('repl');
-const { Console } = require('console');
+const {start} = require('repl');
+const {Console} = require('console');
+const URL = require("url");
 // var Barbie = require('../Model/barbie');
 // var Zappa = require('../Model/zappa');
 // var EvenTim = require('../Model/eventim');
@@ -912,7 +914,7 @@ exports.ScrapSiteMap = async function () {
             allLinks.push($(element).text());
         });
     }
-    // console.log(allLinks);
+
     await ScrapSiteMapFunc(allLinks);
 }
 
@@ -921,6 +923,7 @@ async function ScrapSiteMapFunc(allLinks) {
         '#',
         'kartisim',
         'mevalim',
+        'eventer',
         'barby',
         'comy',
         'eventim',
@@ -930,14 +933,14 @@ async function ScrapSiteMapFunc(allLinks) {
         'ticketingo'
     ];
 
+    var ArrData = [];
+
     for await (const link of allLinks) {
-        const response = await axios.get(link);
-        const $ = cheerio.load(response.data);
-
+        const Htmlresponse = await axios.get(link);
+        const $ = cheerio.load(Htmlresponse.data);
         const eventItems = $('.rgbcode_table_shortcode_table_item');
-        const eventData = [];
-
-        eventItems.each((index, element) => {
+        var DemoLink = link;
+        for await (var element of eventItems) {
             const eventItem = $(element);
 
             const Unfromatteddate = eventItem.find('.rgbcode_table_shortcode_table_date').text().trim();
@@ -945,52 +948,62 @@ async function ScrapSiteMapFunc(allLinks) {
             const [Fromattedday, Fromattedmonth] = Unfromatteddate.split('.');
             const date = `${Fromattedyear}-${Fromattedmonth}-${Fromattedday}`;
             const dayAndTime = eventItem.find('.rgbcode_table_shortcode_table_when').eq(0).text().trim().split('\n');
-            const Unformattedday = dayAndTime[0].trim();
             const time = dayAndTime[1].trim();
             const eventName = eventItem.find('.rgbcode_table_shortcode_table_event_name').text().trim();
             const secondTdText = eventItem.find('td:nth-child(2)').text().trim();
             const link = eventItem.find('td:nth-child(3) a').attr('href');
+<<<<<<< HEAD
             var thirdSlashIndex = link.indexOf('/', link.indexOf('/', link.indexOf('/') + 1) + 1);
             var tempDomain = link.substring(0, thirdSlashIndex + 1);
             var domain = tempDomain.replace('https://www.', '').replace('/', '');
             var showID = link.substring(thirdSlashIndex + 1);
+=======
+            //var thirdSlashIndex = link.indexOf('/', link.indexOf('/', link.indexOf('/') + 1) + 1);
+            var URLObj = GET_HOST.parse(link);
+            // var domain = tempDomain.replace('https://www.', '').replace('/', '');
+            var domain = URLObj.hostname;
+            var showID = URLObj.path;
+>>>>>>> 391931fd1300e8eb9c8f9c636c1cdeedd5475bd3
             // we are saving link instead of showID
             const cleanedSecondTdText = secondTdText.replace(eventName, '').trim();
             const parts = cleanedSecondTdText.split('\n');
-
             // Check if there are at least two parts
             if (parts.length >= 2) {
                 // Extract and assign the values to the 'hallName' variable
                 const value1 = parts[1].trim();
                 const value2 = parts.length > 2 ? parts[2].trim() : ''; // Check if parts[2] exists
                 const hall = value1 + ' ' + value2;
-
-                day = GetDay(Unformattedday);
-
-                var response = {};
-                response.show_id = link;
-                response.name = eventName;
-                response.link = link;
-                response.domain = domain;
-                response.showLocations = {
-                    link,
-                    date,
-                    day,
-                    time,
-                    //eventName,
-                    hall,
-                };
+                const day = GetDay(date);
                 // Check if the link contains any of the excluded keywords
                 const isExcluded = excludedKeywords.some(keyword => link.includes(keyword));
 
                 if (!isExcluded) {
-                    eventData.push(response);
-                }
+                    var response = {};
+                    response.show_id = showID;
+                    response.name = eventName;
+                    response.link = link;
+                    response.domain = (domain && domain != null && domain != undefined) ? domain.replace('www.', '') : "";
+                    response.showLocations = [{
+                        DemoLink: DemoLink,
+                        date: date,
+                        day: day,
+                        time: time,
+                        hall: (hall && hall != null && hall != undefined) ? hall.trim() : ""
+                    }];
 
-            } else {
-                // Handle the case where the format is invalid
-                console.log('Invalid format for element at index ' + index);
+                    const result = await Shows.findOne({show_id: response.show_id});
+                    if (result == null) {
+                        console.log(response.show_id, "New Added");
+                        await Shows.create(response);
+                        //console.log(response.show_id, "New Found Pushed in Arr");
+                        //ArrData.push(response);
+                    } else {
+                        await Shows.updateOne({show_id: response.show_id}, response);
+                        console.log(response.show_id, "Already Exist & Updated");
+                    }
+                }
             }
+<<<<<<< HEAD
         });
 
         if (eventData.length > 0) {
@@ -1008,8 +1021,16 @@ async function ScrapSiteMapFunc(allLinks) {
                   }
               }*/
 
+=======
+>>>>>>> 391931fd1300e8eb9c8f9c636c1cdeedd5475bd3
         }
     }
+
+    /*if (ArrData.length > 0) {
+        console.log(`New scraped from link: ${ArrData.length}`);
+        await Shows.insertMany(ArrData);
+    }*/
+    console.log(`New scraped from link: ${ArrData.length}`);
     console.log(`Execution Completed`);
 }
 
