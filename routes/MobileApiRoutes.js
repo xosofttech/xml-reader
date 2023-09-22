@@ -118,8 +118,9 @@ route.post('/fetch-shows', async function (req, res) {
     if (filterParams.issuperprice && filterParams.issuperprice === 1)
         main_query.superprice = 1;
 
+    SectionArr = (filterParams.section = undefined && filterParams.section !== "" && filterParams.section.length != 0) ? splitStr(filterParams.section, ',') : "";
 
-    if (filterParams.section && Array.isArray(filterParams.section)) {
+    if (filterParams.section && Array.isArray(SectionArr)) {
         var SectionSearchArr = [];
 
         if (filterParams.section.includes("הרצאות")) {
@@ -284,5 +285,11 @@ route.post('/register-device', async function (req, res) {
         res.send({"cities": [], "sections": []});
     }
 });*/
+
+
+function splitStr(str, separator) {
+    // Function to split string
+    return str.split(separator);
+}
 
 module.exports = route
