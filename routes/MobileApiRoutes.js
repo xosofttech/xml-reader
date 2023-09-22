@@ -118,43 +118,39 @@ route.post('/fetch-shows', async function (req, res) {
     if (filterParams.issuperprice && filterParams.issuperprice === 1)
         main_query.superprice = 1;
 
-    console.log(filterParams.section)
-
-    SectionArr = (filterParams.section = undefined && filterParams.section !== "" && filterParams.section.length != 0) ? splitStr(filterParams.section, ',') : "";
-
-    console.log(SectionArr)
+    SectionArr = (filterParams.section !== undefined && filterParams.section !== "" && filterParams.section.length !== 0) ? splitStr(filterParams.section, ',') : [];
 
     if (filterParams.section && Array.isArray(SectionArr)) {
         var SectionSearchArr = [];
 
-        if (filterParams.section.includes("הרצאות")) {
+        if (SectionArr.includes("הרצאות")) {
             SectionSearchArr.push(new RegExp(`הרצאות`, "i"));
         }
-        if (filterParams.section.includes("תערוכות")) {
+        if (SectionArr.includes("תערוכות")) {
             SectionSearchArr.push(new RegExp(`תערוכות`, "i"));
         }
-        if (filterParams.section.includes("אופרה")) {
+        if (SectionArr.includes("אופרה")) {
             SectionSearchArr.push(new RegExp(`אופרה`, "i"));
         }
-        if (filterParams.section.includes("מחול ובלט")) {
+        if (SectionArr.includes("מחול ובלט")) {
             SectionSearchArr.push(new RegExp(`הופעות מחול ובלט,`, "i"));
         }
-        if (filterParams.section.includes("מחזמר")) {
+        if (SectionArr.includes("מחזמר")) {
             SectionSearchArr.push(new RegExp(`מחזמר`, "i"));
         }
-        if (filterParams.section.includes("הצגות ילדים")) {
+        if (SectionArr.includes("הצגות ילדים")) {
             SectionSearchArr.push(new RegExp(`הצגות ילדים`, "i"));
             SectionSearchArr.push(new RegExp(`קרקס`, "i"));
             SectionSearchArr.push(new RegExp(`מוסיקה לילדים`, "i"));
         }
-        if (filterParams.section.includes("סטנדאפ")) {
+        if (SectionArr.includes("סטנדאפ")) {
             SectionSearchArr.push(new RegExp(`סטנדאפ`, "i"));
             SectionSearchArr.push(new RegExp(`סטנד אפ`, "i"));
         }
-        if (filterParams.section.includes("הצגות")) {
+        if (SectionArr.includes("הצגות")) {
             SectionSearchArr.push(new RegExp(`הצגות`, "i"));
         }
-        if (filterParams.section.includes("הופעות")) {
+        if (SectionArr.includes("הופעות")) {
             SectionSearchArr.push(new RegExp(`הופעות מוזיקה`, "i"));
             SectionSearchArr.push(new RegExp(`הופעות רוק`, "i"));
             SectionSearchArr.push(new RegExp(`הופעות מוזיקה קלאסית`, "i"));
