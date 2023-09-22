@@ -112,7 +112,7 @@ route.post('/fetch-shows', async function (req, res) {
     if (filterParams.show_id)
         main_query.show_id = new RegExp(filterParams.show_id, "i");
 
-    if (filterParams.isdiscount && filterParams.isdiscount === 1)
+    if (filterParams.isDiscount && filterParams.isDiscount === 1)
         main_query.discount = 1;
 
     if (filterParams.issuperprice && filterParams.issuperprice === 1)
@@ -226,7 +226,8 @@ route.post('/fetch-shows', async function (req, res) {
 
     TotalRows = (Rows !== undefined && Rows.length !== 0) ? Rows[0].count : 0
 
-    console.log(main_query);
+    console.log('Mobile Req:', req.body);
+    console.log('Mobile:', main_query);
 
     res.send({
         "result": ShowsResult,
