@@ -897,7 +897,7 @@ exports.ScrapTicketIngo = async function () {
     });
 }
 
-exports.ScrapSiteMap = async function () {
+exports.ScrapMevalim = async function () {
     const siteMaps = [
         'https://www.mevalim.co.il/page-sitemap.xml',
         'https://www.mevalim.co.il/page-sitemap2.xml'
