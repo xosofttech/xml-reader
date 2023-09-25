@@ -50,7 +50,7 @@ route.post('/fetch-shows', async function (req, res) {
         main_query["showLocations.city"] = {
             $in: [`קריית מוצקין`, `בנימינה`, `חדרה`, `קיסריה`, `אזור תעשייה עמק חפר`, `בית נגלר קרית חיים-חיפה`, `אודיטוריום חיפה`, `תיאטרון חיפה`, `חיפה`, `מועצה האזורית חוף הכרמל`, `עין הוד`, `קיבוץ יגור`, `היכל התיאטרון-קרית מוצקין`, `אור עקיבא`, `קרית מוצקין`, `טבעון - אולם זוהר`, `תיאטרון הצפון`]
         }
-    } else if ((filterParams.area && filterParams.area === 'צפון (צפון + חיפה)') || (filterParams.name && filterParams.name === 'צפון')) {
+    } else if ((filterParams.area && (filterParams.area === 'צפון (צפון + חיפה)' || filterParams.area === 'צפון')) || (filterParams.name && filterParams.name === 'צפון')) {
         main_query["showLocations.city"] = {
             $in: [`בית לחם הגלילית`, `נוף הגליל (נצרת עילית)`, `קיבוץ מזרע`, `בית גבריאל`, `קיבוץ יפעת`, `מושב מנוף`, `צפת`, `קיבוץ כברי`, `מעלות`, `כרמיאל`, `היכל התרבות כרמיאל`, `מושב שבי ציון`, `קיבוץ כנרת`, `היכל התרבות מעלות תרשיחא`, `זכרון יעקב`, `קיבוץ מעיין צבי`, `יוקנעם`, `בית שאן`, `היכל התרבות קריית שמונה`, `כינרת`, `טבריה`, `עפולה`, `היכל התרבות יקנעם`, `נהריה`, `מרכז תרבות מגידו`, `כפר ויתקין`, `כפר בלום - בית העם`, `זכרון יעקב-בית התותחן`, `מועצה אזורית חוף כרמל`, `כפר בלום`, `עכו`, `קיבוץ גן שמואל`, `רנה שני חדרה- טו באב`, `מרכז אומנויות הבמה מתנס פרדס חנה כרכור`, `היכל התרבות מנשה - גן שמואל`, `אולם מופעים קיבוץ כברי`]
         }
@@ -112,44 +112,45 @@ route.post('/fetch-shows', async function (req, res) {
     if (filterParams.show_id)
         main_query.show_id = new RegExp(filterParams.show_id, "i");
 
-    if (filterParams.isdiscount && filterParams.isdiscount === 1)
+    if (filterParams.isDiscount && filterParams.isDiscount === 1)
         main_query.discount = 1;
 
     if (filterParams.issuperprice && filterParams.issuperprice === 1)
         main_query.superprice = 1;
 
+    SectionArr = (filterParams.section !== undefined && filterParams.section !== "" && filterParams.section.length !== 0) ? splitStr(filterParams.section, ',') : [];
 
-    if (filterParams.section && Array.isArray(filterParams.section)) {
+    if (filterParams.section && Array.isArray(SectionArr)) {
         var SectionSearchArr = [];
 
-        if (filterParams.section.includes("הרצאות")) {
+        if (SectionArr.includes("הרצאות")) {
             SectionSearchArr.push(new RegExp(`הרצאות`, "i"));
         }
-        if (filterParams.section.includes("תערוכות")) {
+        if (SectionArr.includes("תערוכות")) {
             SectionSearchArr.push(new RegExp(`תערוכות`, "i"));
         }
-        if (filterParams.section.includes("אופרה")) {
+        if (SectionArr.includes("אופרה")) {
             SectionSearchArr.push(new RegExp(`אופרה`, "i"));
         }
-        if (filterParams.section.includes("מחול ובלט")) {
+        if (SectionArr.includes("מחול ובלט")) {
             SectionSearchArr.push(new RegExp(`הופעות מחול ובלט,`, "i"));
         }
-        if (filterParams.section.includes("מחזמר")) {
+        if (SectionArr.includes("מחזמר")) {
             SectionSearchArr.push(new RegExp(`מחזמר`, "i"));
         }
-        if (filterParams.section.includes("הצגות ילדים")) {
+        if (SectionArr.includes("הצגות ילדים")) {
             SectionSearchArr.push(new RegExp(`הצגות ילדים`, "i"));
             SectionSearchArr.push(new RegExp(`קרקס`, "i"));
             SectionSearchArr.push(new RegExp(`מוסיקה לילדים`, "i"));
         }
-        if (filterParams.section.includes("סטנדאפ")) {
+        if (SectionArr.includes("סטנדאפ")) {
             SectionSearchArr.push(new RegExp(`סטנדאפ`, "i"));
             SectionSearchArr.push(new RegExp(`סטנד אפ`, "i"));
         }
-        if (filterParams.section.includes("הצגות")) {
+        if (SectionArr.includes("הצגות")) {
             SectionSearchArr.push(new RegExp(`הצגות`, "i"));
         }
-        if (filterParams.section.includes("הופעות")) {
+        if (SectionArr.includes("הופעות")) {
             SectionSearchArr.push(new RegExp(`הופעות מוזיקה`, "i"));
             SectionSearchArr.push(new RegExp(`הופעות רוק`, "i"));
             SectionSearchArr.push(new RegExp(`הופעות מוזיקה קלאסית`, "i"));
@@ -226,7 +227,8 @@ route.post('/fetch-shows', async function (req, res) {
 
     TotalRows = (Rows !== undefined && Rows.length !== 0) ? Rows[0].count : 0
 
-    console.log(main_query);
+    console.log('Mobile Req:', req.body);
+    console.log('Mobile:', main_query);
 
     res.send({
         "result": ShowsResult,
@@ -241,6 +243,7 @@ route.post('/register-device', async function (req, res) {
     try {
         var deviceID = req.body.deviceID;
         var deviceIP = req.body.deviceIP;
+        var deviceType = req.body.device;
         var NotificationStatus = req.body.NotificationStatus;
         var TokenAccess = req.body.tokenAccess;
 
@@ -249,6 +252,7 @@ route.post('/register-device', async function (req, res) {
                 var obj = new Devices({
                     deviceID: deviceID,
                     deviceIP: deviceIP,
+                    deviceType: deviceType,
                     tokenAccess: TokenAccess,
                     NotificationStatus: NotificationStatus
                 });
@@ -281,5 +285,11 @@ route.post('/register-device', async function (req, res) {
         res.send({"cities": [], "sections": []});
     }
 });*/
+
+
+function splitStr(str, separator) {
+    // Function to split string
+    return str.split(separator);
+}
 
 module.exports = route

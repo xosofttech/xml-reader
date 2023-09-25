@@ -238,7 +238,7 @@ route.post('/fetch-shows', async function (req, res) {
 
     TotalRows = (Rows !== undefined && Rows.length !== 0) ? Rows[0].count : 0
 
-    console.log(main_query);
+    //console.log(main_query);
 
     res.send({
         "result": Object.assign({}, ShowsResult),
