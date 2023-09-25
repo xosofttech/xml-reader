@@ -934,6 +934,7 @@ async function ScrapSiteMapFunc(allLinks) {
     var ArrData = [];
 
     for await (const link of allLinks) {
+        console.log(link);
         const Htmlresponse = await axios.get(link);
         const $ = cheerio.load(Htmlresponse.data);
         const eventItems = $('.rgbcode_table_shortcode_table_item');
