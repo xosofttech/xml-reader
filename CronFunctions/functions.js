@@ -975,7 +975,7 @@ async function ScrapSiteMapFunc(allLinks) {
                     response.link = link;
                     response.domain = (domain && domain != null && domain != undefined) ? domain.replace('www.', '') : "";
                     response.showLocations = [{
-                        DemoLink: DemoLink,
+                        //DemoLink: DemoLink,
                         date: date,
                         day: day,
                         time: time,
