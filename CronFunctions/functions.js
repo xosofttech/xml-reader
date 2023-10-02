@@ -952,18 +952,11 @@ async function ScrapSiteMapFunc(allLinks) {
             const eventName = eventItem.find('.rgbcode_table_shortcode_table_event_name').text().trim();
             const secondTdText = eventItem.find('td:nth-child(2)').text().trim();
             const link = eventItem.find('td:nth-child(3) a').attr('href');
-<<<<<<< HEAD
-            var thirdSlashIndex = link.indexOf('/', link.indexOf('/', link.indexOf('/') + 1) + 1);
-            var tempDomain = link.substring(0, thirdSlashIndex + 1);
-            var domain = tempDomain.replace('https://www.', '').replace('/', '');
-            var showID = link.substring(thirdSlashIndex + 1);
-=======
             //var thirdSlashIndex = link.indexOf('/', link.indexOf('/', link.indexOf('/') + 1) + 1);
             var URLObj = GET_HOST.parse(link);
             // var domain = tempDomain.replace('https://www.', '').replace('/', '');
             var domain = URLObj.hostname;
             var showID = URLObj.path;
->>>>>>> 391931fd1300e8eb9c8f9c636c1cdeedd5475bd3
             // we are saving link instead of showID
             const cleanedSecondTdText = secondTdText.replace(eventName, '').trim();
             const parts = cleanedSecondTdText.split('\n');
@@ -1003,26 +996,6 @@ async function ScrapSiteMapFunc(allLinks) {
                     }
                 }
             }
-<<<<<<< HEAD
-        });
-
-        if (eventData.length > 0) {
-            console.log(`Data scraped from link: ${link}`);
-            console.log(eventData);
-
-            /*  for (const response of eventData) {
-                  const result = await AllEvents.findOne({show_id: response.show_id});
-                  if (result == null) {
-                      console.log(response.show_id, "Not Found Pushing in Array");
-                      await AllEvents.create(response);
-                  } else {
-                      await AllEvents.updateOne({show_id: response.show_id}, response);
-                      console.log(response.show_id, "Already Exist & Updated");
-                  }
-              }*/
-
-=======
->>>>>>> 391931fd1300e8eb9c8f9c636c1cdeedd5475bd3
         }
     }
 
@@ -1055,49 +1028,81 @@ exports.ScrapSportSiteMap = async function () {
 
 }
 
-async function ScrapSportSiteMapFunc(linksArray) {
+// Function to convert a date from one format to another
+// Function to convert a date from one format to another
+function formatDate(inputDate) {
+    const months = {
+      'ינואר': '01',
+      'פברואר': '02',
+      'מרץ': '03',
+      'אפריל': '04',
+      'מאי': '05',
+      'יוני': '06',
+      'יולי': '07',
+      'אוגוסט': '08',
+      'ספטמבר': '09',
+      'אוקטובר': '10',
+      'נובמבר': '11',
+      'דצמבר': '12',
+    };
+  
+    const parts = inputDate.split(' ');
+    if (parts.length === 3) {
+      const day = parts[0];
+      const month = months[parts[1]];
+      const year = parts[2];
+      formattedYear = year.replace(',', ''); // Removes the comma
+      return `${formattedYear}-${month}-${day}`;
+    //   return `${year}-${month}-${day}`;
+    }
+    return inputDate; // Return the input date as is if it couldn't be parsed
+  }
+  
+  
+  async function ScrapSportSiteMapFunc(linksArray) {
     const baseURL = 'https://www.ticketingo.co.il/'; // Base URL
     console.log("Total:", linksArray.length);
     const scrapedData = [];
-
+  
     for await (const link of linksArray) {
-        const pageAddress = `${baseURL}${link}`;
-        console.log(pageAddress);
-        data = await GetBrowserURL(pageAddress, driver);
-
-        const $ = cheerio.load(data);
-
-        // Select the elements containing the data you want
-        $('.tableRow').each(async (index, element) => {
-            const leagueName = $(element).find('.eventInfo span').eq(0).text().trim();
-            const gameType = $(element).find('.eventInfo span').eq(1).text().trim();
-            const teamNames = $(element).find('.eventInfo a').text().trim();
-            const city = $(element).find('.eventLocation span').eq(0).text().trim();
-            const country = $(element).find('.eventLocation span').eq(1).text().trim();
-            const stadium = $(element).find('.eventLocation div span').eq(1).text().trim();
-            const date = $(element).find('.tableCell span').eq(1).text().trim();
-            const price = $(element).find('.tableCell .ticket-price').text().trim();
-            const link = $('a.colorA').attr('href');
-
-            var response = {
-                leagueName,
-                gameType,
-                teamNames,
-                city,
-                country,
-                stadium,
-                date,
-                price,
-                link,
-            };
-
-            await SportSiteMap.create(response);
-        });
+      const pageAddress = `${baseURL}${link}`;
+      console.log(pageAddress);
+      data = await GetBrowserURL(pageAddress, driver);
+  
+      const $ = cheerio.load(data);
+  
+      // Select the elements containing the data you want
+      $('.tableRow').each(async (index, element) => {
+        const leagueName = $(element).find('.eventInfo span').eq(0).text().trim();
+        const gameType = $(element).find('.eventInfo span').eq(1).text().trim();
+        const teamNames = $(element).find('.eventInfo a').text().trim();
+        const city = $(element).find('.eventLocation span').eq(0).text().trim();
+        const country = $(element).find('.eventLocation span').eq(1).text().trim();
+        const stadium = $(element).find('.eventLocation div span').eq(1).text().trim();
+        const date = formatDate($(element).find('.tableCell').eq(1).find('span').eq(1).text().trim());
+        const price = $(element).find('.tableCell .ticket-price').text().trim();
+        const link = $('a.colorA').attr('href');
+  
+        var response = {
+          leagueName,
+          gameType,
+          teamNames,
+          city,
+          country,
+          stadium,
+          date,
+          price,
+          link,
+        };
+        // console.log(response)
+  
+        await SportSiteMap.create(response);
+      });
     }
-
+  
     console.log(`Execution Completed`);
-}
-
+  }
+  
 
 
 
