@@ -9,6 +9,7 @@ const cheerio = require('cheerio');
 const jsdom = require('jsdom');
 const moment = require('moment');
 const request = require('request');
+const GET_HOST = require('url');
 const {JSDOM} = jsdom;
 const {
     Scraper,
@@ -17,7 +18,7 @@ const {
     CollectContent,
     DownloadContent
 } = require('nodejs-web-scraper');
-const {Builder, Browser, By} = require('selenium-webdriver');
+const { Builder, Browser, By } = require('selenium-webdriver');
 const firefox = require('selenium-webdriver/firefox');
 
 let profile = new firefox.Options();
@@ -32,9 +33,12 @@ global.DOMParser = new JSDOM().window.DOMParser
 
 var Shows = require('../Model/shows');
 var AllEvents = require('../Model/allevents');
+var SportSiteMap = require('../Model/SportSiteMap');
+
 const fs = require("fs");
 const {start} = require('repl');
 const {Console} = require('console');
+const URL = require("url");
 // var Barbie = require('../Model/barbie');
 // var Zappa = require('../Model/zappa');
 // var EvenTim = require('../Model/eventim');
@@ -74,7 +78,7 @@ exports.ScrapBarbie = async function () {
     // This hook is called after every page finished scraping.
     // It will also get an address argument.
     const getPageObject = (pageObject, address) => {
-        pages.push({URL: address, Data: pageObject})
+        pages.push({ URL: address, Data: pageObject })
     }
 
     const config = {
@@ -94,14 +98,14 @@ exports.ScrapBarbie = async function () {
     // Opens every job ad, and calls the getPageObject, passing the formatted dictionary.
 
     // const links = new CollectContent('.defShowListMain a.href', {name: 'link'});
-    const titles = new CollectContent('h1', {name: 'title'});
+    const titles = new CollectContent('h1', { name: 'title' });
     // const images = new DownloadContent('.showCatRightDiv img', {name: 'images'})
-    const category = new CollectContent('.showCatLeftShowTitel span', {name: 'category'});
-    const day = new CollectContent('.showCatDivLbl #ctl00_ContentPlaceHolder1_lblDay', {name: 'day'});
-    const date = new CollectContent('.showCatDivLbl #ctl00_ContentPlaceHolder1_lblDate', {name: 'date'});
-    const price = new CollectContent('.showCatDivLbl #ctl00_ContentPlaceHolder1_lblPrice', {name: 'price'});
-    const showType = new CollectContent('.showCatDivLbl #ctl00_ContentPlaceHolder1_lblSeatType', {name: 'showType'});
-    const description = new CollectContent('.divDescMainYL #ctl00_ContentPlaceHolder1_lblDescription', {name: 'description'});
+    const category = new CollectContent('.showCatLeftShowTitel span', { name: 'category' });
+    const day = new CollectContent('.showCatDivLbl #ctl00_ContentPlaceHolder1_lblDay', { name: 'day' });
+    const date = new CollectContent('.showCatDivLbl #ctl00_ContentPlaceHolder1_lblDate', { name: 'date' });
+    const price = new CollectContent('.showCatDivLbl #ctl00_ContentPlaceHolder1_lblPrice', { name: 'price' });
+    const showType = new CollectContent('.showCatDivLbl #ctl00_ContentPlaceHolder1_lblSeatType', { name: 'showType' });
+    const description = new CollectContent('.divDescMainYL #ctl00_ContentPlaceHolder1_lblDescription', { name: 'description' });
     // const day = new CollectContent('.showCatDivLbl span', { day: 'day' });
 
     root.addOperation(jobAds);
@@ -212,11 +216,11 @@ exports.ScrapBarbie = async function () {
             response.description = convDescription;
             response.showLocations = showLocations;
 
-            DBResponse = await Shows.findOne({show_id: showID});
+            DBResponse = await Shows.findOne({ show_id: showID });
             if (DBResponse === null) {
                 ArrData.push(response);
             } else {
-                await Shows.updateOne({show_id: showID}, response);
+                await Shows.updateOne({ show_id: showID }, response);
                 console.log(showID, "Already Exist & Updated");
             }
 
@@ -246,7 +250,7 @@ exports.ScrapComy = async function () {
     const pages = []; // All ad pages.
 
     const getPageObject = (pageObject, address) => { // pageObject.URL=address;
-        pages.push({URL: address, Data: pageObject})
+        pages.push({ URL: address, Data: pageObject })
     }
 
     const config = {
@@ -265,18 +269,18 @@ exports.ScrapComy = async function () {
     // Opens every job ad, and calls the getPageObject, passing the formatted dictionary.
 
     // const links = new CollectContent('.defShowListMain a.href', {name: 'link'});
-    const titles = new CollectContent('h1', {name: 'title'});
-    const category = new CollectContent('h2', {name: 'category'});
-    const showDescription = new CollectContent('#the-event p', {name: 'showDescription'});
-    const date = new CollectContent('.te-date', {name: 'date'});
-    const price = new CollectContent('.ticket-price', {name: 'price'});
+    const titles = new CollectContent('h1', { name: 'title' });
+    const category = new CollectContent('h2', { name: 'category' });
+    const showDescription = new CollectContent('#the-event p', { name: 'showDescription' });
+    const date = new CollectContent('.te-date', { name: 'date' });
+    const price = new CollectContent('.ticket-price', { name: 'price' });
 
     // Event List
-    const eventName = new CollectContent('.single-place-string p', {name: 'eventName'});
-    const eventHall = new CollectContent('.single-place-string p:nth-child(1)', {name: 'eventHall'});
-    const eventCity = new CollectContent('.single-place-string p:nth-child(2)', {name: 'eventCity'});
-    const eventDate = new CollectContent('.single-date-details .date', {name: 'eventDate'});
-    const eventTime = new CollectContent('.single-date-details .single-light', {name: 'eventTime'});
+    const eventName = new CollectContent('.single-place-string p', { name: 'eventName' });
+    const eventHall = new CollectContent('.single-place-string p:nth-child(1)', { name: 'eventHall' });
+    const eventCity = new CollectContent('.single-place-string p:nth-child(2)', { name: 'eventCity' });
+    const eventDate = new CollectContent('.single-date-details .date', { name: 'eventDate' });
+    const eventTime = new CollectContent('.single-date-details .single-light', { name: 'eventTime' });
     // const eventTitle = new CollectContent('.single-edt-left-new p', {name: 'eventTitle'});
 
     root.addOperation(jobAds);
@@ -396,11 +400,11 @@ exports.ScrapComy = async function () {
         response.price = convPrice;
         response.showDescription = convshowDescription;
         response.showLocations = myObjArray;
-        DBResponse = await Shows.findOne({show_id: showID});
+        DBResponse = await Shows.findOne({ show_id: showID });
         if (DBResponse === null) {
             ArrData.push(response);
         } else {
-            await Shows.updateOne({show_id: showID}, response);
+            await Shows.updateOne({ show_id: showID }, response);
             console.log(showID, "Already Exist & Updated");
         }
 
@@ -424,7 +428,7 @@ exports.XMLToMongo = function () {
         execute(`curl https://buytickets.kartisim.co.il/xml/partner/shows.xml`, function (err, data, outerr) {
             if (err) throw err;
             console.log(`Result Fetched`);
-            var parser = new xml2js.Parser({explicitArray: false});
+            var parser = new xml2js.Parser({ explicitArray: false });
             parser.parseString(data, function (err, result) {
                 var Result = result.bravo.shows.show;
 
@@ -521,7 +525,7 @@ exports.XMLToMongo = function () {
                             showObj: show_object
                         };
 
-                        ShowExist = await Shows.findOne({"show_id": show_id});
+                        ShowExist = await Shows.findOne({ "show_id": show_id });
                         if (ShowExist != null) {
                             console.log("ShowID => ", show_id, " Exist already Found & Updated");
                             PageResult = await Shows.updateOne({
@@ -558,7 +562,7 @@ exports.ScrapEvenTim = async function () {
     const pokemons = $('.swiper-slide').map((_, pokemon) => {
         const $pokemon = $(pokemon);
         const link = $pokemon.find('a').attr("href");
-        return {'link': link}
+        return { 'link': link }
     }).toArray();
     EvenTimFunc(pokemons)
 }
@@ -668,128 +672,67 @@ exports.LoopAllLinks = async function () {
 
 }
 
+exports.smartTicket = async function () {
+    const links = [
+        'https://afula.smarticket.co.il/',
+        'https://t-hazafon.smarticket.co.il/',
+    ];
 
-// exports.ScrapOshercohen = async function () {
+    async function scrapeTickets(links) {
+        const eventsArray = [];
+        const showLocations = [];
 
-//     request('https://2207.kupat.co.il/show/oshercohen', (error, response, body) => {
-//         if (!error && response.statusCode === 200) {
-//             const $ = cheerio.load(body);
+        for (const link of links) {
 
-//             // Example: Scrape the text from an element with a specific class
-//             const date = $('.ticket-row-inner .date').text();
-//             const starts = $('.ticket-row-inner .starts').text();
-//             const city = $('.ticket-row-inner .city').text();
-//             const hall = $('.ticket-row-inner .hall').text();
-//             const scrapedText = $('.tab-title.only-desktop').text();
-//             const description = $('.info').text();
+            console.log('scrapping', link)
+            await new Promise((resolve, reject) => {
+                request(link, (error, response, body) => {
+                    if (!error && response.statusCode === 200) {
+                        const $ = cheerio.load(body);
 
+                        $('.show_cube').each((index, element) => {
+                            const $element = $(element);
+                            const name = $element.find(`#show_name_${index}`).text().trim();
+                            const date = $element.find('.show_date').text().trim();
+                            var extractedDate = date.split(',')[1].trim();
+                            const category = $element.find('.category').text().trim();
+                            const hall = $element.find('.theater_name').text().trim();
+                            const time = $element.find('.event-time').text().trim();
+                            var timeRegex = /\b(\d{1,2}:\d{2})\b/;
+                            var extractedTime = time.match(timeRegex)[1];
 
-//             console.log('date:', date);
-//             console.log('date:', starts);
-//             console.log('date:', city);
-//             console.log('date:', hall);
-//             console.log('title:', scrapedText);
-//             console.log('description:', description);
+                            showLocations.push({
+                                name: name,
+                                showLocations: {
+                                    name: name,
+                                    date: extractedDate,
+                                    category: category,
+                                    hall: hall,
+                                    time: extractedTime,
+                                }
+                            });
+                        });
 
-//             // Continue scraping other elements as needed
+                        resolve();
+                    } else {
+                        console.error('Error:', error);
+                        reject(error);
+                    }
+                });
+            });
+        }
 
-//         } else {
-//             console.error('Error:', error);
-//         }
-//     });
+        AllEvents.insertMany(showLocations).then(async function () {
+            console.log("done");
+        }).catch(function (error) {
+            console.log(error)
+        });
 
-// }
+    }
 
-// exports.ScrapHananbenari = async function () {
+    // scrapeTickets(links);
 
-//     request('https://2207.kupat.co.il/show/hananbenari', (error, response, body) => {
-//       if (!error && response.statusCode === 200) {
-//         const $ = cheerio.load(body);
-//         const events = [];
-//         const name = $('.order_btn_wrap a').text();
-
-//         $('.days.alldays li').each((index, element) => {
-//           const $element = $(element);
-//           const date = $element.find('.date').text().trim();
-//           const time = $element.find('.starts').text().trim();
-//           const city = $element.find('.city').text().trim();
-//           const hall = $element.find('.hall').text().trim();
-//           const orderLink = $element.find('a.order_show').attr('href');
-
-//           events.push({ date, time, city, hall, orderLink });
-//         });
-
-//         console.log(name)
-//         console.log(events);
-
-//       } else {
-//         console.error('Error:', error);
-//       }
-//     });
-
-
-// }
-
-// exports.ScrapEyalgolan = async function () {
-
-//     request('https://2207.kupat.co.il/show/eyalgolan', (error, response, body) => {
-//       if (!error && response.statusCode === 200) {
-//         const $ = cheerio.load(body);
-//         const events = [];
-//         const name = $('.order_btn_wrap a').text();
-
-//         $('.days.alldays li').each((index, element) => {
-//           const $element = $(element);
-//           const date = $element.find('.date').text().trim();
-//           const time = $element.find('.starts').text().trim();
-//           const city = $element.find('.city').text().trim();
-//           const hall = $element.find('.hall').text().trim();
-//           const orderLink = $element.find('a.order_show').attr('href');
-
-//           events.push({ date, time, city, hall, orderLink });
-//         });
-
-//         console.log(name)
-//         console.log(events);
-
-//       } else {
-//         console.error('Error:', error);
-//       }
-//     });
-
-
-// }
-
-
-// exports.ScrapShlomo = async function () {
-
-//     request('https://2207.kupat.co.il/show/shlomo-artzi', (error, response, body) => {
-//       if (!error && response.statusCode === 200) {
-//         const $ = cheerio.load(body);
-//         const events = [];
-//         const name = $('.order_btn_wrap a').text();
-
-//         $('.days.alldays li').each((index, element) => {
-//           const $element = $(element);
-//           const date = $element.find('.date').text().trim();
-//           const time = $element.find('.starts').text().trim();
-//           const city = $element.find('.city').text().trim();
-//           const hall = $element.find('.hall').text().trim();
-//           const orderLink = $element.find('a.order_show').attr('href');
-
-//           events.push({ date, time, city, hall, orderLink });
-//         });
-
-//         console.log(name)
-//         console.log(events);
-
-//       } else {
-//         console.error('Error:', error);
-//       }
-//     });
-
-
-// }
+}
 
 
 async function EvenTimFunc(pokemons) {
@@ -799,7 +742,7 @@ async function EvenTimFunc(pokemons) {
     var eventDetails = [];
     var showID = "";
     console.log("Total:", pokemons.length);
-    for await([index, object] of pokemons.entries()) {
+    for await ([index, object] of pokemons.entries()) {
         var pageAddress = object.link || '';
 
         var parts = object.link.split("/");
@@ -910,13 +853,13 @@ async function EvenTimFunc(pokemons) {
                 // console.log(ArrData)
 
 
-                const result = await Shows.findOne({show_id: showID});
+                const result = await Shows.findOne({ show_id: showID });
                 if (result == null) {
                     console.log(showID, "Not Found Pushing in Array");
                     ArrData.push(response);
                     await Shows.create(response);
                 } else {
-                    await Shows.updateOne({show_id: showID}, response);
+                    await Shows.updateOne({ show_id: showID }, response);
                     console.log(showID, "Already Exist & Updated");
                 }
             } catch (e) {
@@ -928,6 +871,331 @@ async function EvenTimFunc(pokemons) {
     console.log("Updated, Execution Completed!!!");
     driver.close();
 }
+
+exports.ScrapTicketIngo = async function () {
+    console.log("ScrapTmisrael")
+    driver = await new Builder().forBrowser(Browser.FIREFOX).setFirefoxOptions(profile).build();
+    data = await GetBrowserURL(`https://www.ticketingo.co.il/dock/team/barcelona-fc`);
+    const $ = cheerio.load(data);
+    const extractedData = [];
+
+
+    $('.noBgColor .tableRow').each((index, element) => {
+        const $eventInfo = $(element).find('.eventInfo');
+        const $priceCell = $(element).find('.tableCell').eq(2);
+        const $dateCell = $(element).find('.tableCell').eq(1); // Select the second .tableCell
+
+        // Extract name
+        const name = $eventInfo.find('a').text().trim();
+        const price = $priceCell.find('.ticket-price').text().trim();
+        const date = $dateCell.find('span').eq(1).find('font').text().trim(); // Extract the text of the font element inside the second span
+
+        // Print the extracted data
+        console.log('Name:', name);
+        console.log('Price:', price);
+        console.log('Date:', date);
+
+        console.log('---'); // Separator for readability
+    });
+}
+
+exports.ScrapSiteMap = async function () {
+    const siteMaps = [
+        'https://www.mevalim.co.il/page-sitemap.xml',
+        'https://www.mevalim.co.il/page-sitemap2.xml'
+    ];
+    const allLinks = [];
+    for (const siteMapUrl of siteMaps) {
+        const response = await axios.get(siteMapUrl);
+        const $ = cheerio.load(response.data);
+
+        // Extract and console the links from the sitemap
+        $('loc').each((index, element) => {
+            allLinks.push($(element).text());
+        });
+    }
+
+    await ScrapSiteMapFunc(allLinks);
+}
+
+async function ScrapSiteMapFunc(allLinks) {
+    const excludedKeywords = [
+        '#',
+        'kartisim',
+        'mevalim',
+        'eventer',
+        'barby',
+        'comy',
+        'eventim',
+        'kupat',
+        'smarticket',
+        'tmisrael',
+        'ticketingo'
+    ];
+
+    var ArrData = [];
+
+    for await (const link of allLinks) {
+        const Htmlresponse = await axios.get(link);
+        const $ = cheerio.load(Htmlresponse.data);
+        const eventItems = $('.rgbcode_table_shortcode_table_item');
+        var DemoLink = link;
+        for await (var element of eventItems) {
+            const eventItem = $(element);
+
+            const Unfromatteddate = eventItem.find('.rgbcode_table_shortcode_table_date').text().trim();
+            const Fromattedyear = new Date().getFullYear(); // Get the current year
+            const [Fromattedday, Fromattedmonth] = Unfromatteddate.split('.');
+            const date = `${Fromattedyear}-${Fromattedmonth}-${Fromattedday}`;
+            const dayAndTime = eventItem.find('.rgbcode_table_shortcode_table_when').eq(0).text().trim().split('\n');
+            const time = dayAndTime[1].trim();
+            const eventName = eventItem.find('.rgbcode_table_shortcode_table_event_name').text().trim();
+            const secondTdText = eventItem.find('td:nth-child(2)').text().trim();
+            const link = eventItem.find('td:nth-child(3) a').attr('href');
+            //var thirdSlashIndex = link.indexOf('/', link.indexOf('/', link.indexOf('/') + 1) + 1);
+            var URLObj = GET_HOST.parse(link);
+            // var domain = tempDomain.replace('https://www.', '').replace('/', '');
+            var domain = URLObj.hostname;
+            var showID = URLObj.path;
+            // we are saving link instead of showID
+            const cleanedSecondTdText = secondTdText.replace(eventName, '').trim();
+            const parts = cleanedSecondTdText.split('\n');
+            // Check if there are at least two parts
+            if (parts.length >= 2) {
+                // Extract and assign the values to the 'hallName' variable
+                const value1 = parts[1].trim();
+                const value2 = parts.length > 2 ? parts[2].trim() : ''; // Check if parts[2] exists
+                const hall = value1 + ' ' + value2;
+                const day = GetDay(date);
+                // Check if the link contains any of the excluded keywords
+                const isExcluded = excludedKeywords.some(keyword => link.includes(keyword));
+
+                if (!isExcluded) {
+                    var response = {};
+                    response.show_id = showID;
+                    response.name = eventName;
+                    response.link = link;
+                    response.domain = (domain && domain != null && domain != undefined) ? domain.replace('www.', '') : "";
+                    response.showLocations = [{
+                        DemoLink: DemoLink,
+                        date: date,
+                        day: day,
+                        time: time,
+                        hall: (hall && hall != null && hall != undefined) ? hall.trim() : ""
+                    }];
+
+                    const result = await Shows.findOne({show_id: response.show_id});
+                    if (result == null) {
+                        console.log(response.show_id, "New Added");
+                        await Shows.create(response);
+                        //console.log(response.show_id, "New Found Pushed in Arr");
+                        //ArrData.push(response);
+                    } else {
+                        await Shows.updateOne({show_id: response.show_id}, response);
+                        console.log(response.show_id, "Already Exist & Updated");
+                    }
+                }
+            }
+        }
+    }
+
+    /*if (ArrData.length > 0) {
+        console.log(`New scraped from link: ${ArrData.length}`);
+        await Shows.insertMany(ArrData);
+    }*/
+    console.log(`New scraped from link: ${ArrData.length}`);
+    console.log(`Execution Completed`);
+}
+
+
+exports.ScrapSportSiteMap = async function () {
+    const linksArray = [];
+
+    driver = await new Builder().forBrowser(Browser.FIREFOX).setFirefoxOptions(profile).build();
+    data = await GetBrowserURL(`https://www.ticketingo.co.il/sitemap`);
+    const $ = cheerio.load(data);
+
+
+    // Use Cheerio to select the links within the specified elements
+    $('.siteMap ul.sub li a').each((index, element) => {
+        const link = $(element).attr('href');
+        // Remove '../' from the link and push it into the array
+        const cleanLink = link.replace('../', '');
+        linksArray.push(cleanLink);
+    });
+
+    ScrapSportSiteMapFunc(linksArray)
+
+}
+
+// Function to convert a date from one format to another
+// Function to convert a date from one format to another
+function formatDate(inputDate) {
+    const months = {
+      'ינואר': '01',
+      'פברואר': '02',
+      'מרץ': '03',
+      'אפריל': '04',
+      'מאי': '05',
+      'יוני': '06',
+      'יולי': '07',
+      'אוגוסט': '08',
+      'ספטמבר': '09',
+      'אוקטובר': '10',
+      'נובמבר': '11',
+      'דצמבר': '12',
+    };
+  
+    const parts = inputDate.split(' ');
+    if (parts.length === 3) {
+      const day = parts[0];
+      const month = months[parts[1]];
+      const year = parts[2];
+      formattedYear = year.replace(',', ''); // Removes the comma
+      return `${formattedYear}-${month}-${day}`;
+    //   return `${year}-${month}-${day}`;
+    }
+    return inputDate; // Return the input date as is if it couldn't be parsed
+  }
+  
+  
+  async function ScrapSportSiteMapFunc(linksArray) {
+    const baseURL = 'https://www.ticketingo.co.il/'; // Base URL
+    console.log("Total:", linksArray.length);
+    const scrapedData = [];
+  
+    for await (const link of linksArray) {
+      const pageAddress = `${baseURL}${link}`;
+      console.log(pageAddress);
+      data = await GetBrowserURL(pageAddress, driver);
+  
+      const $ = cheerio.load(data);
+  
+      // Select the elements containing the data you want
+      $('.tableRow').each(async (index, element) => {
+        const leagueName = $(element).find('.eventInfo span').eq(0).text().trim();
+        const gameType = $(element).find('.eventInfo span').eq(1).text().trim();
+        const teamNames = $(element).find('.eventInfo a').text().trim();
+        const city = $(element).find('.eventLocation span').eq(0).text().trim();
+        const country = $(element).find('.eventLocation span').eq(1).text().trim();
+        const stadium = $(element).find('.eventLocation div span').eq(1).text().trim();
+        const date = formatDate($(element).find('.tableCell').eq(1).find('span').eq(1).text().trim());
+        const price = $(element).find('.tableCell .ticket-price').text().trim();
+        const link = $('a.colorA').attr('href');
+  
+        var response = {
+          leagueName,
+          gameType,
+          teamNames,
+          city,
+          country,
+          stadium,
+          date,
+          price,
+          link,
+        };
+        // console.log(response)
+  
+        await SportSiteMap.create(response);
+      });
+    }
+  
+    console.log(`Execution Completed`);
+  }
+  
+
+
+
+exports.ScrapTmisrael = async function () {
+    console.log("ScrapTmisrael")
+    driver = await new Builder().forBrowser(Browser.FIREFOX).setFirefoxOptions(profile).build();
+    data = await GetBrowserURL(`https://www.tmisrael.co.il/homepage/ALL/iw`);
+    const $ = cheerio.load(data);
+
+    const hrefArray = [];
+    const ulElement = $('ul.v2');
+    const links = ulElement.find('a');
+
+    // Iterate through each 'a' element and extract the href value
+    links.each((index, element) => {
+        const href = $(element).attr('href');
+        hrefArray.push(href);
+    });
+
+    // console.log(hrefArray);
+
+    const filteredHrefs = hrefArray.filter(href =>
+        !href.includes('https://') && !href.includes('event-group')
+    );
+    // console.log(filteredHrefs)
+    await TmisraelFunc(filteredHrefs, driver);
+
+}
+
+
+async function TmisraelFunc(pokemons, driver) {
+    const baseURL = 'https://www.tmisrael.co.il'; // Base URL
+    var productDetails = [];
+    var showID = "";
+    console.log("Total:", pokemons.length);
+
+    for await (const link of pokemons) {
+        const pageAddress = `${baseURL}${link}`;
+        console.log(pageAddress);
+        data = await GetBrowserURL(pageAddress, driver);
+        // console.log(data)
+
+        try {
+            const $ = cheerio.load(data);
+            eventDetails = [];
+            EventData = [];
+            const $pokemon = $('.ContentWrapperInner');
+            const name = $pokemon.find('#eventnameh1 span[itemprop="name"]').text();
+            const startDate = $('h2[itemprop="startDate"]').attr('content');
+            const date = $('h2 span:nth-child(1)').text().trim();
+            const month = $('h2 span:nth-child(2)').text().trim();
+            const year = $('h2 span:nth-child(3)').text().trim();
+            const day = $('h2 span:nth-child(5)').text().trim();
+            const time = $('h2 span:nth-child(6)').text().trim();
+            const location = $('#hidablelocation span[itemprop="name"]').text().trim();
+
+            var locations = {};
+            var showLocations = [];
+            locations.name = name;
+            locations.startDate = startDate;
+            locations.month = month;
+            locations.year = year;
+            locations.day = day;
+            locations.time = time;
+            locations.hall = location;
+            showLocations.push(locations);
+
+            var response = {};
+            response.name = name;
+            response.showLocations = showLocations;
+
+            console.log(response)
+
+
+            // const result = await AllEvents.findOne({name: name});
+            // if (result == null) {
+            //     console.log(showID, "Not Found Pushing in Array");
+            //     await AllEvents.create(response);
+            // } else {
+            //     await AllEvents.updateOne({name: name}, response);
+            //     console.log(showID, "Already Exist & Updated");
+            // }
+
+        } catch (e) {
+            console.log(`Error Cheerio load`, e);
+        }
+    }
+
+
+    console.log(`Execution Completed`);
+
+}
+
 
 async function GetBrowserURL(url) {
     try {
@@ -941,7 +1209,7 @@ async function GetBrowserURL(url) {
 }
 
 function Delete_Shows() {
-    Shows.deleteMany({domain: /buytickets.kartisim.co.il/}, function (err, resp) {
+    Shows.deleteMany({ domain: /buytickets.kartisim.co.il/ }, function (err, resp) {
         console.log(resp);
     });
 }
