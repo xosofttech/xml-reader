@@ -1012,9 +1012,10 @@ async function ScrapSiteMapFunc(allLinks) {
 exports.ScrapSportSiteMap = async function () {
     const linksArray = [];
 
-    driver = await new Builder().forBrowser(Browser.FIREFOX).setFirefoxOptions(profile).build();
-    data = await GetBrowserURL(`https://www.ticketingo.co.il/sitemap`);
-    const $ = cheerio.load(data);
+    driver = await new Builder().forBrowser(Browser.FIREFOX).build();
+    await driver.get(`https://www.ticketingo.co.il/sitemap`);
+    html = await driver.findElement(By.tagName("html")).getAttribute("innerHTML");
+    const $ = cheerio.load(html);
 
 
     // Use Cheerio to select the links within the specified elements
