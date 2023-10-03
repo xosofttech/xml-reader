@@ -18,7 +18,7 @@ const {
     CollectContent,
     DownloadContent
 } = require('nodejs-web-scraper');
-const {Builder, Browser, By} = require('selenium-webdriver');
+const { Builder, Browser, By } = require('selenium-webdriver');
 const firefox = require('selenium-webdriver/firefox');
 
 let profile = new firefox.Options();
@@ -33,6 +33,8 @@ global.DOMParser = new JSDOM().window.DOMParser
 
 var Shows = require('../Model/shows');
 var AllEvents = require('../Model/allevents');
+var SportSiteMap = require('../Model/SportSiteMap');
+
 const fs = require("fs");
 const {start} = require('repl');
 const {Console} = require('console');
@@ -76,7 +78,7 @@ exports.ScrapBarbie = async function () {
     // This hook is called after every page finished scraping.
     // It will also get an address argument.
     const getPageObject = (pageObject, address) => {
-        pages.push({URL: address, Data: pageObject})
+        pages.push({ URL: address, Data: pageObject })
     }
 
     const config = {
@@ -96,14 +98,14 @@ exports.ScrapBarbie = async function () {
     // Opens every job ad, and calls the getPageObject, passing the formatted dictionary.
 
     // const links = new CollectContent('.defShowListMain a.href', {name: 'link'});
-    const titles = new CollectContent('h1', {name: 'title'});
+    const titles = new CollectContent('h1', { name: 'title' });
     // const images = new DownloadContent('.showCatRightDiv img', {name: 'images'})
-    const category = new CollectContent('.showCatLeftShowTitel span', {name: 'category'});
-    const day = new CollectContent('.showCatDivLbl #ctl00_ContentPlaceHolder1_lblDay', {name: 'day'});
-    const date = new CollectContent('.showCatDivLbl #ctl00_ContentPlaceHolder1_lblDate', {name: 'date'});
-    const price = new CollectContent('.showCatDivLbl #ctl00_ContentPlaceHolder1_lblPrice', {name: 'price'});
-    const showType = new CollectContent('.showCatDivLbl #ctl00_ContentPlaceHolder1_lblSeatType', {name: 'showType'});
-    const description = new CollectContent('.divDescMainYL #ctl00_ContentPlaceHolder1_lblDescription', {name: 'description'});
+    const category = new CollectContent('.showCatLeftShowTitel span', { name: 'category' });
+    const day = new CollectContent('.showCatDivLbl #ctl00_ContentPlaceHolder1_lblDay', { name: 'day' });
+    const date = new CollectContent('.showCatDivLbl #ctl00_ContentPlaceHolder1_lblDate', { name: 'date' });
+    const price = new CollectContent('.showCatDivLbl #ctl00_ContentPlaceHolder1_lblPrice', { name: 'price' });
+    const showType = new CollectContent('.showCatDivLbl #ctl00_ContentPlaceHolder1_lblSeatType', { name: 'showType' });
+    const description = new CollectContent('.divDescMainYL #ctl00_ContentPlaceHolder1_lblDescription', { name: 'description' });
     // const day = new CollectContent('.showCatDivLbl span', { day: 'day' });
 
     root.addOperation(jobAds);
@@ -214,11 +216,11 @@ exports.ScrapBarbie = async function () {
             response.description = convDescription;
             response.showLocations = showLocations;
 
-            DBResponse = await Shows.findOne({show_id: showID});
+            DBResponse = await Shows.findOne({ show_id: showID });
             if (DBResponse === null) {
                 ArrData.push(response);
             } else {
-                await Shows.updateOne({show_id: showID}, response);
+                await Shows.updateOne({ show_id: showID }, response);
                 console.log(showID, "Already Exist & Updated");
             }
 
@@ -248,7 +250,7 @@ exports.ScrapComy = async function () {
     const pages = []; // All ad pages.
 
     const getPageObject = (pageObject, address) => { // pageObject.URL=address;
-        pages.push({URL: address, Data: pageObject})
+        pages.push({ URL: address, Data: pageObject })
     }
 
     const config = {
@@ -267,18 +269,18 @@ exports.ScrapComy = async function () {
     // Opens every job ad, and calls the getPageObject, passing the formatted dictionary.
 
     // const links = new CollectContent('.defShowListMain a.href', {name: 'link'});
-    const titles = new CollectContent('h1', {name: 'title'});
-    const category = new CollectContent('h2', {name: 'category'});
-    const showDescription = new CollectContent('#the-event p', {name: 'showDescription'});
-    const date = new CollectContent('.te-date', {name: 'date'});
-    const price = new CollectContent('.ticket-price', {name: 'price'});
+    const titles = new CollectContent('h1', { name: 'title' });
+    const category = new CollectContent('h2', { name: 'category' });
+    const showDescription = new CollectContent('#the-event p', { name: 'showDescription' });
+    const date = new CollectContent('.te-date', { name: 'date' });
+    const price = new CollectContent('.ticket-price', { name: 'price' });
 
     // Event List
-    const eventName = new CollectContent('.single-place-string p', {name: 'eventName'});
-    const eventHall = new CollectContent('.single-place-string p:nth-child(1)', {name: 'eventHall'});
-    const eventCity = new CollectContent('.single-place-string p:nth-child(2)', {name: 'eventCity'});
-    const eventDate = new CollectContent('.single-date-details .date', {name: 'eventDate'});
-    const eventTime = new CollectContent('.single-date-details .single-light', {name: 'eventTime'});
+    const eventName = new CollectContent('.single-place-string p', { name: 'eventName' });
+    const eventHall = new CollectContent('.single-place-string p:nth-child(1)', { name: 'eventHall' });
+    const eventCity = new CollectContent('.single-place-string p:nth-child(2)', { name: 'eventCity' });
+    const eventDate = new CollectContent('.single-date-details .date', { name: 'eventDate' });
+    const eventTime = new CollectContent('.single-date-details .single-light', { name: 'eventTime' });
     // const eventTitle = new CollectContent('.single-edt-left-new p', {name: 'eventTitle'});
 
     root.addOperation(jobAds);
@@ -398,11 +400,11 @@ exports.ScrapComy = async function () {
         response.price = convPrice;
         response.showDescription = convshowDescription;
         response.showLocations = myObjArray;
-        DBResponse = await Shows.findOne({show_id: showID});
+        DBResponse = await Shows.findOne({ show_id: showID });
         if (DBResponse === null) {
             ArrData.push(response);
         } else {
-            await Shows.updateOne({show_id: showID}, response);
+            await Shows.updateOne({ show_id: showID }, response);
             console.log(showID, "Already Exist & Updated");
         }
 
@@ -426,7 +428,7 @@ exports.XMLToMongo = function () {
         execute(`curl https://buytickets.kartisim.co.il/xml/partner/shows.xml`, function (err, data, outerr) {
             if (err) throw err;
             console.log(`Result Fetched`);
-            var parser = new xml2js.Parser({explicitArray: false});
+            var parser = new xml2js.Parser({ explicitArray: false });
             parser.parseString(data, function (err, result) {
                 var Result = result.bravo.shows.show;
 
@@ -523,7 +525,7 @@ exports.XMLToMongo = function () {
                             showObj: show_object
                         };
 
-                        ShowExist = await Shows.findOne({"show_id": show_id});
+                        ShowExist = await Shows.findOne({ "show_id": show_id });
                         if (ShowExist != null) {
                             console.log("ShowID => ", show_id, " Exist already Found & Updated");
                             PageResult = await Shows.updateOne({
@@ -560,7 +562,7 @@ exports.ScrapEvenTim = async function () {
     const pokemons = $('.swiper-slide').map((_, pokemon) => {
         const $pokemon = $(pokemon);
         const link = $pokemon.find('a').attr("href");
-        return {'link': link}
+        return { 'link': link }
     }).toArray();
     EvenTimFunc(pokemons)
 }
@@ -740,7 +742,7 @@ async function EvenTimFunc(pokemons) {
     var eventDetails = [];
     var showID = "";
     console.log("Total:", pokemons.length);
-    for await([index, object] of pokemons.entries()) {
+    for await ([index, object] of pokemons.entries()) {
         var pageAddress = object.link || '';
 
         var parts = object.link.split("/");
@@ -851,13 +853,13 @@ async function EvenTimFunc(pokemons) {
                 // console.log(ArrData)
 
 
-                const result = await Shows.findOne({show_id: showID});
+                const result = await Shows.findOne({ show_id: showID });
                 if (result == null) {
                     console.log(showID, "Not Found Pushing in Array");
                     ArrData.push(response);
                     await Shows.create(response);
                 } else {
-                    await Shows.updateOne({show_id: showID}, response);
+                    await Shows.updateOne({ show_id: showID }, response);
                     console.log(showID, "Already Exist & Updated");
                 }
             } catch (e) {
@@ -1007,6 +1009,104 @@ async function ScrapSiteMapFunc(allLinks) {
 }
 
 
+exports.ScrapSportSiteMap = async function () {
+    const linksArray = [];
+
+    driver = await new Builder().forBrowser(Browser.FIREFOX).setFirefoxOptions(profile).build();
+    data = await GetBrowserURL(`https://www.ticketingo.co.il/sitemap`);
+    const $ = cheerio.load(data);
+
+
+    // Use Cheerio to select the links within the specified elements
+    $('.siteMap ul.sub li a').each((index, element) => {
+        const link = $(element).attr('href');
+        // Remove '../' from the link and push it into the array
+        const cleanLink = link.replace('../', '');
+        linksArray.push(cleanLink);
+    });
+
+    ScrapSportSiteMapFunc(linksArray)
+
+}
+
+// Function to convert a date from one format to another
+// Function to convert a date from one format to another
+function formatDate(inputDate) {
+    const months = {
+      'ינואר': '01',
+      'פברואר': '02',
+      'מרץ': '03',
+      'אפריל': '04',
+      'מאי': '05',
+      'יוני': '06',
+      'יולי': '07',
+      'אוגוסט': '08',
+      'ספטמבר': '09',
+      'אוקטובר': '10',
+      'נובמבר': '11',
+      'דצמבר': '12',
+    };
+  
+    const parts = inputDate.split(' ');
+    if (parts.length === 3) {
+      const day = parts[0];
+      const month = months[parts[1]];
+      const year = parts[2];
+      formattedYear = year.replace(',', ''); // Removes the comma
+      return `${formattedYear}-${month}-${day}`;
+    //   return `${year}-${month}-${day}`;
+    }
+    return inputDate; // Return the input date as is if it couldn't be parsed
+  }
+  
+  
+  async function ScrapSportSiteMapFunc(linksArray) {
+    const baseURL = 'https://www.ticketingo.co.il/'; // Base URL
+    console.log("Total:", linksArray.length);
+    const scrapedData = [];
+  
+    for await (const link of linksArray) {
+      const pageAddress = `${baseURL}${link}`;
+      console.log(pageAddress);
+      data = await GetBrowserURL(pageAddress, driver);
+  
+      const $ = cheerio.load(data);
+  
+      // Select the elements containing the data you want
+      $('.tableRow').each(async (index, element) => {
+        const leagueName = $(element).find('.eventInfo span').eq(0).text().trim();
+        const gameType = $(element).find('.eventInfo span').eq(1).text().trim();
+        const teamNames = $(element).find('.eventInfo a').text().trim();
+        const city = $(element).find('.eventLocation span').eq(0).text().trim();
+        const country = $(element).find('.eventLocation span').eq(1).text().trim();
+        const stadium = $(element).find('.eventLocation div span').eq(1).text().trim();
+        const date = formatDate($(element).find('.tableCell').eq(1).find('span').eq(1).text().trim());
+        const price = $(element).find('.tableCell .ticket-price').text().trim();
+        const link = $('a.colorA').attr('href');
+  
+        var response = {
+          leagueName,
+          gameType,
+          teamNames,
+          city,
+          country,
+          stadium,
+          date,
+          price,
+          link,
+        };
+        // console.log(response)
+  
+        await SportSiteMap.create(response);
+      });
+    }
+  
+    console.log(`Execution Completed`);
+  }
+  
+
+
+
 exports.ScrapTmisrael = async function () {
     console.log("ScrapTmisrael")
     driver = await new Builder().forBrowser(Browser.FIREFOX).setFirefoxOptions(profile).build();
@@ -1017,7 +1117,7 @@ exports.ScrapTmisrael = async function () {
     const ulElement = $('ul.v2');
     const links = ulElement.find('a');
 
-// Iterate through each 'a' element and extract the href value
+    // Iterate through each 'a' element and extract the href value
     links.each((index, element) => {
         const href = $(element).attr('href');
         hrefArray.push(href);
@@ -1110,7 +1210,7 @@ async function GetBrowserURL(url) {
 }
 
 function Delete_Shows() {
-    Shows.deleteMany({domain: /buytickets.kartisim.co.il/}, function (err, resp) {
+    Shows.deleteMany({ domain: /buytickets.kartisim.co.il/ }, function (err, resp) {
         console.log(resp);
     });
 }
