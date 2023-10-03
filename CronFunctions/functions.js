@@ -23,10 +23,10 @@ const firefox = require('selenium-webdriver/firefox');
 
 let profile = new firefox.Options();
 
-profile.setPreference('permissions.default.stylesheet', 2);
-profile.setPreference('permissions.default.image', 2);
-profile.setPreference("dom.ipc.plugins.enabled.libflashplayer.so", false);
-profile.setPreference('network.proxy.Kind', 'Direct')
+// profile.setPreference('permissions.default.stylesheet', 2);
+// profile.setPreference('permissions.default.image', 2);
+// profile.setPreference("dom.ipc.plugins.enabled.libflashplayer.so", false);
+// profile.setPreference('network.proxy.Kind', 'Direct')
 
 
 global.DOMParser = new JSDOM().window.DOMParser
