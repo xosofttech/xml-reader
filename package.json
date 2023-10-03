@@ -45,7 +45,7 @@
     "xmlbuilder": "^15.1.1"
   },
   "engines": {
-    "node": "12.16.1"
+    "node": "18.13.0"
   },
   "bugs": {
     "url": "https://bitbucket.org/muteebahmadkamboh/nft-stats/issues"
