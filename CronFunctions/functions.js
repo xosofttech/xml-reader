@@ -10,7 +10,7 @@ const jsdom = require('jsdom');
 const moment = require('moment');
 const request = require('request');
 const GET_HOST = require('url');
-const {JSDOM} = jsdom;
+const { JSDOM } = jsdom;
 const {
     Scraper,
     Root,
@@ -36,8 +36,8 @@ var AllEvents = require('../Model/allevents');
 var SportSiteMap = require('../Model/SportSiteMap');
 
 const fs = require("fs");
-const {start} = require('repl');
-const {Console} = require('console');
+const { start } = require('repl');
+const { Console } = require('console');
 const URL = require("url");
 // var Barbie = require('../Model/barbie');
 // var Zappa = require('../Model/zappa');
@@ -984,14 +984,14 @@ async function ScrapSiteMapFunc(allLinks) {
                         hall: (hall && hall != null && hall != undefined) ? hall.trim() : ""
                     }];
 
-                    const result = await Shows.findOne({show_id: response.show_id});
+                    const result = await Shows.findOne({ show_id: response.show_id });
                     if (result == null) {
                         console.log(response.show_id, "New Added");
                         await Shows.create(response);
                         //console.log(response.show_id, "New Found Pushed in Arr");
                         //ArrData.push(response);
                     } else {
-                        await Shows.updateOne({show_id: response.show_id}, response);
+                        await Shows.updateOne({ show_id: response.show_id }, response);
                         console.log(response.show_id, "Already Exist & Updated");
                     }
                 }
@@ -1032,77 +1032,92 @@ exports.ScrapSportSiteMap = async function () {
 // Function to convert a date from one format to another
 function formatDate(inputDate) {
     const months = {
-      'ינואר': '01',
-      'פברואר': '02',
-      'מרץ': '03',
-      'אפריל': '04',
-      'מאי': '05',
-      'יוני': '06',
-      'יולי': '07',
-      'אוגוסט': '08',
-      'ספטמבר': '09',
-      'אוקטובר': '10',
-      'נובמבר': '11',
-      'דצמבר': '12',
+        'ינואר': '01',
+        'פברואר': '02',
+        'מרץ': '03',
+        'אפריל': '04',
+        'מאי': '05',
+        'יוני': '06',
+        'יולי': '07',
+        'אוגוסט': '08',
+        'ספטמבר': '09',
+        'אוקטובר': '10',
+        'נובמבר': '11',
+        'דצמבר': '12',
     };
-  
+
     const parts = inputDate.split(' ');
     if (parts.length === 3) {
-      const day = parts[0];
-      const month = months[parts[1]];
-      const year = parts[2];
-      formattedYear = year.replace(',', ''); // Removes the comma
-      return `${formattedYear}-${month}-${day}`;
-    //   return `${year}-${month}-${day}`;
+        const day = parts[0];
+        const month = months[parts[1]];
+        const year = parts[2];
+        formattedYear = year.replace(',', ''); // Removes the comma
+        return `${formattedYear}-${month}-${day}`;
+        //   return `${year}-${month}-${day}`;
     }
     return inputDate; // Return the input date as is if it couldn't be parsed
-  }
-  
-  
-  async function ScrapSportSiteMapFunc(linksArray) {
+}
+
+
+async function ScrapSportSiteMapFunc(linksArray) {
     const baseURL = 'https://www.ticketingo.co.il/'; // Base URL
     console.log("Total:", linksArray.length);
     const scrapedData = [];
-  
+
     for await (const link of linksArray) {
-      const pageAddress = `${baseURL}${link}`;
-      console.log(pageAddress);
-      data = await GetBrowserURL(pageAddress, driver);
-  
-      const $ = cheerio.load(data);
-  
-      // Select the elements containing the data you want
-      $('.tableRow').each(async (index, element) => {
-        const leagueName = $(element).find('.eventInfo span').eq(0).text().trim();
-        const gameType = $(element).find('.eventInfo span').eq(1).text().trim();
-        const teamNames = $(element).find('.eventInfo a').text().trim();
-        const city = $(element).find('.eventLocation span').eq(0).text().trim();
-        const country = $(element).find('.eventLocation span').eq(1).text().trim();
-        const stadium = $(element).find('.eventLocation div span').eq(1).text().trim();
-        const date = formatDate($(element).find('.tableCell').eq(1).find('span').eq(1).text().trim());
-        const price = $(element).find('.tableCell .ticket-price').text().trim();
-        const link = $('a.colorA').attr('href');
-  
-        var response = {
-          leagueName,
-          gameType,
-          teamNames,
-          city,
-          country,
-          stadium,
-          date,
-          price,
-          link,
-        };
-        // console.log(response)
-  
-        await SportSiteMap.create(response);
-      });
+        const pageAddress = `${baseURL}${link}`;
+        console.log(pageAddress);
+        data = await GetBrowserURL(pageAddress, driver);
+
+        const $ = cheerio.load(data);
+
+        // Select the elements containing the data you want
+        $('.tableRow').each(async (index, element) => {
+            const leagueName = $(element).find('.eventInfo span').eq(0).text().trim();
+            const gameType = $(element).find('.eventInfo span').eq(1).text().trim();
+            const teamNames = $(element).find('.eventInfo a').text().trim();
+            const city = $(element).find('.eventLocation span').eq(0).text().trim();
+            const country = $(element).find('.eventLocation span').eq(1).text().trim();
+            const stadium = $(element).find('.eventLocation div span').eq(1).text().trim();
+            const date = formatDate($(element).find('.tableCell').eq(1).find('span').eq(1).text().trim());
+            const price = $(element).find('.tableCell .ticket-price').text().trim();
+            const link = $('a.colorA').attr('href');
+            const newLink = link.replace(/^(\.\.\/)+/, '');
+
+            var response = {
+                leagueName,
+                gameType,
+                teamNames,
+                city,
+                country,
+                stadium,
+                date,
+                price,
+                newLink,
+            };
+
+            // console.log(response)
+
+            const existingRecord = await SportSiteMap.findOne({ link: link });
+
+            if (existingRecord) {
+                // Update the existing record
+                console.log(`record exist, updating ...`)
+                await SportSiteMap.updateOne({ link: response.link }, response);
+            } else {
+                console.log(`record exist, inserting ...`)
+                // Insert a new record
+                await SportSiteMap.create(response);
+            }
+
+
+            await SportSiteMap.create(response);
+        });
     }
-  
+
     console.log(`Execution Completed`);
-  }
-  
+}
+
 
 
 
