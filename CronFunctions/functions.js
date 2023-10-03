@@ -23,10 +23,10 @@ const firefox = require('selenium-webdriver/firefox');
 
 let profile = new firefox.Options();
 
-// profile.setPreference('permissions.default.stylesheet', 2);
-// profile.setPreference('permissions.default.image', 2);
-// profile.setPreference("dom.ipc.plugins.enabled.libflashplayer.so", false);
-// profile.setPreference('network.proxy.Kind', 'Direct')
+profile.setPreference('permissions.default.stylesheet', 2);
+profile.setPreference('permissions.default.image', 2);
+profile.setPreference("dom.ipc.plugins.enabled.libflashplayer.so", false);
+profile.setPreference('network.proxy.Kind', 'Direct')
 
 
 global.DOMParser = new JSDOM().window.DOMParser
@@ -1012,10 +1012,9 @@ async function ScrapSiteMapFunc(allLinks) {
 exports.ScrapSportSiteMap = async function () {
     const linksArray = [];
 
-    driver = await new Builder().forBrowser(Browser.FIREFOX).build();
-    await driver.get(`https://www.ticketingo.co.il/sitemap`);
-    html = await driver.findElement(By.tagName("html")).getAttribute("innerHTML");
-    const $ = cheerio.load(html);
+    driver = await new Builder().forBrowser(Browser.FIREFOX).setFirefoxOptions(profile).build();
+    data = await GetBrowserURL(`https://www.ticketingo.co.il/sitemap`);
+    const $ = cheerio.load(data);
 
 
     // Use Cheerio to select the links within the specified elements
@@ -1204,7 +1203,6 @@ async function GetBrowserURL(url) {
         console.log(url);
         await driver.get(url);
         html = await driver.findElement(By.tagName("html")).getAttribute("innerHTML");
-        console.log(html);
         return html;
     } catch (e) {
         console.log(e);
