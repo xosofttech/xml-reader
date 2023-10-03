@@ -3,7 +3,7 @@ const route = express.Router();
 var SportSiteMap = require('../Model/SportSiteMap');
 
 // Define a POST route to list events based on filters
-route.post('/sport-events', async (req, res) => {
+route.post('/sports-events', async (req, res) => {
     try {
         const {
             leagueName,
