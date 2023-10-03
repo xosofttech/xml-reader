@@ -1082,8 +1082,8 @@ async function ScrapSportSiteMapFunc(linksArray) {
             const stadium = $(element).find('.eventLocation div span').eq(1).text().trim();
             const date = formatDate($(element).find('.tableCell').eq(1).find('span').eq(1).text().trim());
             const price = $(element).find('.tableCell .ticket-price').text().trim();
-            const link = $('a.colorA').attr('href');
-            const newLink = link.replace(/^(\.\.\/)+/, '');
+            const newLink = $('a.colorA').attr('href');
+            const link = newLink.replace(/^(\.\.\/)+/, '');
 
             var response = {
                 leagueName,
@@ -1094,10 +1094,8 @@ async function ScrapSportSiteMapFunc(linksArray) {
                 stadium,
                 date,
                 price,
-                newLink,
+                link
             };
-
-            // console.log(response)
 
             const existingRecord = await SportSiteMap.findOne({ link: link });
 
@@ -1112,7 +1110,6 @@ async function ScrapSportSiteMapFunc(linksArray) {
             }
 
 
-            await SportSiteMap.create(response);
         });
     }
 
