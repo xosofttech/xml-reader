@@ -230,7 +230,7 @@ route.post('/fetch-shows', async function (req, res) {
     TotalRows = (Rows !== undefined && Rows.length !== 0) ? Rows[0].count : 0
 
     console.log('Mobile Req:', req.body);
-    console.log('Mobile:', main_query);
+    console.log('Mobile Filter:', JSON.stringify(main_query));
 
     res.send({
         "result": ShowsResult,
