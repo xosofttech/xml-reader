@@ -3,7 +3,7 @@ var Config = require('./config');
 //var CronJobRoutes = require('./routes/CronJobRoutes');
 const path = require("path");
 const bodyParser = require("body-parser");
-const cookiesParser  = require('cookie-parser');
+const cookiesParser = require('cookie-parser');
 
 var {dburl} = require('./config');
 var mongoose = require('mongoose');
@@ -28,6 +28,7 @@ var CronJobRoute = require('./routes/CronJobRoutes');
 
 app.use('/', require('./routes/ApiRoutes'));
 app.use('/mobile', require('./routes/MobileApiRoutes'));
+app.use('/sports', require('./routes/SportsApiRoutes'));
 app.use('/app', require('./routes/AppRoutes'));
 
 

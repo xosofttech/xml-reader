@@ -160,7 +160,7 @@ route.post('/fetch-shows', async function (req, res) {
         }
 
         if (SectionSearchArr.length !== 0)
-            main_query.section = { $in: SectionSearchArr };
+            main_query.section = {$in: SectionSearchArr};
     }
 
     //console.log(SectionSearchArr);
@@ -168,15 +168,15 @@ route.post('/fetch-shows', async function (req, res) {
     if (filterParams.Not_in_Shabath && filterParams.Not_in_Shabath === true) {
         main_query.$or = [
             {
-                "showLocations.day": { $in: ["Monday", "Tuesday", "Wednesday", "Thursday", "Sunday"] },
+                "showLocations.day": {$in: ["Monday", "Tuesday", "Wednesday", "Thursday", "Sunday"]},
             },
             {
                 "showLocations.day": "Friday",
-                "showLocations.time": { $lt: "16:00" }
+                "showLocations.time": {$lt: "16:00"}
             },
             {
                 "showLocations.day": "Saturday",
-                "showLocations.time": { $gt: "18:00" }
+                "showLocations.time": {$gt: "18:00"}
             }
         ];
     }
@@ -195,7 +195,7 @@ route.post('/fetch-shows', async function (req, res) {
             $match: main_query
         },
         {
-            $sort: { "showLocations.date": 1, "showLocations.time": 1 }
+            $sort: {"showLocations.date": 1, "showLocations.time": 1}
         },
         {
             $skip: perPage * page
@@ -222,7 +222,7 @@ route.post('/fetch-shows', async function (req, res) {
         {
             $group: {
                 _id: null,
-                count: { $sum: 1 }
+                count: {$sum: 1}
             }
         }
     ]);
@@ -249,7 +249,7 @@ route.post('/register-device', async function (req, res) {
         var NotificationStatus = req.body.NotificationStatus;
         var TokenAccess = req.body.tokenAccess;
 
-        Devices.findOne({ deviceID: deviceID }, async function (err, deviceData) {
+        Devices.findOne({deviceID: deviceID}, async function (err, deviceData) {
             if (deviceData === null) {
                 var obj = new Devices({
                     deviceID: deviceID,
@@ -260,17 +260,17 @@ route.post('/register-device', async function (req, res) {
                 });
                 await obj.save();
             } else {
-                await Devices.updateOne({ deviceID: deviceID }, {
+                await Devices.updateOne({deviceID: deviceID}, {
                     deviceID: deviceID,
                     deviceIP: deviceIP,
                     tokenAccess: TokenAccess,
                     NotificationStatus: NotificationStatus
                 })
             }
-            res.send({ "error": false, "message": "Updated Successfully" });
+            res.send({"error": false, "message": "Updated Successfully"});
         });
     } catch (err) {
-        res.send({ "error": true, "message": "Failed", "Required Fields": "deviceID, deviceIP & NotificationStatus" });
+        res.send({"error": true, "message": "Failed", "Required Fields": "deviceID, deviceIP & NotificationStatus"});
     }
 });
 
@@ -288,76 +288,6 @@ route.post('/register-device', async function (req, res) {
     }
 });*/
 
-// Define a POST route to list events based on filters
-// Define a POST route to list events based on filters
-route.post('/sport-events', async (req, res) => {
-    try {
-      const {
-        leagueName,
-        gameType,
-        teamNames,
-        city,
-        country,
-        stadium,
-        date,
-        price,
-        link,
-        startDate,
-        endDate,
-      } = req.body;
-  
-      // Construct the filter criteria for the query
-      const filterCriteria = {};
-  
-      if (leagueName) {
-        filterCriteria.leagueName = leagueName;
-      }
-      if (gameType) {
-        filterCriteria.gameType = gameType;
-      }
-      if (teamNames) {
-        filterCriteria.teamNames = teamNames;
-      }
-      if (city) {
-        filterCriteria.city = city;
-      }
-      if (country) {
-        filterCriteria.country = country;
-      }
-      if (stadium) {
-        filterCriteria.stadium = stadium;
-      }
-      if (price) {
-        filterCriteria.price = price;
-      }
-      if (link) {
-        filterCriteria.link = link;
-      }
-  
-      // Get the current date in ISO format (e.g., "2023-10-02")
-      const currentDate = new Date().toISOString().split('T')[0];
-  
-      // Add a filter to include only upcoming events if no date range is specified
-      if (!startDate && !endDate) {
-        filterCriteria.date = { $gte: currentDate };
-      } else {
-        // If startDate and endDate are specified, filter events within the date range
-        filterCriteria.date = {
-          $gte: startDate,
-          $lte: endDate,
-        };
-      }
-  
-      // Perform the query using the filter criteria
-      const events = await SportSiteMap.find(filterCriteria);
-  
-      res.status(200).json({ events });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  });
-  
 
 function splitStr(str, separator) {
     // Function to split string
