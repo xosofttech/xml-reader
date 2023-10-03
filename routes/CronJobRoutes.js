@@ -3,7 +3,7 @@ var CronJob = require('cron').CronJob;
 var FN = require('../CronFunctions/functions');
 var {CONFIG} = require('../config');
 
-if (CONFIG.CRON === "offf") {
+if (CONFIG.CRON === "on") {
     var PullXMLToMongoObject = new CronJob('01 */3 * * *', function () {
         console.log("Getting XML TO Mongo Cron Running Start");
         FN.XMLToMongo();
@@ -22,11 +22,19 @@ if (CONFIG.CRON === "offf") {
     }, null, true, TIMEZONE);
     ScrapComy.start();
 
-    var ScrapMevalim = new CronJob('50 */3 * * *', function () {
+    var ScrapMevalim = new CronJob('40 */3 * * *', function () {
         console.log("Scrap Mevalim Cron Running Start");
         FN.ScrapMevalim();
     }, null, true, TIMEZONE);
     ScrapMevalim.start();
+
+
+    var ScrapSportsEvents = new CronJob('50 */3 * * *', function () {
+        console.log("Scrap Sports Cron Running Start");
+        FN.ScrapSportSiteMap();
+    }, null, true, TIMEZONE);
+    ScrapSportsEvents.start();
+
 
     /*var ScrapEvenTim = new CronJob('50 *!/3 * * *', function () {
         console.log("Scrap EvenTim Cron Running Start");
@@ -47,5 +55,5 @@ if (CONFIG.CRON === "offf") {
 // FN.ScrapTicketIngo();
 // FN.ScrapMevalim();
 // FN.ScrapSiteMap();
-FN.ScrapSportSiteMap();
+// FN.ScrapSportSiteMap();
 
