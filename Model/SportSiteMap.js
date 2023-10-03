@@ -4,6 +4,15 @@ const Module = require('../Modules/general');
 
 
 var SportSiteMapSchema = new Schema({
+    show_id: {
+        type: String,
+        default: "",
+        index: true
+    },
+    domain: {
+        type: String,
+        default: "",
+    },
     leagueName: {
         type: String,
         default: "",
@@ -43,7 +52,11 @@ var SportSiteMapSchema = new Schema({
     Created: {
         type: Date,
         default: Module.NOW()
+    },
+    Updated: {
+        type: Date,
+        default: Module.NOW()
     }
-}, { versionKey: false });
+}, {versionKey: false});
 
 module.exports = mongoose.model('SportSiteMap', SportSiteMapSchema);
