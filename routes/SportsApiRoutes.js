@@ -2,6 +2,12 @@ const express = require('express');
 const route = express.Router();
 var SportSiteMap = require('../Model/SportSiteMap');
 
+
+route.get('/healthcheck', function (req, res) {
+    res.send(res.statusCode.toString());
+});
+
+
 // Define a POST route to list events based on filters
 route.post('/sports-events', async (req, res) => {
     try {
@@ -17,6 +23,7 @@ route.post('/sports-events', async (req, res) => {
             link,
             startDate,
             endDate,
+            page,
         } = req.body;
 
         // Construct the filter criteria for the query
@@ -62,9 +69,20 @@ route.post('/sports-events', async (req, res) => {
         }
 
         // Perform the query using the filter criteria
-        const events = await SportSiteMap.find(filterCriteria);
+        const allEvents = await SportSiteMap.find(filterCriteria);
+        
+        // const { limit, pageno } = page || { limit: 10, pageno: 1 }; // Default to limit 10, page 1
+        const { limit, pageno } = page; // Default to limit 10, page 1
 
-        res.status(200).json({events});
+        // Calculate start and end indices for pagination
+        const startIndex = (pageno - 1) * limit;
+        const endIndex = pageno * limit;
+
+        // Slice the events array to return only the desired page
+        const events = allEvents.slice(startIndex, endIndex);
+
+        res.status(200).json({ events });
+
     } catch (error) {
         console.error(error);
         res.status(500).json({error: 'Internal Server Error'});
