@@ -1066,11 +1066,11 @@ async function ScrapSportSiteMapFunc(linksArray) {
     console.log("Total:", linksArray.length);
 
     for await (const link of linksArray) {
-        let pageNo = 1; 
-        var scrapedData = [];
+        let pageNo = 1;
         let pageCount; 
 
         do {
+            var scrapedData = [];
             const pageAddress = `${baseURL}${link}&page=${pageNo}`;
             data = await GetBrowserURL(pageAddress, driver);
             const $ = cheerio.load(data);
