@@ -3,15 +3,15 @@ const route = express.Router();
 const Module = require('../Modules/general');
 const Shows = require('../Model/shows');
 const Devices = require('../Model/devices');
-var SportSiteMap = require('../Model/SportSiteMap');
-
-const fs = require('fs');
+// var SportSiteMap = require('../Model/SportSiteMap');
+//
+// const fs = require('fs');
 
 var ShowsResult = [];
 route.post('/fetch-shows', async function (req, res) {
 
-    let isoDate = new Date();
-    gteDate = isoDate.toISOString().substring(0, 10);
+    /*let isoDate = new Date();
+    gteDate = isoDate.toISOString().substring(0, 10);*/
 
     filterParams = req.body.filter;
     pageParams = req.body.page;
@@ -232,6 +232,22 @@ route.post('/fetch-shows', async function (req, res) {
     console.log('Mobile Req:', req.body);
     console.log('Mobile Filter:', JSON.stringify(main_query));
 
+    //console.log(ShowsResult);
+
+    TodayJR = Module.NOW_JR();
+    TommorowJR = Module.Tomorrow_JR();
+
+
+    ShowsResult.map((obj) => {
+        DateLabel = "";
+        if (obj.showLocations.date == TodayJR)
+            DateLabel = 'היום';
+        else if (obj.showLocations.date == TommorowJR)
+            DateLabel = 'מחר';
+
+        obj.showLocations.DayLabel = DateLabel;
+    })
+
     res.send({
         "result": ShowsResult,
         "TotalRecords": TotalRows,
@@ -274,20 +290,6 @@ route.post('/register-device', async function (req, res) {
         res.send({"error": true, "message": "Failed", "Required Fields": "deviceID, deviceIP & NotificationStatus"});
     }
 });
-
-/*route.post('/fetch-data', async function (req, res) {
-    try {
-        if (fs.existsSync('public/data.txt')) {
-            const data = fs.readFileSync('public/data.txt', 'utf8');
-            res.setHeader('Content-Type', 'application/json');
-            res.send(data);
-        } else {
-            res.send({"cities": [], "sections": []});
-        }
-    } catch (err) {
-        res.send({"cities": [], "sections": []});
-    }
-});*/
 
 
 function splitStr(str, separator) {

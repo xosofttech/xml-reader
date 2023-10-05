@@ -5,6 +5,21 @@ exports.NOW = function () {
     return nDate;
 }
 
+exports.NOW_JR = function () {
+    nDate = new Date().toDateString('he-IL', {
+        timeZone: "Asia/Jerusalem"
+    });
+
+    return this.parseDate(nDate);
+}
+
+exports.Tomorrow_JR = function () {
+    const today = new Date(this.NOW_JR()) // get today's date
+    const tomorrow = new Date(this.NOW_JR())
+    tomorrow.setDate(today.getDate() + 1) // Add 1 to today's date and set it to tomorrow
+    return this.parseDate(tomorrow);
+}
+
 exports.parseDate = function (date) {
     newDate = new Date(date);
 
