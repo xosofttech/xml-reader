@@ -28,6 +28,10 @@ var DeviceSchema = new Schema({
         type: Date,
         default: Module.NOW()
     },
+    updatedAt: {
+        type: Date,
+        default: Module.NOW()
+    },
 }, {versionKey: false});
 
 module.exports = mongoose.model('device', DeviceSchema);

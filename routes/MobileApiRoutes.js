@@ -264,7 +264,8 @@ route.post('/register-device', async function (req, res) {
                     deviceID: deviceID,
                     deviceIP: deviceIP,
                     tokenAccess: TokenAccess,
-                    NotificationStatus: NotificationStatus
+                    NotificationStatus: NotificationStatus,
+                    updatedAt: Module.NOW()
                 })
             }
             res.send({"error": false, "message": "Updated Successfully"});
