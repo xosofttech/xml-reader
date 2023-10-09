@@ -251,7 +251,10 @@ route.post('/save-records', (req, res) => {
             hall: formData.hall[index],
             city: formData.city[index],
             location: formData.location[index],
-            address: formData.address[index]
+            address: formData.address[index],
+            priceMin: formData.priceMin[index],
+            priceMax: formData.priceMax[index]
+
         };
     });
 
@@ -327,6 +330,7 @@ route.post('/detail-edit-show', async (req, res) => {
     const formData = req.body;
     const showId = formData.showId;
     const index = formData.index;
+    console.log("formData", formData);
 
     try {
         var updatedFields = {
@@ -335,7 +339,9 @@ route.post('/detail-edit-show', async (req, res) => {
             [`showLocations.${index}.city`]: formData.city,
             [`showLocations.${index}.date`]: formData.date,
             [`showLocations.${index}.day`]: Module.GetDay(formData.date),
-            [`showLocations.${index}.time`]: formData.time
+            [`showLocations.${index}.time`]: formData.time,
+            [`showLocations.${index}.priceMin`]: formData.minPrice,
+            [`showLocations.${index}.priceMax`]: formData.maxPrice
         };
 
         await Shows.updateOne(
