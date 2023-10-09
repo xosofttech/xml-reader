@@ -129,6 +129,8 @@
                                 <th>Date</th>
                                 <th>Day</th>
                                 <th>Time</th>
+                                <th>Min Price</th>
+                                <th>Max Price</th>
                                 <th style=" width: 150px;">Action</th>
                             </tr>
                             </thead>
@@ -181,6 +183,15 @@
                                 <label class="form-label">Time</label>
                                 <input type="time" class="form-control editTime" value="">
                             </div>
+                            <div class="mb-3">
+                                <label class="form-label">Minimum Price</label>
+                                <input type="text" class="form-control editMinPrice" value="">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Maximum Price</label>
+                                <input type="text" class="form-control editMaxPrice" value="">
+                            </div>
+                            
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -217,7 +228,7 @@
     var showLocations;
 
     $(document).on('click', '.showLocationDetail', function () {
-        //console.log($(this).data('showid'));
+        console.log($(this).data('showid'));
         var showid = $(this).data('showid');
         $("#Default-showID").val($(this).data('showid'));
         var showIndex = $(this).data('showindex');
@@ -237,10 +248,12 @@
                 '<td>' + location.date + '</td>' +
                 '<td>' + location.day + '</td>' +
                 '<td>' + location.time + '</td>' +
-                '<td> <div class="btn-group"><button class="btn btn-primary editLocation" data-bs-toggle="modal"  data-index= "' + index + '" data-address="' + location.address + '" data-hall="' + location.hall + '" data-city="' + location.city + '" data-date="' + location.date + '" data-day="' + location.day + '" data-time="' + location.time + '" data-bs-target=".editShowLocationModal">Edit</button>' +
+                '<td>' + location.priceMin + '</td>' +
+                '<td>' + location.priceMax + '</td>' +
+                '<td> <div class="btn-group"><button class="btn btn-primary editLocation" data-bs-toggle="modal"  data-index= "' + index + '" data-address="' + location.address + '" data-hall="' + location.hall + '" data-city="' + location.city + '" data-date="' + location.date + '" data-day="' + location.day + '" data-time="' + location.time + '" data-priceMin="' + location.priceMin + '" data-priceMax="' + location.priceMax + '" data-bs-target=".editShowLocationModal">Edit</button>' +
 
 
-                '<button class="btn btn-danger deleteLocation"   data-index= "' + index + '" data-showid="'+ showid +'" >Delete</button></div></td>' +
+                '<button class="btn btn-danger deleteLocation"   data-index= "' + index + '" data-showid="'+ showid +'" >Delete</button></div></td>'
                 '</tr>';
             tableBody.append(row);
         });
@@ -306,8 +319,11 @@
         var date = button.data('date');
         var day = button.data('day');
         var time = button.data('time');
+        var priceMin = button.data('pricemin');
+        var priceMax = button.data('pricemax');
         var index = (button).data('index');
-        console.log("index here", index);
+        console.log("priceMin:", priceMin);
+        console.log("priceMax:", priceMax);
         // var showLocations = button.data('showlocations');
 
         var modal = $('.editShowLocationModal');
@@ -318,6 +334,8 @@
         modal.find('.form-control.editDate').val(date);
         modal.find('.form-control.editDay').val(day);
         modal.find('.form-control.editTime').val(time);
+        modal.find('.form-control.editMinPrice').val(priceMin);
+        modal.find('.form-control.editMaxPrice').val(priceMax);
         modal.find('.form-control.editindex').val(index);
     });
 
@@ -330,6 +348,8 @@
             var editedCity = modal.find('.form-control.editCity').val();
             var editedDate = modal.find('.form-control.editDate').val();
             var editedTime = modal.find('.form-control.editTime').val();
+            var editedMinPrice = modal.find('.form-control.editMinPrice').val();
+            var editedMaxPrice = modal.find('.form-control.editMaxPrice').val();
             var index = modal.find('.form-control.editindex').val();
             var showId = modal.find('.form-control#Default-showID').val();
 
@@ -341,7 +361,9 @@
                 hall: editedHall,
                 city: editedCity,
                 date: editedDate,
-                time: editedTime
+                time: editedTime,
+                minPrice: editedMinPrice,
+                maxPrice: editedMaxPrice,
             };
 
             $.ajax({
@@ -368,10 +390,6 @@
 
 <script>
     $(document).ready(function () {
-
-
-        
-
 
         $(document).on('click', '.editButton', function () {
             var button = $(this);
