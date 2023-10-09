@@ -76,7 +76,7 @@ route.post('/fetch-shows', async function (req, res) {
 
 
     var dateFilter = {};
-    if (filterParams.start_date)
+    if (filterParams.start_date && filterParams.start_date >= TodayDate)
         dateFilter.$gte = filterParams.start_date;
     else
         dateFilter.$gte = TodayDate;
