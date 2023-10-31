@@ -2,6 +2,12 @@ const express = require('express');
 const route = express.Router();
 var SportSiteMap = require('../Model/SportSiteMap');
 
+
+route.get('/healthcheck', function (req, res) {
+    res.send(res.statusCode.toString());
+});
+
+
 // Define a POST route to list events based on filters
 route.post('/sports-events', async (req, res) => {
     try {
@@ -17,9 +23,9 @@ route.post('/sports-events', async (req, res) => {
             link,
             startDate,
             endDate,
+            page,
         } = req.body;
 
-        // Construct the filter criteria for the query
         const filterCriteria = {};
 
         if (leagueName) {
@@ -47,28 +53,41 @@ route.post('/sports-events', async (req, res) => {
             filterCriteria.link = link;
         }
 
-        // Get the current date in ISO format (e.g., "2023-10-02")
         const currentDate = new Date().toISOString().split('T')[0];
 
-        // Add a filter to include only upcoming events if no date range is specified
         if (!startDate && !endDate) {
-            filterCriteria.date = {$gte: currentDate};
+            filterCriteria.date = { $gte: currentDate };
         } else {
-            // If startDate and endDate are specified, filter events within the date range
             filterCriteria.date = {
                 $gte: startDate,
                 $lte: endDate,
             };
         }
 
-        // Perform the query using the filter criteria
-        const events = await SportSiteMap.find(filterCriteria);
+        const allEvents = await SportSiteMap.find(filterCriteria);
 
-        res.status(200).json({events});
+        const { limit, pageno } = page || { limit: 10, pageno: 1 };
+
+        const startIndex = (pageno - 1) * limit;
+        const endIndex = pageno * limit;
+
+        const events = allEvents.slice(startIndex, endIndex);
+
+        const totalRecords = allEvents.length;
+        const totalPages = Math.ceil(totalRecords / limit);
+
+        res.status(200).json({
+            result: events,
+            TotalRecords: totalRecords,
+            CurrPage: pageno,
+            Totalpages: totalPages,
+        });
+
     } catch (error) {
         console.error(error);
-        res.status(500).json({error: 'Internal Server Error'});
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
 
 module.exports = route
