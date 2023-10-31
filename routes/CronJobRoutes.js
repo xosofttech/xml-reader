@@ -55,5 +55,5 @@ if (CONFIG.CRON === "on") {
 // FN.ScrapTicketIngo();
 // FN.ScrapMevalim();
 // FN.ScrapSiteMap();
-// FN.ScrapSportSiteMap();
+FN.ScrapSportSiteMap();
 

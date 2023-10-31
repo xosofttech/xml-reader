@@ -22,8 +22,8 @@ var SportSiteMapSchema = new Schema({
         default: "",
     },
     teamNames: {
-        type: String,
-        default: "",
+        type: Array,
+        default: []
     },
     city: {
         type: String,

@@ -1085,7 +1085,8 @@ async function ScrapSportSiteMapFunc(linksArray) {
             $('.tableBody .tableRow').each(async (index, element) => {
                 const leagueName = $(element).find('.eventInfo span').eq(0).text().trim();
                 const gameType = $(element).find('.eventInfo span').eq(1).text().trim();
-                const teamNames = $(element).find('.eventInfo a').text().trim();
+                const team = $(element).find('.eventInfo a').text().trim();
+                const teamNames = team.split(' - ');
                 const city = $(element).find('.eventLocation span').eq(0).text().trim();
                 const country = $(element).find('.eventLocation span').eq(1).text().trim();
                 const stadium = $(element).find('.eventLocation div span').eq(1).text().trim();
@@ -1130,7 +1131,8 @@ async function ScrapSportSiteMapFunc(linksArray) {
                     }
                 }
             }
-            pageNo++; 
+
+            pageNo++;
 
         } while (pageNo <= pageCount);
     }
