@@ -16,7 +16,10 @@ var ShowSchema = new Schema({
         type: "String",
         default: "",
     },
-    IsPromotion: { type: Boolean, default: false },
+    IsPromotion: { 
+        type: "Boolean",
+        default: "false",
+    },
     link: {
         type: "String",
         default: "",

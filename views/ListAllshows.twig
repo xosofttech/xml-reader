@@ -54,7 +54,7 @@
             <tbody>
             {% for key, row in response %}
                 <tr>
-                    <td> <input type="checkbox" {% if row.IsPromotion == 'true' %}checked{% endif %} disabled></td>
+                    <td><input type="checkbox" class="form-check-input" {% if row.IsPromotion %}checked{% endif %} disabled></td>
                     <td>{{ row.name }}</td>
                     <td>{{ row.domain }}</td>
                     <td>{{ row.section }}</td>
@@ -67,7 +67,7 @@
                     <td>
                         <button class="btn btn-primary editButton" data-bs-toggle="modal" data-showid="{{ row._id }}"
                             data-name="{{ row.name }}" data-domain="{{ row.domain }}"
-                            data-section="{{ row.section }}" data-IsPromotion="{{ row.IsPromotion }}" data-bs-target=".editModal">Edit
+                            data-section="{{ row.section }}" data-ispromotion="{{ row.IsPromotion }}" data-bs-target=".editModal">Edit
                         </button>
                         <button class="btn btn-danger deleteButton"  data-rowid={{ row._id }} >Delete
                         </button>
@@ -402,15 +402,16 @@
             var name = button.data('name');
             var domain = button.data('domain');
             var section = button.data('section');
-            var IsPromotion = button.data('IsPromotion');
+            var IsPromotion = button.data('ispromotion');
             var showid = button.data('showid');
             var modal = $('.editModal');
+            console.log("IsPromotion", IsPromotion);
             
 
             modal.find('.form-control.editName').val(name);
             modal.find('.form-control.editDomain').val(domain);
             modal.find('.form-control.editSection').val(section);
-            modal.find('.form-check-input.editIsPromotion').prop('checked', IsPromotion === 'true');
+            modal.find('.form-check-input.editIsPromotion').prop('checked', IsPromotion);
             modal.find('.form-control.showid').val(showid);
         });
 
