@@ -400,13 +400,13 @@
 
 <script>
     $(document).ready(function () {
-
+        var button
         $(document).on('click', '.editButton', function () {
-            var button = $(this);
-            var name = button.data('name');
-            var domain = button.data('domain');
-            var section = button.data('section');
-            var IsPromotion = button.data('ispromotion');
+            button = $(this);
+            var name = button.attr('data-name');
+            var domain = button.attr('data-domain');
+            var section = button.attr('data-section');
+            let IsPromotion = button.attr('data-ispromotion');
             var showid = button.data('showid');
             var modal = $('.editModal');
             console.log("IsPromotion", IsPromotion);
@@ -415,7 +415,7 @@
             modal.find('.form-control.editName').val(name);
             modal.find('.form-control.editDomain').val(domain);
             modal.find('.form-control.editSection').val(section);
-            modal.find('.form-check-input.editIsPromotion').prop('checked', IsPromotion);
+            modal.find('.form-check-input.editIsPromotion').prop('checked', IsPromotion == 'true' ? true : false);
             modal.find('.form-control.showid').val(showid);
         });
 
@@ -440,6 +440,10 @@
                     IsPromotion: IsPromotion
                 },
                 success: function (response) {
+                    button.attr('data-name', name);
+                    button.attr('data-domain', domain);
+                    button.attr('data-section', section);
+                    button.attr('data-ispromotion', IsPromotion);
                     $('#RowId-' + showid).children('td:nth-child(1)').html(IsPromotion == 'true' ? '<span class="badge bg-success">Sponsored</span>' : '<span > </span>');
                     $('#RowId-' + showid).children('td:nth-child(2)').html(name);
                     $('#RowId-' + showid).children('td:nth-child(3)').html(domain);
