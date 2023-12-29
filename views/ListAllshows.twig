@@ -15,14 +15,14 @@
         }
 
         .action-header {
-        width: 150px; /* Set the desired width */
-    }
+            width: 150px; /* Set the desired width */
+        }
 
-    /* Adjust the width as needed */
-    #showsTable td:nth-child(5),
-    #showsTable th:nth-child(5) {
-        width: 150px; /* Set the same desired width as above */
-    }
+        /* Adjust the width as needed */
+        #showsTable td:nth-child(5),
+        #showsTable th:nth-child(5) {
+            width: 150px; /* Set the same desired width as above */
+        }
 
     </style>
 </head>
@@ -31,12 +31,12 @@
 <div class="container mt-5">
 
     <div class="table-responsive">
-    <br/>
-				<h3 align="center">ALL Manual Added Shows</h3>
-				<a class="btn btn-primary mb-2" href="../app">+ Add New</a>
-				<a class="btn btn-primary mb-2" href="../app/edit-cities">Cities</a>
-				<a class="btn btn-primary mb-2" href="../app/edit-halls">Halls</a>
-				<br/>
+        <br/>
+        <h3 align="center">ALL Manual Added Shows</h3>
+        <a class="btn btn-primary mb-2" href="../app">+ Add New</a>
+        <a class="btn btn-primary mb-2" href="../app/edit-cities">Cities</a>
+        <a class="btn btn-primary mb-2" href="../app/edit-halls">Halls</a>
+        <br/>
         <div style="display: -webkit-inline-box;">
             <h2>All Shows</h2>
         </div>
@@ -53,8 +53,9 @@
             </thead>
             <tbody>
             {% for key, row in response %}
-                <tr>
-                    <td><input type="checkbox" class="form-check-input" {% if row.IsPromotion %}checked{% endif %} disabled></td>
+                <tr id="RowId-{{ row._id }}">
+                    <td><input type="checkbox" class="form-check-input" {% if row.IsPromotion %}checked{% endif %}
+                               disabled></td>
                     <td>{{ row.name }}</td>
                     <td>{{ row.domain }}</td>
                     <td>{{ row.section }}</td>
@@ -66,10 +67,11 @@
                     </td>
                     <td>
                         <button class="btn btn-primary editButton" data-bs-toggle="modal" data-showid="{{ row._id }}"
-                            data-name="{{ row.name }}" data-domain="{{ row.domain }}"
-                            data-section="{{ row.section }}" data-ispromotion="{{ row.IsPromotion }}" data-bs-target=".editModal">Edit
+                                data-name="{{ row.name }}" data-domain="{{ row.domain }}"
+                                data-section="{{ row.section }}" data-ispromotion="{{ row.IsPromotion }}"
+                                data-bs-target=".editModal">Edit
                         </button>
-                        <button class="btn btn-danger deleteButton"  data-rowid={{ row._id }} >Delete
+                        <button class="btn btn-danger deleteButton" data-rowid={{ row._id }}>Delete
                         </button>
                     </td>
 
@@ -197,7 +199,7 @@
                                 <label class="form-label">Maximum Price</label>
                                 <input type="text" class="form-control editMaxPrice" value="">
                             </div>
-                            
+
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -222,11 +224,10 @@
         $('#showsTable').DataTable({"ordering": false});
     });
 
-//     $(document).ready(function () {
-//     $('#showLocationsTable').DataTable(); // Initialize DataTable
-// });
+    //     $(document).ready(function () {
+    //     $('#showLocationsTable').DataTable(); // Initialize DataTable
+    // });
 </script>
-
 
 
 <script>
@@ -259,57 +260,57 @@
                 '<td> <div class="btn-group"><button class="btn btn-primary editLocation" data-bs-toggle="modal"  data-index= "' + index + '" data-address="' + location.address + '" data-hall="' + location.hall + '" data-city="' + location.city + '" data-date="' + location.date + '" data-day="' + location.day + '" data-time="' + location.time + '" data-priceMin="' + location.priceMin + '" data-priceMax="' + location.priceMax + '" data-bs-target=".editShowLocationModal">Edit</button>' +
 
 
-                '<button class="btn btn-danger deleteLocation"   data-index= "' + index + '" data-showid="'+ showid +'" >Delete</button></div></td>'
-                '</tr>';
+                '<button class="btn btn-danger deleteLocation"   data-index= "' + index + '" data-showid="' + showid + '" >Delete</button></div></td>'
+            '</tr>';
             tableBody.append(row);
         });
         $("#showLocationsModal").modal('show');
     });
 
     $(document).on('click', '.deleteLocation', function () {
-    var index = $(this).data('index');
-    var showId = $(this).data('showid');
+        var index = $(this).data('index');
+        var showId = $(this).data('showid');
 
-    var confirmation = confirm('Are you sure you want to delete this entry?');
-    if (!confirmation) {
-        return; // If the user cancels, do nothing
-    }
-
-    $.ajax({
-        url: 'deleteLocationDetail', 
-        type: 'DELETE',
-        data: {
-            index: index,
-            showId: showId
-        }, 
-        success: function (data) {
-            console.log('Object deleted successfully');
-            $("#showLocationsTableBody tr:eq(" + index + ")").remove();
-            toastr.success('Deleted successfully!');
-
-            // Update the indexes in the remaining array elements
-            showLocations.splice(index, 1);
-            console.log("after deletion", showLocations)
-
-
-            // Update data-index attributes in the remaining rows
-            $('#showLocationsTableBody tr').each(function (newIndex) {
-                $(this).find('.editLocation').data('index', newIndex);
-                $(this).find('.deleteLocation').data('index', newIndex);
-            });
-
-            // Clear the DataTable and redraw with updated data
-            // var dataTable = $('#showLocationsTable').DataTable();
-            // modal.modal('');
-            //$("#showLocationsModal").modal('hide');
-            // dataTable.clear().rows.add(showLocations).draw();
-        },
-        error: function (error) {
-            console.error('Error deleting object:', error);
-            toastr.error('An error occurred while Deleting.');
+        var confirmation = confirm('Are you sure you want to delete this entry?');
+        if (!confirmation) {
+            return; // If the user cancels, do nothing
         }
+
+        $.ajax({
+            url: 'deleteLocationDetail',
+            type: 'DELETE',
+            data: {
+                index: index,
+                showId: showId
+            },
+            success: function (data) {
+                console.log('Object deleted successfully');
+                $("#showLocationsTableBody tr:eq(" + index + ")").remove();
+                toastr.success('Deleted successfully!');
+
+                // Update the indexes in the remaining array elements
+                showLocations.splice(index, 1);
+                console.log("after deletion", showLocations)
+
+
+                // Update data-index attributes in the remaining rows
+                $('#showLocationsTableBody tr').each(function (newIndex) {
+                    $(this).find('.editLocation').data('index', newIndex);
+                    $(this).find('.deleteLocation').data('index', newIndex);
+                });
+
+                // Clear the DataTable and redraw with updated data
+                // var dataTable = $('#showLocationsTable').DataTable();
+                // modal.modal('');
+                //$("#showLocationsModal").modal('hide');
+                // dataTable.clear().rows.add(showLocations).draw();
+            },
+            error: function (error) {
+                console.error('Error deleting object:', error);
+                toastr.error('An error occurred while Deleting.');
+            }
+        });
     });
-});
 
 </script>
 
@@ -406,7 +407,7 @@
             var showid = button.data('showid');
             var modal = $('.editModal');
             console.log("IsPromotion", IsPromotion);
-            
+
 
             modal.find('.form-control.editName').val(name);
             modal.find('.form-control.editDomain').val(domain);
@@ -416,7 +417,7 @@
         });
 
         $('.saveChanges').on('click', function () {
-            
+
 
             var modal = $(this).closest('.modal');
             var name = modal.find('.form-control.editName').val();
@@ -438,6 +439,10 @@
                     IsPromotion: IsPromotion
                 },
                 success: function (response) {
+                    $('#RowId-' + showid).children('td:nth-child(1)').html();
+                    $('#RowId-' + showid).children('td:nth-child(2)').html(name);
+                    $('#RowId-' + showid).children('td:nth-child(3)').html(domain);
+                    $('#RowId-' + showid).children('td:nth-child(4)').html(section);
                     toastr.success('Update successful!');
                     modal.modal('hide');
                 },
@@ -451,42 +456,41 @@
 
 <script>
     $(document).on('click', '.deleteButton', function () {
-    var rowId = $(this).data('rowid');
-    var rowElement = $(this).closest('tr');
-    var dataTable = $('#showsTable').DataTable();
+        var rowId = $(this).data('rowid');
+        var rowElement = $(this).closest('tr');
+        var dataTable = $('#showsTable').DataTable();
 
-    var confirmation = confirm('Are you sure you want to delete this entry?');
-    if (!confirmation) {
-        return;
-    }
-
-    $.ajax({
-        type: 'DELETE',
-        url: `delete-show/${rowId}`, 
-        success: function (response) {
-            toastr.success('Deleted successful!');
-            rowElement.remove();
-            dataTable.row(rowElement).remove().draw(); // Remove and redraw DataTable
-
-            // Update the "Showing x to y of z entries" message
-            var info = dataTable.page.info();
-            var paginationInfo = $('#showsTable_info');
-            paginationInfo.text('Showing ' + (info.start + 1) + ' to ' + (info.start + info.length) + ' of ' + info.recordsTotal + ' entries');
-
-            console.log(response.message);
-        },
-        error: function (error) {
-            console.error('Error deleting show:', error);
-            toastr.error('An error occurred while Deleting.');
+        var confirmation = confirm('Are you sure you want to delete this entry?');
+        if (!confirmation) {
+            return;
         }
+
+        $.ajax({
+            type: 'DELETE',
+            url: `delete-show/${rowId}`,
+            success: function (response) {
+                toastr.success('Deleted successful!');
+                rowElement.remove();
+                dataTable.row(rowElement).remove().draw(); // Remove and redraw DataTable
+
+                // Update the "Showing x to y of z entries" message
+                var info = dataTable.page.info();
+                var paginationInfo = $('#showsTable_info');
+                paginationInfo.text('Showing ' + (info.start + 1) + ' to ' + (info.start + info.length) + ' of ' + info.recordsTotal + ' entries');
+
+                console.log(response.message);
+            },
+            error: function (error) {
+                console.error('Error deleting show:', error);
+                toastr.error('An error occurred while Deleting.');
+            }
+        });
     });
-});
 </script>
 
 
 {# delete Show Location Detail #}
 <script>
-
 
 
 </script>
