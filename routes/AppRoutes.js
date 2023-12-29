@@ -297,14 +297,15 @@ route.post('/save-records', (req, res) => {
 
 route.post('/quick-edit-show', async (req, res) => {
     const formData = req.body;
-
+    console.log("formData", formData);
     try {
         // Define the update object with the fields you want to update
         const updateObject = {
             domain: formData.domain,
             section: formData.section,
-            name: formData.name
-            // Add other fields as needed...
+            name: formData.name,
+            IsPromotion: formData.IsPromotion
+            
         };
 
         await Shows.updateOne(
