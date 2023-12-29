@@ -48,8 +48,12 @@
             </thead>
             <tbody>
             {% for key, row in response %}
-                <tr>
-                    <td><input type="checkbox" class="form-check-input" {% if row.IsPromotion %}checked{% endif %} disabled></td>
+                <tr id="RowId-{{ row._id }}">
+                    <td>
+                        {% if row.IsPromotion %}
+                            <span class="badge rounded-pill bg-success">Sponsored</span>
+                        {% endif %}
+                    </td>
                     <td>{{ row.name }}</td>
                     <td>{{ row.domain }}</td>
                     <td>{{ row.section }}</td>
@@ -409,6 +413,10 @@
                     IsPromotion: IsPromotion
                 },
                 success: function (response) {
+                    $('#RowId-' + showid).children('td:nth-child(1)').html(IsPromotion == 'true' ? '<span class="badge bg-success">Sponsored</span>' : '<span > </span>');
+                    $('#RowId-' + showid).children('td:nth-child(2)').html(name);
+                    $('#RowId-' + showid).children('td:nth-child(3)').html(domain);
+                    $('#RowId-' + showid).children('td:nth-child(4)').html(section);
                     toastr.success('Update successful!');
                     modal.modal('hide');
                 },
